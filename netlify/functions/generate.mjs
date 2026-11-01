@@ -1,9 +1,11 @@
 // POST /api/generate — собирает системный промпт на сервере.
-// Бесплатно: 3 генерации в сутки на IP. PRO-функции — только с подтверждённой лицензией.
+// Бесплатно: 3 генерации в сутки на IP (из них 1 пробная через ИИ). PRO: шаблоны + до 30 ИИ-генераций в сутки.
+// ИИ вызывается только по явной кнопке (ai: true) и только при заполненной нише; иначе — локальный шаблон.
 import {
   json, isSameOrigin, readJsonBody, validateSettings, buildPrompt, ROLES,
   verifyLicense, bearer, clientKey, hitLimit, FREE_PER_DAY, DAY_MS, HOUR_MS
 } from '../lib/shared.mjs';
+import { aiGenerate, peekUserAi, AI_CFG } from '../lib/ai.mjs';
 
 export default async (req, context) => {
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405, { allow: 'POST' });
@@ -14,27 +16,49 @@ export default async (req, context) => {
 
   const settings = validateSettings(body.data.settings);
   if (!settings) return json({ error: 'bad_settings' }, 400);
+  const wantAi = body.data.ai === true;
 
   try {
     const token = bearer(req);
     const orderId = token ? await verifyLicense(token) : null;
     const pro = !!orderId;
+    const cfg = AI_CFG();
+    const ipKey = clientKey(req, context);
+    const result = { pro };
 
     if (!pro) {
       if (ROLES[settings.role].pro) return json({ error: 'pro_required', reason: 'role' }, 402);
       if (settings.protection) return json({ error: 'pro_required', reason: 'protection' }, 402);
 
-      const q = await hitLimit('free2:' + clientKey(req, context), FREE_PER_DAY, DAY_MS);
+      const q = await hitLimit('free2:' + ipKey, FREE_PER_DAY, DAY_MS);
       if (!q.allowed) {
         return json({ error: q.busy ? 'busy' : 'quota', tokensLeft: 0, freePerDay: FREE_PER_DAY, resetAt: q.resetAt }, q.busy ? 429 : 402);
       }
-      return json({ prompt: buildPrompt(settings), pro: false, tokensLeft: q.remaining, freePerDay: FREE_PER_DAY, resetAt: q.resetAt });
+      Object.assign(result, { tokensLeft: q.remaining, freePerDay: FREE_PER_DAY, resetAt: q.resetAt });
+    } else {
+      // Защита от ботов даже для PRO
+      const rl = await hitLimit('pro:' + orderId, 600, HOUR_MS);
+      if (!rl.allowed) return json({ error: 'rate_limited' }, 429);
     }
 
-    // PRO: безлимит для людей, но защита от автоматического выкачивания
-    const rl = await hitLimit('pro:' + orderId, 600, HOUR_MS);
-    if (!rl.allowed) return json({ error: 'rate_limited' }, 429);
-    return json({ prompt: buildPrompt(settings), pro: true });
+    const base = buildPrompt(settings);
+    const userKey = pro ? 'pro:' + orderId : 'free:' + ipKey;
+    const userDaily = pro ? cfg.proDaily : cfg.freeTrialDaily;
+
+    let mode = 'template';
+    let reason = null;
+    let prompt = base;
+
+    if (!wantAi) reason = 'live';
+    else if (!settings.task) reason = 'no_task';
+    else {
+      const ai = await aiGenerate({ basePrompt: base, task: settings.task, userKey, userDaily });
+      if (ai.prompt) { prompt = ai.prompt; mode = 'ai'; }
+      else reason = ai.fallback;
+    }
+
+    const left = await peekUserAi(userKey, userDaily);
+    return json({ ...result, prompt, mode, reason, aiLeft: left.remaining, aiDaily: userDaily });
   } catch (e) {
     console.error('generate failed:', e && e.message);
     return json({ error: 'server_error' }, 500);

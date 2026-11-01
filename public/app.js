@@ -19,8 +19,9 @@
   ['systemprompt_pro_status', 'systemprompt_free_tokens', 'spp_pro_unlocked'].forEach(storeDel);
 
   /* ================= СОСТОЯНИЕ ================= */
-  const state = { pro: false, tokensLeft: null, freePerDay: 3, statusLoaded: false };
+  const state = { pro: false, tokensLeft: null, freePerDay: 3, statusLoaded: false, aiOnline: false, aiLeft: null, aiDaily: null };
   const ORDER_RE = /^[a-f0-9]{32}$/;
+  const OUTPUT_PLACEHOLDER = (document.getElementById('output') || {}).placeholder || '';
 
   /* ================= API ================= */
   async function api(path, opts) {
@@ -57,7 +58,7 @@
     payForm: $('payForm'), payBtn: $('payBtn'), payLabel: $('payLabel'), paySpinner: $('paySpinner'),
     formLabel: $('formLabel'), successUrl: $('formSuccessUrl'),
     restoreBox: $('restoreBox'), restoreForm: $('restoreForm'), restoreCode: $('restoreCode'),
-    restoreBtn: $('restoreBtn'), restoreMsg: $('restoreMsg'),
+    restoreBtn: $('restoreBtn'), restoreMsg: $('restoreMsg'), aiHint: $('aiHint'),
     toast: $('toast'), toastText: $('toastText'), toastIcon: $('toastIcon')
   };
 
@@ -78,6 +79,7 @@
   /* ================= ВЫВОД ================= */
   let generatedText = '';
   let generatedKey = '';
+  let generatedMode = 'template';
   let typingFrame = null;
   let busy = false;
 
@@ -95,7 +97,7 @@
     const words = text.trim() ? text.trim().split(/\s+/).length : 0;
     els.stats.textContent = text.length + ' chars · ' + words + ' words';
   }
-  const doneLabel = () => (state.pro ? 'live' : 'generated');
+  const doneLabel = () => (generatedMode === 'ai' ? 'ai ✨' : state.pro ? 'live' : 'generated');
 
   const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -188,6 +190,20 @@
     els.proRolesGroup.label = pro ? 'PRO-роли ⚡' : 'PRO-роли 🔒';
     els.proRolesGroup.querySelectorAll('option').forEach((o) => { o.textContent = (pro ? '' : '🔒 ') + o.dataset.label; });
     els.headerProBtn.textContent = pro ? 'PRO ⚡' : 'PRO ✨';
+    updateAiHint();
+  }
+
+  function updateAiHint() {
+    if (!els.aiHint) return;
+    let text = '';
+    if (state.statusLoaded) {
+      if (!state.aiOnline) text = 'ИИ-адаптация временно недоступна — промпты собираются по шаблонам';
+      else if (state.aiLeft === 0) text = state.pro ? 'ИИ-генерации на сегодня исчерпаны (' + state.aiDaily + '/сутки) — дальше шаблоны' : 'Пробная ИИ-генерация на сегодня использована. В PRO — 30 в сутки ✨';
+      else if (!els.taskContext.value.trim()) text = '✨ Опишите нишу в поле 03 — ИИ адаптирует промпт под неё';
+      else text = '✨ ИИ адаптирует промпт под вашу нишу' + (state.aiLeft !== null ? ' · осталось ' + state.aiLeft + '/' + state.aiDaily + ' сегодня' : '');
+    }
+    els.aiHint.textContent = text;
+    els.aiHint.classList.toggle('hidden', !text);
   }
 
   async function refreshStatus() {
@@ -198,6 +214,9 @@
       state.pro = data.pro === true;
       state.tokensLeft = state.pro ? null : (typeof data.tokensLeft === 'number' ? data.tokensLeft : null);
       if (typeof data.freePerDay === 'number') state.freePerDay = data.freePerDay;
+      state.aiOnline = data.aiOnline === true;
+      state.aiLeft = typeof data.aiLeft === 'number' ? data.aiLeft : null;
+      state.aiDaily = typeof data.aiDaily === 'number' ? data.aiDaily : null;
       state.statusLoaded = true;
     } catch (e) {
       state.statusLoaded = false;
@@ -211,23 +230,37 @@
     if (!state.pro && state.tokensLeft === 0) { openModal('Бесплатные генерации на сегодня закончились'); return; }
 
     const key = settingsKey();
+    const aiLikely = state.aiOnline && state.aiLeft !== 0 && els.taskContext.value.trim().length > 0;
     setBusy(true);
-    setStatus('…', STATUS.typing);
+    setStatus(aiLikely ? 'ai thinking…' : '…', STATUS.typing);
+    if (aiLikely) {
+      els.output.classList.add('is-typing');
+      els.output.value = '';
+      els.output.placeholder = '// ✨ ИИ изучает вашу нишу и пишет персональный промпт…\n// Обычно это занимает 5–15 секунд.';
+    }
     try {
-      const { status, data } = await api('/api/generate', { method: 'POST', body: { settings: getSettings() } });
+      const { status, data } = await api('/api/generate', { method: 'POST', body: { settings: getSettings(), ai: true } });
+      els.output.placeholder = OUTPUT_PLACEHOLDER;
       if (status === 200 && typeof data.prompt === 'string') {
         if (data.pro === false && typeof data.tokensLeft === 'number') state.tokensLeft = data.tokensLeft;
         if (data.pro === true) state.pro = true;
+        if (typeof data.aiLeft === 'number') state.aiLeft = data.aiLeft;
+        if (typeof data.aiDaily === 'number') state.aiDaily = data.aiDaily;
+        if (['budget', 'daily_cap', 'breaker', 'disabled', 'not_configured', 'error'].indexOf(data.reason) !== -1) state.aiOnline = false;
         updateStatusUI();
         generatedText = data.prompt;
         generatedKey = key;
+        generatedMode = data.mode === 'ai' ? 'ai' : 'template';
+        const modeNote = aiModeNote(data);
         showStale(false);
         setStats(generatedText);
         typeOut(generatedText, () => {
           setBusy(false);
           if (!state.pro) {
             if (state.tokensLeft === 0) showToast('Это была последняя бесплатная генерация на сегодня. Откройте PRO для безлимита ⚡', 3800, 'warn');
-            else showToast('Промпт готов! Осталось бесплатных генераций: ' + state.tokensLeft + '/' + state.freePerDay, 2600);
+            else showToast((generatedMode === 'ai' ? '✨ ИИ-промпт под вашу нишу готов! ' : 'Промпт готов! ') + 'Осталось бесплатных генераций: ' + state.tokensLeft + '/' + state.freePerDay, 3000);
+          } else if (modeNote) {
+            showToast(modeNote, 3600, generatedMode === 'ai' ? '' : 'warn');
           }
         });
         return;
@@ -236,12 +269,33 @@
       handleApiError(status, data);
     } catch (e) {
       setBusy(false);
+      els.output.placeholder = OUTPUT_PLACEHOLDER;
+      els.output.classList.remove('is-typing');
+      if (generatedText) els.output.value = generatedText;
       setStatus(generatedText ? doneLabel() : 'ready', generatedText ? STATUS.done : STATUS.ready);
       showToast('Нет связи с сервером. Проверьте интернет и попробуйте снова', 3000, 'warn');
     }
   }
 
+  function aiModeNote(data) {
+    if (data.mode === 'ai') return '✨ Промпт адаптирован ИИ под вашу нишу' + (typeof data.aiLeft === 'number' ? ' · осталось ' + data.aiLeft + '/' + data.aiDaily + ' сегодня' : '');
+    const notes = {
+      no_task: 'Опишите нишу в поле 03, чтобы ИИ адаптировал промпт под неё',
+      user_limit: 'ИИ-генерации на сегодня исчерпаны — промпт собран по шаблону',
+      budget: 'ИИ-режим временно на паузе — промпт собран по шаблону',
+      daily_cap: 'ИИ-режим временно на паузе — промпт собран по шаблону',
+      breaker: 'ИИ-режим временно на паузе — промпт собран по шаблону',
+      disabled: 'ИИ-режим отключён — промпт собран по шаблону',
+      not_configured: 'ИИ-режим недоступен — промпт собран по шаблону',
+      error: 'ИИ не ответил — промпт собран по шаблону',
+      bad_output: 'ИИ не справился — промпт собран по шаблону'
+    };
+    return notes[data.reason] || '';
+  }
+
   function handleApiError(status, data) {
+    els.output.classList.remove('is-typing');
+    if (generatedText) els.output.value = generatedText;
     setStatus(generatedText ? doneLabel() : 'ready', generatedText ? STATUS.done : STATUS.ready);
     if (status === 402 && data.error === 'quota') {
       state.tokensLeft = 0; updateStatusUI();
@@ -264,12 +318,13 @@
     const seq = ++liveSeq;
     const key = settingsKey();
     try {
-      const { status, data } = await api('/api/generate', { method: 'POST', body: { settings: getSettings() } });
+      const { status, data } = await api('/api/generate', { method: 'POST', body: { settings: getSettings(), ai: false } });
       if (seq !== liveSeq) return; // пришёл устаревший ответ
       if (status === 200 && typeof data.prompt === 'string') {
         stopTyping();
         generatedText = data.prompt;
         generatedKey = key;
+        generatedMode = 'template';
         els.output.value = generatedText;
         setStats(generatedText);
         showStale(false);
@@ -281,6 +336,7 @@
 
   function onSettingsChange() {
     els.taskCounter.textContent = els.taskContext.value.length + '/1000';
+    updateAiHint();
     if (!generatedText) return;
     const changed = settingsKey() !== generatedKey;
     if (state.pro) {
@@ -392,6 +448,15 @@
   let lastFocused = null;
   function openModal(reason, opts) {
     opts = opts || {};
+    if (state.pro && !opts.force && reason === 'improve') {
+      if (!els.taskContext.value.trim()) {
+        els.taskContext.focus();
+        showToast('Опишите нишу в поле 03 — и ИИ адаптирует промпт под неё ✨', 3200, 'warn');
+      } else {
+        generate();
+      }
+      return;
+    }
     if (state.pro && !opts.force) {
       const order = storeGet(KEY_ORDER);
       showToast(reason === 'improve'
