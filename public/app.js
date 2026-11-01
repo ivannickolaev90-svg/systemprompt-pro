@@ -49,7 +49,7 @@
     taskContext: $('taskContext'), taskCounter: $('taskCounter'),
     fmtCode: $('fmtCode'), fmtNoFluff: $('fmtNoFluff'),
     protection: $('protection'), mdTables: $('mdTables'),
-    output: $('output'), outputStatus: $('outputStatus'), stats: $('stats'),
+    output: null, outputStatus: $('outputStatus'), stats: $('stats'),
     staleHint: $('staleHint'), staleRegen: $('staleRegen'),
     generateBtn: $('generateBtn'), generateLabel: $('generateLabel'),
     copyBtn: $('copyBtn'), resetBtn: $('resetBtn'), headerProBtn: $('headerProBtn'),
@@ -60,6 +60,154 @@
     restoreBox: $('restoreBox'), restoreForm: $('restoreForm'), restoreCode: $('restoreCode'),
     restoreBtn: $('restoreBtn'), restoreMsg: $('restoreMsg'), aiHint: $('aiHint'),
     toast: $('toast'), toastText: $('toastText'), toastIcon: $('toastIcon')
+  };
+
+  /* ================= ОКНО ВЫВОДА (документ) ================= */
+  // Промпт отрисовывается как документ. Текст ИИ вставляется ТОЛЬКО через textContent — без innerHTML.
+  const out = {
+    area: $('output'), frame: $('outputFrame'), view: $('outputView'),
+    empty: $('outputEmpty'), emptyText: $('outputEmptyText'), dots: document.querySelector('#outputEmpty .out-dots')
+  };
+  const EMPTY_TEXT = out.emptyText.textContent;
+  let revealTimer = null;
+
+  function el(tag, cls, text) {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  }
+  // Инлайн-разметка: `код` и **жирный**
+  function appendInline(parent, text) {
+    const re = /(`[^`\n]+`|\*\*[^*\n]+\*\*)/g;
+    let last = 0, m;
+    while ((m = re.exec(text))) {
+      if (m.index > last) parent.appendChild(document.createTextNode(text.slice(last, m.index)));
+      const t = m[0];
+      if (t[0] === '`') parent.appendChild(el('code', 'font-mono text-[13px] px-1.5 py-0.5 rounded-md bg-zinc-800 text-indigo-200 border border-zinc-700/60', t.slice(1, -1)));
+      else parent.appendChild(el('strong', 'font-semibold text-white', t.slice(2, -2)));
+      last = m.index + t.length;
+    }
+    if (last < text.length) parent.appendChild(document.createTextNode(text.slice(last)));
+    return parent;
+  }
+  function splitRow(line) {
+    return line.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim());
+  }
+
+  function renderMarkdown(text) {
+    const blocks = [];
+    const lines = text.replace(/\r/g, '').split('\n');
+    let i = 0;
+    while (i < lines.length) {
+      const line = lines[i];
+      const t = line.trim();
+      if (!t) { i++; continue; }
+
+      if (t.startsWith('```')) {                       // блок кода
+        const buf = []; i++;
+        while (i < lines.length && !lines[i].trim().startsWith('```')) buf.push(lines[i++]);
+        i++;
+        const pre = el('pre', 'my-4 p-4 rounded-xl bg-zinc-950/70 border border-zinc-800 overflow-x-auto');
+        pre.appendChild(el('code', 'font-mono text-[13px] leading-6 text-zinc-200', buf.join('\n')));
+        blocks.push(pre); continue;
+      }
+      let m;
+      if ((m = /^(#{1,4})\s+(.*)$/.exec(t))) {         // заголовки
+        const lvl = m[1].length;
+        let node;
+        if (lvl === 1) {
+          node = el('h2', 'text-xl sm:text-2xl font-bold tracking-tight text-white pb-3 mb-4 border-b border-zinc-800');
+        } else if (lvl === 2) {
+          node = el('h3', 'flex items-center gap-2.5 text-base sm:text-[17px] font-bold tracking-tight text-white mt-7 mb-2.5');
+          node.appendChild(el('span', 'w-1 h-4 rounded-full bg-indigo-500 shrink-0'));
+        } else {
+          node = el('h4', 'text-[15px] font-semibold text-zinc-100 mt-5 mb-1.5');
+        }
+        appendInline(node, m[2].replace(/^#+\s*/, ''));
+        blocks.push(node); i++; continue;
+      }
+      if (t.startsWith('|')) {                          // таблица
+        const rows = [];
+        while (i < lines.length && lines[i].trim().startsWith('|')) rows.push(lines[i++]);
+        const data = rows.filter((r) => !/^\|?\s*:?-{2,}/.test(r.trim().replace(/^\|/, '')));
+        const wrap = el('div', 'my-4 overflow-x-auto rounded-xl border border-zinc-800');
+        const table = el('table', 'w-full text-sm text-left');
+        data.forEach((r, ri) => {
+          const tr = el('tr', ri === 0 ? 'bg-zinc-800/60' : 'border-t border-zinc-800');
+          splitRow(r).forEach((c) => tr.appendChild(appendInline(el(ri === 0 ? 'th' : 'td', ri === 0 ? 'px-3 py-2 font-semibold text-white' : 'px-3 py-2 text-zinc-300'), c)));
+          table.appendChild(tr);
+        });
+        wrap.appendChild(table); blocks.push(wrap); continue;
+      }
+      if (/^[-*•]\s+/.test(t)) {                        // маркированный список
+        const ul = el('ul', 'my-3 space-y-2');
+        while (i < lines.length && /^[-*•]\s+/.test(lines[i].trim())) {
+          const li = el('li', 'flex gap-3');
+          li.appendChild(el('span', 'mt-[11px] w-1.5 h-1.5 rounded-full bg-indigo-400/80 shrink-0'));
+          li.appendChild(appendInline(el('span', 'min-w-0'), lines[i].trim().replace(/^[-*•]\s+/, '')));
+          ul.appendChild(li); i++;
+        }
+        blocks.push(ul); continue;
+      }
+      if (/^\d+[.)]\s+/.test(t)) {                      // нумерованный список
+        const ol = el('ol', 'my-3 space-y-2');
+        let n = 1;
+        while (i < lines.length && /^\d+[.)]\s+/.test(lines[i].trim())) {
+          const li = el('li', 'flex gap-3');
+          li.appendChild(el('span', 'mt-0.5 w-6 h-6 rounded-md bg-zinc-800 text-zinc-300 text-xs font-semibold flex items-center justify-center shrink-0', String(n++)));
+          li.appendChild(appendInline(el('span', 'min-w-0'), lines[i].trim().replace(/^\d+[.)]\s+/, '')));
+          ol.appendChild(li); i++;
+        }
+        blocks.push(ol); continue;
+      }
+      const para = [];                                   // абзац
+      while (i < lines.length && lines[i].trim() && !/^(#{1,4}\s|```|\||[-*•]\s|\d+[.)]\s)/.test(lines[i].trim())) para.push(lines[i++].trim());
+      blocks.push(appendInline(el('p', 'my-3'), para.join(' ')));
+    }
+    return blocks;
+  }
+
+  function renderOutput(text, animate) {
+    clearTimeout(revealTimer);
+    out.view.textContent = '';
+    const has = !!(text && text.trim());
+    out.view.classList.toggle('hidden', !has);
+    out.empty.classList.toggle('hidden', has);
+    out.empty.classList.toggle('flex', !has);
+    if (!has) return;
+    const blocks = renderMarkdown(text);
+    blocks.forEach((b) => { b.classList.add('out-block'); out.view.appendChild(b); });
+    if (!animate || reducedMotion) { blocks.forEach((b) => b.classList.add('shown')); return; }
+    // плавное появление блоков по очереди
+    const step = Math.max(28, Math.min(70, 1100 / blocks.length));
+    let k = 0;
+    (function next() {
+      if (k >= blocks.length) return;
+      blocks[k++].classList.add('shown');
+      revealTimer = setTimeout(next, step);
+    })();
+  }
+
+  // Совместимый «фасад» вместо textarea: логика генерации продолжает работать с els.output
+  els.output = {
+    get value() { return out.area.value; },
+    set value(v) { out.area.value = v; renderOutput(v, false); },
+    get placeholder() { return out.emptyText.textContent; },
+    set placeholder(v) {
+      const txt = String(v || '').replace(/^\/\/\s?/gm, '');
+      out.emptyText.textContent = txt || EMPTY_TEXT;
+      out.area.placeholder = v;
+    },
+    classList: {
+      add(c) { out.frame.classList.add(c); if (c === 'is-typing') { out.dots.classList.remove('hidden'); out.dots.classList.add('flex'); } },
+      remove(c) { out.frame.classList.remove(c); if (c === 'is-typing') { out.dots.classList.add('hidden'); out.dots.classList.remove('flex'); } },
+      contains(c) { return out.frame.classList.contains(c); }
+    },
+    get scrollTop() { return out.view.scrollTop; },
+    set scrollTop(v) { out.view.scrollTop = v; },
+    focus() { out.area.classList.remove('sr-only'); out.area.className = 'mt-3 w-full h-40 rounded-xl bg-zinc-950 border border-zinc-700 p-3 font-mono text-xs text-zinc-200'; out.area.focus(); },
+    select() { out.area.select(); }
   };
 
   /* ================= НАСТРОЙКИ ПРОМПТА ================= */
@@ -85,8 +233,9 @@
 
   const STATUS = {
     ready: 'bg-zinc-800 text-zinc-400 border-zinc-700',
-    typing: 'bg-violet-500/15 text-violet-300 border-violet-500/30',
-    done: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+    typing: 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30',
+    done: 'bg-zinc-800 text-zinc-300 border-zinc-700',
+    ai: 'bg-indigo-500/15 text-indigo-200 border-indigo-400/30',
     stale: 'bg-amber-500/10 text-amber-300 border-amber-500/30'
   };
   function setStatus(label, cls) {
@@ -102,35 +251,25 @@
   const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function stopTyping() {
-    if (typingFrame) { cancelAnimationFrame(typingFrame); typingFrame = null; }
+    if (typingFrame) { clearTimeout(typingFrame); typingFrame = null; }
     els.output.classList.remove('is-typing');
   }
 
+  // Плавное появление готового промпта (fade-in по блокам)
   function typeOut(text, done) {
     stopTyping();
-    const finish = () => {
-      els.output.value = text;
-      els.output.scrollTop = 0;
-      stopTyping();
-      els.output.classList.add('is-live');
-      setStatus(doneLabel(), STATUS.done);
+    out.area.value = text;
+    els.output.classList.add('is-live');
+    renderOutput(text, true);
+    out.view.scrollTop = 0;
+    setStatus('…', STATUS.typing);
+    const blocks = out.view.children.length || 1;
+    const total = reducedMotion ? 0 : Math.min(1300, Math.max(28, Math.min(70, 1100 / blocks)) * blocks + 200);
+    typingFrame = setTimeout(() => {
+      typingFrame = null;
+      setStatus(doneLabel(), generatedMode === 'ai' ? STATUS.ai : STATUS.done);
       if (done) done();
-    };
-    if (reducedMotion) { finish(); return; }
-    const duration = Math.min(1800, 500 + text.length * 0.9);
-    const start = performance.now();
-    els.output.classList.add('is-typing');
-    els.output.classList.remove('is-live');
-    setStatus('typing…', STATUS.typing);
-    function step(now) {
-      const p = Math.min(1, (now - start) / duration);
-      const n = Math.floor(text.length * (1 - Math.pow(1 - p, 2)));
-      els.output.value = text.slice(0, n) + (p < 1 ? '▌' : '');
-      els.output.scrollTop = els.output.scrollHeight;
-      if (p < 1) typingFrame = requestAnimationFrame(step);
-      else { typingFrame = null; finish(); }
-    }
-    typingFrame = requestAnimationFrame(step);
+    }, total);
   }
 
   function showStale(show) {
@@ -405,7 +544,8 @@
     } catch (e) { return false; }
   }
 
-  const copyLabelText = els.copyBtn.textContent.trim();
+  const copyLabelEl = els.copyBtn.querySelector('[data-copy-label]') || els.copyBtn;
+  const copyLabelText = copyLabelEl.textContent.trim();
   let copyTimer;
   els.copyBtn.addEventListener('click', async () => {
     if (!generatedText) {
@@ -417,9 +557,9 @@
     if (typingFrame) { stopTyping(); els.output.value = generatedText; setStatus(doneLabel(), STATUS.done); }
     const ok = await copyText(generatedText);
     if (ok) {
-      els.copyBtn.textContent = 'Скопировано! ✅';
+      copyLabelEl.textContent = 'Скопировано! ✅';
       clearTimeout(copyTimer);
-      copyTimer = setTimeout(() => { els.copyBtn.textContent = copyLabelText; }, 1800);
+      copyTimer = setTimeout(() => { copyLabelEl.textContent = copyLabelText; }, 1800);
       showToast('Скопировано!', 1800);
     } else {
       els.output.focus(); els.output.select();
