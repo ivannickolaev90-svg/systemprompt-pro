@@ -24,7 +24,7 @@ export default async (req, context) => {
       if (ROLES[settings.role].pro) return json({ error: 'pro_required', reason: 'role' }, 402);
       if (settings.protection) return json({ error: 'pro_required', reason: 'protection' }, 402);
 
-      const q = await hitLimit('free:' + clientKey(req, context), FREE_PER_DAY, DAY_MS);
+      const q = await hitLimit('free2:' + clientKey(req, context), FREE_PER_DAY, DAY_MS);
       if (!q.allowed) {
         return json({ error: q.busy ? 'busy' : 'quota', tokensLeft: 0, freePerDay: FREE_PER_DAY, resetAt: q.resetAt }, q.busy ? 429 : 402);
       }

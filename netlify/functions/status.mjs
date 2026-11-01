@@ -7,7 +7,7 @@ export default async (req, context) => {
     const token = bearer(req);
     const orderId = token ? await verifyLicense(token) : null;
     if (orderId) return json({ pro: true, price: PRICE_RUB });
-    const q = await peekLimit('free:' + clientKey(req, context), FREE_PER_DAY, DAY_MS);
+    const q = await peekLimit('free2:' + clientKey(req, context), FREE_PER_DAY, DAY_MS);
     return json({
       pro: false,
       licenseInvalid: !!token,
