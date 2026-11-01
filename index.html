@@ -11,8 +11,7 @@
   <meta name="google-site-verification" content="OxwbR1Cj8zhjXmc8JV0aasz2gA-Qww1MUUAF9xeJxmo" />
   <meta name="robots" content="index, follow">
   <meta name="author" content="SystemPrompt PRO">
-  <meta name="theme-color" content="#020617">
-  <!-- Замени на свой домен -->
+  <meta name="theme-color" content="#09090b">
   <link rel="canonical" href="https://systemprompt-pro-ai.netlify.app/">
 
   <!-- ===== Open Graph (соцсети, Telegram) ===== -->
@@ -47,7 +46,10 @@
     "operatingSystem": "Any",
     "inLanguage": "ru",
     "description": "Интерактивный генератор системных промптов и кастомных инструкций для ИИ-агентов с защитой от промпт-инъекций.",
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    "offers": [
+      { "@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "RUB" },
+      { "@type": "Offer", "name": "PRO (доступ навсегда)", "price": "190", "priceCurrency": "RUB" }
+    ]
   }
   </script>
 
@@ -59,7 +61,7 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    tailwind.config = {
+    if (window.tailwind) tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
@@ -90,12 +92,29 @@
       background-size: 40px 40px;
     }
     .text-gradient {
-      background: linear-gradient(90deg, #818cf8, #34d399, #818cf8);
+      background: linear-gradient(90deg, #818cf8, #a78bfa, #34d399, #818cf8);
       background-size: 200% auto;
       -webkit-background-clip: text; background-clip: text; color: transparent;
       animation: shimmer 6s linear infinite;
     }
     @keyframes shimmer { 0% { background-position: 200% 0 } 100% { background-position: -200% 0 } }
+
+    /* Неоновое свечение активных зон */
+    .neon-panel {
+      box-shadow: 0 0 0 1px rgba(99,102,241,.10), 0 25px 50px -12px rgba(0,0,0,.6), 0 0 60px -20px rgba(139,92,246,.35);
+      transition: box-shadow .4s ease, border-color .4s ease;
+    }
+    .neon-panel:hover, .neon-panel:focus-within {
+      box-shadow: 0 0 0 1px rgba(129,140,248,.25), 0 25px 50px -12px rgba(0,0,0,.6), 0 0 80px -16px rgba(139,92,246,.5);
+    }
+    .neon-output.is-live {
+      border-color: rgba(52,211,153,.45);
+      box-shadow: inset 0 0 30px -12px rgba(52,211,153,.25), 0 0 32px -10px rgba(52,211,153,.35);
+    }
+    .neon-output.is-typing {
+      border-color: rgba(167,139,250,.6);
+      box-shadow: inset 0 0 30px -12px rgba(167,139,250,.3), 0 0 40px -8px rgba(139,92,246,.55);
+    }
 
     /* Кастомный селект */
     select.custom-select {
@@ -104,29 +123,33 @@
       background-repeat: no-repeat; background-position: right .9rem center; background-size: 1.1rem;
       padding-right: 2.75rem;
     }
-    select.custom-select option { background: #0f172a; color: #e2e8f0; }
+    select.custom-select option, select.custom-select optgroup { background: #18181b; color: #e4e4e7; }
 
     /* Скроллбар */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: #020617; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 8px; }
-    ::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
+    ::-webkit-scrollbar-track { background: #09090b; }
+    ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 8px; }
+    ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
 
     /* Модалка и тост */
     .modal-enter { animation: modalIn .28s cubic-bezier(.16,1,.3,1) forwards; }
     @keyframes modalIn { from { opacity: 0; transform: scale(.94) translateY(10px) } to { opacity: 1; transform: scale(1) translateY(0) } }
-    .flash { animation: flash .5s ease; }
-    @keyframes flash { 0% { box-shadow: 0 0 0 0 rgba(52,211,153,.0) } 40% { box-shadow: 0 0 0 3px rgba(52,211,153,.35) } 100% { box-shadow: 0 0 0 0 rgba(52,211,153,0) } }
+    .shake { animation: shake .45s ease; }
+    @keyframes shake { 0%,100% { transform: translateX(0) } 20%,60% { transform: translateX(-5px) } 40%,80% { transform: translateX(5px) } }
+
+    /* PRO-режим: прячем замки */
+    body.pro-unlocked .pro-lock { display: none !important; }
+    body:not(.pro-unlocked) .pro-only { display: none !important; }
 
     /* Статьи */
-    .prose-kb h2 { font-size: 1.6rem; font-weight: 800; color: #f1f5f9; margin: 2.5rem 0 1rem; line-height: 1.25; }
+    .prose-kb h2 { font-size: 1.6rem; font-weight: 800; color: #f4f4f5; margin: 2.5rem 0 1rem; line-height: 1.25; }
     .prose-kb h3 { font-size: 1.2rem; font-weight: 700; color: #a5b4fc; margin: 1.75rem 0 .75rem; }
-    .prose-kb p { color: #94a3b8; line-height: 1.8; margin-bottom: 1rem; }
+    .prose-kb p { color: #a1a1aa; line-height: 1.8; margin-bottom: 1rem; }
     .prose-kb ul { list-style: none; margin: 0 0 1.25rem; padding: 0; }
-    .prose-kb li { color: #94a3b8; line-height: 1.7; padding-left: 1.5rem; position: relative; margin-bottom: .5rem; }
+    .prose-kb li { color: #a1a1aa; line-height: 1.7; padding-left: 1.5rem; position: relative; margin-bottom: .5rem; }
     .prose-kb li::before { content: '▹'; position: absolute; left: 0; color: #34d399; }
-    .prose-kb strong { color: #e2e8f0; font-weight: 600; }
-    .prose-kb code { font-family: 'JetBrains Mono', monospace; font-size: .85em; background: #1e293b; color: #6ee7b7; padding: .1rem .4rem; border-radius: .3rem; }
+    .prose-kb strong { color: #e4e4e7; font-weight: 600; }
+    .prose-kb code { font-family: 'JetBrains Mono', monospace; font-size: .85em; background: #27272a; color: #6ee7b7; padding: .1rem .4rem; border-radius: .3rem; }
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -134,24 +157,32 @@
   </style>
 </head>
 
-<body class="bg-slate-950 text-slate-200 font-sans min-h-screen overflow-x-hidden selection:bg-indigo-600/50 selection:text-white">
+<body class="bg-zinc-950 text-zinc-200 font-sans min-h-screen overflow-x-hidden selection:bg-indigo-600/50 selection:text-white">
 
   <!-- Фоновые эффекты -->
   <div class="fixed inset-0 grid-bg pointer-events-none" aria-hidden="true"></div>
   <div class="fixed -top-40 -left-40 w-[28rem] h-[28rem] bg-indigo-600/20 rounded-full blur-3xl pointer-events-none animate-float" aria-hidden="true"></div>
-  <div class="fixed top-1/3 -right-40 w-[26rem] h-[26rem] bg-emerald-500/10 rounded-full blur-3xl pointer-events-none animate-float" style="animation-delay:-4s" aria-hidden="true"></div>
+  <div class="fixed top-1/3 -right-40 w-[26rem] h-[26rem] bg-violet-600/15 rounded-full blur-3xl pointer-events-none animate-float" style="animation-delay:-4s" aria-hidden="true"></div>
+  <div class="fixed bottom-0 left-1/3 w-[22rem] h-[22rem] bg-emerald-500/10 rounded-full blur-3xl pointer-events-none animate-float" style="animation-delay:-2s" aria-hidden="true"></div>
 
   <!-- ===== HEADER ===== -->
-  <header class="relative z-20 border-b border-slate-800/80 bg-slate-950/70 backdrop-blur-xl sticky top-0">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-      <a href="#" class="flex items-center gap-2.5 group">
-        <span class="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-600 to-emerald-500 flex items-center justify-center text-lg shadow-lg shadow-indigo-600/30 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">⚡</span>
-        <span class="font-extrabold tracking-tight text-white text-lg">SystemPrompt <span class="text-emerald-400">PRO</span></span>
+  <header class="relative z-20 border-b border-zinc-800/80 bg-zinc-950/70 backdrop-blur-xl sticky top-0">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+      <a href="#" class="flex items-center gap-2.5 group shrink-0">
+        <span class="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-600 via-violet-600 to-emerald-500 flex items-center justify-center text-lg shadow-lg shadow-violet-600/40 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">⚡</span>
+        <span class="font-extrabold tracking-tight text-white text-lg hidden min-[400px]:inline">SystemPrompt <span class="text-emerald-400">PRO</span></span>
       </a>
       <nav class="flex items-center gap-1 sm:gap-2 text-sm">
-        <a href="#builder" class="hidden sm:inline-block px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900 transition-colors">Конструктор</a>
-        <a href="#knowledge" class="hidden sm:inline-block px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900 transition-colors">База знаний</a>
-        <button type="button" data-open-pro class="px-3.5 py-2 rounded-lg border border-emerald-500/40 text-emerald-400 font-semibold hover:bg-emerald-500/10 hover:border-emerald-400 transition-all">PRO ✨</button>
+        <a href="#builder" class="hidden md:inline-block px-3 py-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors">Конструктор</a>
+        <a href="#knowledge" class="hidden md:inline-block px-3 py-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors">База знаний</a>
+
+        <!-- Счётчик бесплатных генераций -->
+        <span data-token-badge class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold font-mono whitespace-nowrap transition-colors duration-300">
+          <span data-token-dot class="w-2 h-2 rounded-full animate-pulseGlow"></span>
+          <span data-token-text>3/3</span>
+        </span>
+
+        <button type="button" data-open-pro id="headerProBtn" class="px-3.5 py-2 rounded-lg border border-emerald-500/40 text-emerald-400 font-semibold hover:bg-emerald-500/10 hover:border-emerald-400 hover:shadow-[0_0_20px_-4px_rgba(52,211,153,.5)] transition-all whitespace-nowrap">PRO ✨</button>
       </nav>
     </div>
   </header>
@@ -160,25 +191,26 @@
 
     <!-- ===== HERO ===== -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 pt-12 sm:pt-20 pb-10 text-center">
-      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-800 bg-slate-900/70 text-xs sm:text-sm text-slate-400 mb-6">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-zinc-800 bg-zinc-900/70 text-xs sm:text-sm text-zinc-400 mb-6">
         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulseGlow"></span>
         Для Custom GPTs, Claude Projects, Telegram-ботов и ИИ-агентов
       </div>
       <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.1] max-w-4xl mx-auto">
         Конструктор системных инструкций <span class="text-gradient">для ИИ-агентов</span>
       </h1>
-      <p class="mt-5 text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
-        Соберите профессиональный System Prompt за 10 секунд. Выберите роль, тон и формат — готовая инструкция на английском появится справа в реальном времени.
+      <p class="mt-5 text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+        Соберите профессиональный System Prompt за 10 секунд. Выберите роль, тон и формат — нажмите «Сгенерировать», и готовая инструкция на английском напечатается справа.
       </p>
       <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
         <a href="#builder" class="group inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-lg shadow-indigo-600/30 hover:bg-indigo-500 hover:shadow-indigo-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200">
-          Создать промпт
+          Создать промпт бесплатно
           <span class="group-hover:translate-x-1 transition-transform">→</span>
         </a>
-        <a href="#knowledge" class="inline-flex items-center justify-center px-6 py-3.5 rounded-xl border border-slate-800 bg-slate-900/60 text-slate-300 font-semibold hover:border-slate-600 hover:text-white transition-all duration-200">
+        <a href="#knowledge" class="inline-flex items-center justify-center px-6 py-3.5 rounded-xl border border-zinc-800 bg-zinc-900/60 text-zinc-300 font-semibold hover:border-zinc-600 hover:text-white transition-all duration-200">
           Что такое системный промпт?
         </a>
       </div>
+      <p class="mt-4 text-xs text-zinc-500">3 генерации бесплатно · без регистрации · PRO навсегда за 190 ₽</p>
     </section>
 
     <!-- ===== BUILDER ===== -->
@@ -186,34 +218,43 @@
       <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
         <!-- ЛЕВАЯ КОЛОНКА: Панель управления -->
-        <form id="builderForm" class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 space-y-7 shadow-2xl shadow-black/40" onsubmit="return false;">
-          <div class="flex items-center gap-3 pb-4 border-b border-slate-800">
+        <form id="builderForm" class="neon-panel lg:col-span-2 bg-zinc-900/90 backdrop-blur border border-zinc-800 rounded-2xl p-5 sm:p-6 space-y-7" onsubmit="return false;">
+          <div class="flex items-center gap-3 pb-4 border-b border-zinc-800">
             <span class="w-8 h-8 rounded-lg bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">⚙️</span>
             <div>
               <h2 class="font-bold text-white">Панель управления</h2>
-              <p class="text-xs text-slate-500">Изменения применяются мгновенно</p>
+              <p class="text-xs text-zinc-500">Настройте параметры и нажмите «Сгенерировать»</p>
             </div>
           </div>
 
-          <!-- 1. Роль -->
+          <!-- 01. Роль -->
           <div>
-            <label for="role" class="flex items-center gap-2 text-sm font-semibold text-slate-300 mb-2.5">
+            <label for="role" class="flex items-center gap-2 text-sm font-semibold text-zinc-300 mb-2.5">
               <span class="text-emerald-400 font-mono text-xs">01</span> Роль / Профессия
             </label>
-            <select id="role" class="custom-select w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 hover:border-slate-700 transition-all cursor-pointer">
-              <option value="Senior Fullstack Developer">Senior Fullstack Developer</option>
-              <option value="Senior Prompt Engineer & AI Architect">Senior Prompt Engineer &amp; AI Architect</option>
-              <option value="Professional Marketer & Copywriter">Professional Marketer &amp; Copywriter</option>
-              <option value="Data Scientist & Business Analyst">Data Scientist &amp; Business Analyst</option>
+            <select id="role" class="custom-select w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 hover:border-zinc-700 transition-all cursor-pointer">
+              <optgroup label="Базовые роли">
+                <option value="Senior Fullstack Developer">Senior Fullstack Developer</option>
+                <option value="Senior Prompt Engineer & AI Architect">Senior Prompt Engineer &amp; AI Architect</option>
+                <option value="Professional Marketer & Copywriter">Professional Marketer &amp; Copywriter</option>
+                <option value="Data Scientist & Business Analyst">Data Scientist &amp; Business Analyst</option>
+              </optgroup>
+              <optgroup id="proRolesGroup" label="PRO-роли 🔒">
+                <option data-pro data-label="SMM-стратег (Генерация контент-планов и вовлекающих постов)" value="SMM Strategist (content plans and high-engagement social media posts)">SMM-стратег (Генерация контент-планов и вовлекающих постов)</option>
+                <option data-pro data-label="SEO-оптимизатор (Сбор семантики, LSI-фразы, мета-теги)" value="SEO Optimizer (semantic core research, LSI phrases, meta tags)">SEO-оптимизатор (Сбор семантики, LSI-фразы, мета-теги)</option>
+                <option data-pro data-label="Психолог/Коуч (Эмпатичный разбор ситуаций по методу К. Роджерса)" value="Psychologist & Coach (empathetic, person-centered approach of Carl Rogers)">Психолог/Коуч (Эмпатичный разбор ситуаций по методу К. Роджерса)</option>
+                <option data-pro data-label="Prompt-Инженер (Оптимизатор чужих промптов по методу Few-Shot)" value="Prompt Engineer (optimizing third-party prompts with the Few-Shot method)">Prompt-Инженер (Оптимизатор чужих промптов по методу Few-Shot)</option>
+              </optgroup>
             </select>
+            <p class="pro-lock mt-2 text-xs text-zinc-500">🔒 4 продвинутые роли со встроенными сценариями доступны в <button type="button" data-open-pro class="text-indigo-300 hover:text-emerald-400 underline underline-offset-2 transition-colors">PRO</button></p>
           </div>
 
-          <!-- 2. Тон -->
+          <!-- 02. Тон -->
           <div>
-            <label for="tone" class="flex items-center gap-2 text-sm font-semibold text-slate-300 mb-2.5">
+            <label for="tone" class="flex items-center gap-2 text-sm font-semibold text-zinc-300 mb-2.5">
               <span class="text-emerald-400 font-mono text-xs">02</span> Тон и стиль ответов
             </label>
-            <select id="tone" class="custom-select w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 hover:border-slate-700 transition-all cursor-pointer">
+            <select id="tone" class="custom-select w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 hover:border-zinc-700 transition-all cursor-pointer">
               <option value="Strictly technical, direct and concise, without fluff">Strictly technical, direct and concise</option>
               <option value="Creative, inspiring and out-of-the-box thinking">Creative, inspiring, out-of-the-box</option>
               <option value="Academic, highly analytical with deep step-by-step reasoning">Academic, analytical, step-by-step</option>
@@ -221,65 +262,87 @@
             </select>
           </div>
 
-          <!-- 3. Специфика задачи -->
+          <!-- 03. Специфика задачи -->
           <div>
-            <label for="taskContext" class="flex items-center justify-between gap-2 text-sm font-semibold text-slate-300 mb-2.5">
-              <span class="flex items-center gap-2"><span class="text-emerald-400 font-mono text-xs">03</span> Специфика вашей задачи <span class="font-normal text-slate-500">(Необязательно)</span></span>
-              <span id="taskCounter" class="font-mono text-[11px] font-normal text-slate-600">0/1000</span>
+            <label for="taskContext" class="flex items-center justify-between gap-2 text-sm font-semibold text-zinc-300 mb-2.5">
+              <span class="flex items-center gap-2"><span class="text-emerald-400 font-mono text-xs">03</span> Специфика вашей задачи <span class="font-normal text-zinc-500">(Необязательно)</span></span>
+              <span id="taskCounter" class="font-mono text-[11px] font-normal text-zinc-600">0/1000</span>
             </label>
             <textarea id="taskContext" rows="4" maxlength="1000" spellcheck="true"
               placeholder="Например: писать прогревающие посты для продажи одежды, искать логические ошибки в коде Smart-контрактов..."
-              class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder:text-slate-600 leading-relaxed resize-y focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 hover:border-slate-700 transition-all"></textarea>
+              class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-600 leading-relaxed resize-y focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 hover:border-zinc-700 transition-all"></textarea>
           </div>
 
-          <!-- 4. Форматирование -->
+          <!-- 04. Форматирование -->
           <fieldset>
-            <legend class="flex items-center gap-2 text-sm font-semibold text-slate-300 mb-2.5">
+            <legend class="flex items-center gap-2 text-sm font-semibold text-zinc-300 mb-2.5">
               <span class="text-emerald-400 font-mono text-xs">04</span> Форматирование вывода
             </legend>
             <div class="space-y-2.5">
-              <label class="group flex items-start gap-3 p-3.5 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-indigo-500/50 hover:bg-slate-950 cursor-pointer transition-all has-[:checked]:border-indigo-500/60 has-[:checked]:bg-indigo-600/10">
-                <input type="checkbox" id="fmtMarkdown" checked class="mt-0.5 w-4 h-4 rounded accent-indigo-600 cursor-pointer shrink-0">
-                <span class="text-sm text-slate-300 leading-snug">Always use Markdown <span class="block text-xs text-slate-500 mt-0.5">bold, lists, tables, headers</span></span>
-              </label>
-              <label class="group flex items-start gap-3 p-3.5 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-indigo-500/50 hover:bg-slate-950 cursor-pointer transition-all has-[:checked]:border-indigo-500/60 has-[:checked]:bg-indigo-600/10">
+              <label class="flex items-start gap-3 p-3.5 rounded-xl border border-zinc-800 bg-zinc-950/60 hover:border-indigo-500/50 hover:bg-zinc-950 cursor-pointer transition-all has-[:checked]:border-indigo-500/60 has-[:checked]:bg-indigo-600/10">
                 <input type="checkbox" id="fmtCode" class="mt-0.5 w-4 h-4 rounded accent-indigo-600 cursor-pointer shrink-0">
-                <span class="text-sm text-slate-300 leading-snug">Clean code blocks <span class="block text-xs text-slate-500 mt-0.5">markdown + inline comments</span></span>
+                <span class="text-sm text-zinc-300 leading-snug">Clean code blocks <span class="block text-xs text-zinc-500 mt-0.5">markdown + inline comments</span></span>
               </label>
-              <label class="group flex items-start gap-3 p-3.5 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-indigo-500/50 hover:bg-slate-950 cursor-pointer transition-all has-[:checked]:border-indigo-500/60 has-[:checked]:bg-indigo-600/10">
+              <label class="flex items-start gap-3 p-3.5 rounded-xl border border-zinc-800 bg-zinc-950/60 hover:border-indigo-500/50 hover:bg-zinc-950 cursor-pointer transition-all has-[:checked]:border-indigo-500/60 has-[:checked]:bg-indigo-600/10">
                 <input type="checkbox" id="fmtNoFluff" class="mt-0.5 w-4 h-4 rounded accent-indigo-600 cursor-pointer shrink-0">
-                <span class="text-sm text-slate-300 leading-snug">No conversational filler <span class="block text-xs text-slate-500 mt-0.5">без «Sure, I can help with that...»</span></span>
+                <span class="text-sm text-zinc-300 leading-snug">No conversational filler <span class="block text-xs text-zinc-500 mt-0.5">без «Sure, I can help with that...»</span></span>
               </label>
             </div>
           </fieldset>
 
-          <!-- 5. Защита (PRO) -->
-          <div>
-            <p class="flex items-center justify-between gap-2 text-sm font-semibold text-slate-300 mb-2.5">
-              <span class="flex items-center gap-2"><span class="text-emerald-400 font-mono text-xs">05</span> Защита от взлома промпта</span>
-              <span id="proBadge" class="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-600/15 text-indigo-300 border border-indigo-500/30">🔒 PRO</span>
-            </p>
-            <label for="protection" class="flex items-center justify-between gap-4 p-4 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-emerald-500/40 cursor-pointer transition-all has-[:checked]:border-emerald-500/50 has-[:checked]:bg-emerald-500/5">
-              <span>
-                <span class="flex items-center gap-2 text-sm font-semibold text-white">🛡️ Prompt Injection Protection</span>
-                <span class="block text-xs text-slate-500 mt-1 leading-relaxed">Запрещает ИИ раскрывать инструкцию, даже при «ignore previous instructions»</span>
-              </span>
-              <span class="relative shrink-0">
-                <input type="checkbox" id="protection" class="peer sr-only">
-                <span class="block w-12 h-7 rounded-full bg-slate-700 peer-checked:bg-emerald-500 transition-colors duration-300 peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-400/50"></span>
-                <span class="absolute top-1 left-1 w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-300 peer-checked:translate-x-5"></span>
-              </span>
-            </label>
-          </div>
+          <!-- 05. Быстрые модификаторы (тумблеры) -->
+          <fieldset>
+            <legend class="flex items-center gap-2 text-sm font-semibold text-zinc-300 mb-2.5">
+              <span class="text-emerald-400 font-mono text-xs">05</span> Быстрые модификаторы
+            </legend>
+            <div class="space-y-2.5">
+              <!-- Jailbreak Protection -->
+              <label for="protection" class="flex items-center justify-between gap-4 p-4 rounded-xl border border-zinc-800 bg-zinc-950/60 hover:border-emerald-500/40 cursor-pointer transition-all has-[:checked]:border-emerald-500/50 has-[:checked]:bg-emerald-500/5 has-[:checked]:shadow-[0_0_24px_-8px_rgba(52,211,153,.45)]">
+                <span>
+                  <span class="flex items-center gap-2 text-sm font-semibold text-white">🛡️ Включить защиту от взлома
+                    <span class="pro-lock inline-flex items-center text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-indigo-600/15 text-indigo-300 border border-indigo-500/30">🔒 PRO</span>
+                  </span>
+                  <span class="block text-xs text-zinc-500 mt-1 leading-relaxed">Jailbreak Protection: ИИ не выдаст инструкцию даже на «ignore previous instructions»</span>
+                </span>
+                <span class="relative shrink-0">
+                  <input type="checkbox" id="protection" class="peer sr-only">
+                  <span class="block w-12 h-7 rounded-full bg-zinc-700 peer-checked:bg-emerald-500 transition-colors duration-300 peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-400/50"></span>
+                  <span class="absolute top-1 left-1 w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-300 peer-checked:translate-x-5"></span>
+                </span>
+              </label>
+              <!-- Markdown tables -->
+              <label for="mdTables" class="flex items-center justify-between gap-4 p-4 rounded-xl border border-zinc-800 bg-zinc-950/60 hover:border-indigo-500/40 cursor-pointer transition-all has-[:checked]:border-indigo-500/50 has-[:checked]:bg-indigo-600/10 has-[:checked]:shadow-[0_0_24px_-8px_rgba(129,140,248,.45)]">
+                <span>
+                  <span class="flex items-center gap-2 text-sm font-semibold text-white">📊 Форматировать вывод в Markdown-таблицах</span>
+                  <span class="block text-xs text-zinc-500 mt-1 leading-relaxed">Структура, заголовки и таблицы для сравнений и данных</span>
+                </span>
+                <span class="relative shrink-0">
+                  <input type="checkbox" id="mdTables" checked class="peer sr-only">
+                  <span class="block w-12 h-7 rounded-full bg-zinc-700 peer-checked:bg-indigo-600 transition-colors duration-300 peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-400/50"></span>
+                  <span class="absolute top-1 left-1 w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-300 peer-checked:translate-x-5"></span>
+                </span>
+              </label>
+            </div>
+          </fieldset>
 
-          <button type="button" id="resetBtn" class="w-full py-2.5 rounded-xl border border-slate-800 text-sm text-slate-500 hover:text-slate-300 hover:border-slate-700 transition-colors">
-            ↺ Сбросить настройки
-          </button>
+          <!-- Генерация -->
+          <div class="space-y-3 pt-1">
+            <button type="button" id="generateBtn" class="group relative w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600 bg-[length:200%_auto] animate-shimmer text-white text-base font-bold shadow-lg shadow-violet-600/40 hover:shadow-violet-500/70 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-70 disabled:cursor-wait disabled:hover:translate-y-0 transition-all duration-200">
+              <span id="generateLabel">Сгенерировать промпт ⚡</span>
+            </button>
+            <p class="text-center text-xs text-zinc-500">
+              <span class="pro-lock">Бесплатных генераций: <span data-token-inline class="font-mono font-semibold">3/3</span></span>
+              <span class="pro-only text-emerald-400">PRO: безлимит и живой предпросмотр ⚡</span>
+            </p>
+            <button type="button" id="resetBtn" class="w-full py-2.5 rounded-xl border border-zinc-800 text-sm text-zinc-500 hover:text-zinc-300 hover:border-zinc-700 transition-colors">
+              ↺ Сбросить настройки
+            </button>
+          </div>
         </form>
 
-        <!-- ПРАВАЯ КОЛОНКА: Live Preview -->
-        <div class="lg:col-span-3 bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 flex flex-col shadow-2xl shadow-black/40 lg:sticky lg:top-24 lg:self-start">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+        <!-- ПРАВАЯ КОЛОНКА: Окно вывода -->
+        <div class="neon-panel lg:col-span-3 bg-zinc-900/90 backdrop-blur border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col lg:sticky lg:top-24 lg:self-start">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-800">
             <div class="flex items-center gap-3">
               <span class="flex gap-1.5" aria-hidden="true">
                 <span class="w-3 h-3 rounded-full bg-red-500/80"></span>
@@ -288,29 +351,33 @@
               </span>
               <div>
                 <h2 class="font-bold text-white text-sm sm:text-base flex items-center gap-2">
-                  Live Preview
-                  <span class="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulseGlow"></span>live
-                  </span>
+                  System Prompt
+                  <span id="outputStatus" class="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700">ready</span>
                 </h2>
-                <p id="stats" class="text-xs text-slate-500 font-mono">0 chars · 0 words</p>
+                <p id="stats" class="text-xs text-zinc-500 font-mono">0 chars · 0 words</p>
               </div>
             </div>
             <div class="flex gap-2">
-              <button type="button" id="copyBtn" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 text-slate-950 text-sm font-bold shadow-lg shadow-emerald-500/20 hover:bg-emerald-400 hover:shadow-emerald-400/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-[.98] transition-all duration-200">
-                Copy Prompt 📋
+              <button type="button" id="copyBtn" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 text-zinc-950 text-sm font-bold shadow-lg shadow-emerald-500/25 hover:bg-emerald-400 hover:shadow-emerald-400/50 hover:-translate-y-0.5 active:translate-y-0 active:scale-[.98] transition-all duration-200 whitespace-nowrap">
+                Скопировать в 1 клик 📋
               </button>
-              <button type="button" data-open-pro class="relative flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-bold overflow-hidden bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600 bg-[length:200%_auto] animate-shimmer shadow-lg shadow-indigo-600/30 hover:shadow-indigo-500/60 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200">
+              <button type="button" data-open-pro data-reason="improve" class="relative flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-bold overflow-hidden bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600 bg-[length:200%_auto] animate-shimmer shadow-lg shadow-indigo-600/30 hover:shadow-indigo-500/60 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200">
                 Улучшить с помощью ИИ (PRO) ✨
               </button>
             </div>
           </div>
 
+          <div id="staleHint" class="hidden mt-4 items-center justify-between gap-3 px-4 py-2.5 rounded-xl border border-amber-500/30 bg-amber-500/10 text-xs text-amber-300">
+            <span>Настройки изменены — сгенерируйте промпт заново.</span>
+            <button type="button" id="staleRegen" class="shrink-0 font-semibold underline underline-offset-2 hover:text-amber-200">Обновить ⚡</button>
+          </div>
+
           <label for="output" class="sr-only">Сгенерированный системный промпт</label>
           <textarea id="output" readonly spellcheck="false"
-            class="mt-4 w-full min-h-[420px] lg:min-h-[560px] bg-slate-950 border border-slate-800 rounded-xl p-4 sm:p-5 font-mono text-[13px] sm:text-sm leading-relaxed text-emerald-300/90 resize-y focus:outline-none focus:border-indigo-500/60 transition-colors"></textarea>
+            placeholder="// Ваш системный промпт появится здесь.&#10;// Настройте параметры слева и нажмите «Сгенерировать промпт ⚡»."
+            class="neon-output mt-4 w-full min-h-[420px] lg:min-h-[560px] bg-zinc-950 border border-zinc-800 rounded-xl p-4 sm:p-5 font-mono text-[13px] sm:text-sm leading-relaxed text-emerald-300/90 placeholder:text-zinc-600 resize-y focus:outline-none transition-all duration-300"></textarea>
 
-          <p class="mt-3 text-xs text-slate-500 leading-relaxed">
+          <p class="mt-3 text-xs text-zinc-500 leading-relaxed">
             💡 Вставьте результат в поле «Instructions» в Custom GPT, в «Project instructions» в Claude или в system-сообщение вашего бота через API.
           </p>
         </div>
@@ -320,31 +387,31 @@
     <!-- ===== ПРЕИМУЩЕСТВА ===== -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 pb-20">
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="group p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-indigo-500/50 hover:-translate-y-1 transition-all duration-300">
+        <div class="group p-6 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-indigo-500/50 hover:shadow-[0_0_40px_-12px_rgba(99,102,241,.5)] hover:-translate-y-1 transition-all duration-300">
           <div class="text-2xl mb-3 group-hover:scale-110 transition-transform inline-block">⚡</div>
-          <h3 class="font-bold text-white mb-1.5">Мгновенная сборка</h3>
-          <p class="text-sm text-slate-400 leading-relaxed">Промпт обновляется на лету при каждом изменении — без кнопок «Сгенерировать» и ожидания.</p>
+          <h3 class="font-bold text-white mb-1.5">Промпт в 1 клик</h3>
+          <p class="text-sm text-zinc-400 leading-relaxed">Нажмите «Сгенерировать» — готовая инструкция напечатается справа. В PRO промпт обновляется вживую при каждом изменении.</p>
         </div>
-        <div class="group p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-emerald-500/50 hover:-translate-y-1 transition-all duration-300">
+        <div class="group p-6 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-emerald-500/50 hover:shadow-[0_0_40px_-12px_rgba(52,211,153,.5)] hover:-translate-y-1 transition-all duration-300">
           <div class="text-2xl mb-3 group-hover:scale-110 transition-transform inline-block">🛡️</div>
           <h3 class="font-bold text-white mb-1.5">Защита от инъекций</h3>
-          <p class="text-sm text-slate-400 leading-relaxed">Готовый блок безопасности усложняет попытки вытащить вашу инструкцию через джейлбрейки.</p>
+          <p class="text-sm text-zinc-400 leading-relaxed">Готовый блок безопасности усложняет попытки вытащить вашу инструкцию через джейлбрейки.</p>
         </div>
-        <div class="group p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-indigo-500/50 hover:-translate-y-1 transition-all duration-300">
-          <div class="text-2xl mb-3 group-hover:scale-110 transition-transform inline-block">🌐</div>
-          <h3 class="font-bold text-white mb-1.5">Английский вывод</h3>
-          <p class="text-sm text-slate-400 leading-relaxed">Инструкции собираются на английском — языковые модели исполняют их точнее и стабильнее.</p>
+        <div class="group p-6 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-violet-500/50 hover:shadow-[0_0_40px_-12px_rgba(139,92,246,.5)] hover:-translate-y-1 transition-all duration-300">
+          <div class="text-2xl mb-3 group-hover:scale-110 transition-transform inline-block">🎯</div>
+          <h3 class="font-bold text-white mb-1.5">Роли со сценариями</h3>
+          <p class="text-sm text-zinc-400 leading-relaxed">PRO-роли SMM, SEO, коуча и промпт-инженера уже содержат проверенные сценарии работы — не нужно объяснять ИИ азы.</p>
         </div>
       </div>
     </section>
 
     <!-- ===== SEO-СТАТЬЯ: БАЗА ЗНАНИЙ ===== -->
-    <section id="knowledge" class="border-t border-slate-800 bg-slate-950/80 scroll-mt-16">
+    <section id="knowledge" class="border-t border-zinc-800 bg-zinc-950/80 scroll-mt-16">
       <div class="max-w-3xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
         <div class="text-center mb-10">
           <span class="inline-block text-xs font-mono uppercase tracking-widest text-emerald-400 mb-3">// knowledge base</span>
           <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">База знаний об ИИ-агентах</h2>
-          <p class="mt-3 text-slate-400">Всё, что нужно знать о системных промптах, кастомных инструкциях и безопасности нейросетей в 2026 году.</p>
+          <p class="mt-3 text-zinc-400">Всё, что нужно знать о системных промптах, кастомных инструкциях и безопасности нейросетей в 2026 году.</p>
         </div>
 
         <article class="prose-kb">
@@ -388,7 +455,7 @@
           </ul>
 
           <h3>Как защитить системный промпт</h3>
-          <p>Первый уровень защиты — явный протокол безопасности внутри самой инструкции: запрет на раскрытие системного промпта и указание игнорировать попытки переопределить правила. Именно такой блок добавляет наш конструктор при включении опции <strong>Prompt Injection Protection</strong>.</p>
+          <p>Первый уровень защиты — явный протокол безопасности внутри самой инструкции: запрет на раскрытие системного промпта и указание игнорировать попытки переопределить правила. Именно такой блок добавляет наш конструктор при включении модификатора <strong>Jailbreak Protection</strong>.</p>
           <p>Важно понимать: защита на уровне текста инструкции заметно усложняет атаку, но не даёт стопроцентной гарантии. Для серьёзных продуктов её стоит дополнять техническими мерами:</p>
           <ul>
             <li>не храните в промпте секреты — API-ключи, пароли и персональные данные;</li>
@@ -399,15 +466,15 @@
           </ul>
 
           <h2>Как пользоваться конструктором SystemPrompt PRO</h2>
-          <p>Выберите профессиональную роль ассистента, задайте тон ответов, отметьте нужные параметры форматирования и включите защиту от взлома. Готовый системный промпт на английском языке соберётся в окне предпросмотра в реальном времени — останется нажать «Copy Prompt» и вставить его в Custom GPT, Claude Project или код вашего Telegram-бота. Генератор промптов полностью бесплатный и работает прямо в браузере без регистрации.</p>
+          <p>Выберите профессиональную роль ассистента, задайте тон ответов, опишите специфику своей задачи, отметьте параметры форматирования и включите нужные модификаторы. Нажмите «Сгенерировать промпт» — готовая инструкция на английском языке напечатается в окне справа, останется скопировать её в один клик и вставить в Custom GPT, Claude Project или код вашего Telegram-бота. Первые 3 генерации бесплатны и не требуют регистрации, а PRO-доступ за 190 ₽ навсегда снимает лимиты, открывает продвинутые роли со встроенными сценариями и живой предпросмотр.</p>
         </article>
       </div>
     </section>
   </main>
 
   <!-- ===== FOOTER ===== -->
-  <footer class="relative z-10 border-t border-slate-800 bg-slate-950">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-500">
+  <footer class="relative z-10 border-t border-zinc-800 bg-zinc-950">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-zinc-500">
       <p>© <span id="year"></span> SystemPrompt PRO — конструктор системных промптов для ИИ</p>
       <div class="flex gap-5">
         <a href="#builder" class="hover:text-emerald-400 transition-colors">Конструктор</a>
@@ -417,54 +484,74 @@
     </div>
   </footer>
 
-  <!-- ===== МОДАЛКА PRO ===== -->
-  <div id="proModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="proTitle">
-    <div data-close-modal class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"></div>
-    <div class="modal-enter relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl shadow-indigo-900/40 overflow-hidden">
+  <!-- ===== МОДАЛКА ОПЛАТЫ PRO ===== -->
+  <div id="proModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="proTitle">
+    <div data-close-modal class="fixed inset-0 bg-zinc-950/85 backdrop-blur-sm"></div>
+    <div class="modal-enter relative w-full max-w-md my-auto bg-zinc-900 border border-violet-500/30 rounded-2xl p-6 sm:p-8 shadow-[0_0_80px_-20px_rgba(139,92,246,.6)] overflow-hidden">
       <div class="absolute -top-24 -right-24 w-48 h-48 bg-indigo-600/30 rounded-full blur-3xl pointer-events-none"></div>
       <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
 
-      <button type="button" data-close-modal aria-label="Закрыть" class="absolute top-4 right-4 w-9 h-9 rounded-lg flex items-center justify-center text-slate-500 hover:text-white hover:bg-slate-800 hover:rotate-90 transition-all duration-300">✕</button>
+      <button type="button" data-close-modal aria-label="Закрыть" class="absolute top-4 right-4 z-10 w-9 h-9 rounded-lg flex items-center justify-center text-zinc-500 hover:text-white hover:bg-zinc-800 hover:rotate-90 transition-all duration-300">✕</button>
 
       <div class="relative text-center">
-        <div class="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-600 to-emerald-500 flex items-center justify-center text-3xl shadow-xl shadow-indigo-600/40 mb-5 animate-float">⚡</div>
+        <p id="modalReason" class="hidden mb-4 mx-auto w-fit px-3 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-xs font-semibold text-amber-300"></p>
+        <div class="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-600 via-violet-600 to-emerald-500 flex items-center justify-center text-3xl shadow-xl shadow-violet-600/40 mb-5 animate-float">⚡</div>
         <span class="inline-block text-[11px] font-mono uppercase tracking-widest text-emerald-400 mb-2">PRO Access</span>
         <h3 id="proTitle" class="text-xl sm:text-2xl font-extrabold text-white mb-5">Разблокировать SystemPrompt PRO ⚡</h3>
 
-        <ul class="text-left text-sm text-slate-300 space-y-2.5 mb-6 bg-slate-950/60 border border-slate-800 rounded-xl p-4">
+        <ul class="text-left text-sm text-zinc-300 space-y-2.5 mb-6 bg-zinc-950/60 border border-zinc-800 rounded-xl p-4">
+          <li class="flex gap-2.5"><span class="text-emerald-400 font-bold">✓</span> Безлимитные генерации и живой предпросмотр</li>
           <li class="flex gap-2.5"><span class="text-emerald-400 font-bold">✓</span> Доступ ко всем премиум-ролям</li>
           <li class="flex gap-2.5"><span class="text-emerald-400 font-bold">✓</span> Ультимативная защита от Prompt Injection</li>
           <li class="flex gap-2.5"><span class="text-emerald-400 font-bold">✓</span> Генерация промптов со встроенными сценариями</li>
         </ul>
 
         <div class="mb-6">
-          <div class="flex items-baseline justify-center gap-2">
+          <div class="flex items-baseline justify-center gap-3">
+            <span class="text-lg text-zinc-600 line-through">490 ₽</span>
             <span class="text-5xl font-extrabold tracking-tight text-white">190 ₽</span>
           </div>
           <p class="mt-1 text-sm font-semibold text-emerald-400">Доступ навсегда · единоразовый платёж</p>
         </div>
 
-        <button type="button" id="payBtn" class="group relative w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-emerald-500 bg-[length:200%_auto] hover:bg-right text-white text-base font-bold shadow-lg shadow-indigo-600/40 hover:shadow-emerald-500/40 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-80 disabled:cursor-wait disabled:hover:translate-y-0 transition-all duration-500">
-          <span id="payLabel">Оплатить картой / СБП 💳</span>
-          <span id="paySpinner" class="hidden items-center gap-2.5">
-            <svg class="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" class="opacity-25"/><path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
-            Обработка платежа...
-          </span>
-        </button>
-        <p class="mt-2 text-[11px] text-slate-600">🔐 Безопасная оплата · карты РФ и СБП</p>
+        <!--
+          ===== ФОРМА ОПЛАТЫ ЮMONEY =====
+          Документация: https://yoomoney.ru/docs/payment-buttons/using-api/forms
+          🔧 receiver — номер твоего кошелька ЮMoney. Чтобы сменить кошелёк, замени значение ниже.
+        -->
+        <form id="payForm" method="POST" action="https://yoomoney.ru/quickpay/confirm">
+          <input type="hidden" name="receiver" value="4100119673882088"><!-- 🔧 ТВОЙ КОШЕЛЁК ЮMONEY -->
+          <input type="hidden" name="formcomment" value="Подписка SystemPrompt PRO: Бесконечный доступ">
+          <input type="hidden" name="short-dest" value="Подписка SystemPrompt PRO: Бесконечный доступ">
+          <input type="hidden" name="targets" value="Подписка SystemPrompt PRO: Бесконечный доступ">
+          <input type="hidden" name="label" value="sp_pro_user">
+          <input type="hidden" name="quickpay-form" value="button">
+          <input type="hidden" name="sum" value="190" data-type="number">
+          <input type="hidden" name="paymentType" value="AC"><!-- AC = банковская карта, PC = кошелёк ЮMoney -->
+          <input type="hidden" name="successURL" id="formSuccessUrl" value="">
 
-        <a href="#" data-telegram target="_blank" rel="noopener noreferrer" class="mt-5 inline-flex items-center gap-1 text-xs text-slate-400 hover:text-emerald-400 underline decoration-slate-700 underline-offset-4 hover:decoration-emerald-400 transition-colors">
+          <button type="submit" id="payBtn" class="group relative w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-emerald-500 bg-[length:200%_auto] hover:bg-right text-white text-base font-bold shadow-lg shadow-indigo-600/40 hover:shadow-emerald-500/40 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-80 disabled:cursor-wait disabled:hover:translate-y-0 transition-all duration-500">
+            <span id="payLabel">Оплатить картой 💳</span>
+            <span id="paySpinner" class="hidden items-center gap-2.5">
+              <svg class="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" class="opacity-25"/><path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+              Переход к оплате...
+            </span>
+          </button>
+        </form>
+        <p class="mt-2 text-[11px] text-zinc-500">🔐 Безопасная оплата через ЮMoney · карты Visa, Mastercard, Мир</p>
+
+        <a href="#" data-telegram target="_blank" rel="noopener noreferrer" class="mt-5 inline-flex items-center gap-1 text-xs text-zinc-400 hover:text-emerald-400 underline decoration-zinc-700 underline-offset-4 hover:decoration-emerald-400 transition-colors">
           Забрать готовые PRO-шаблоны в нашем Telegram-переходнике 🚀
         </a>
-        <button type="button" data-close-modal class="mt-3 block w-full py-2 text-sm text-slate-500 hover:text-slate-300 transition-colors">Закрыть</button>
+        <button type="button" data-close-modal class="mt-3 block w-full py-2 text-sm text-zinc-500 hover:text-zinc-300 transition-colors">Не сейчас</button>
       </div>
     </div>
   </div>
 
   <!-- ===== ТОСТ ===== -->
   <div id="toast" class="fixed bottom-6 left-1/2 z-[60] w-max max-w-[calc(100vw-2rem)] -translate-x-1/2 translate-y-24 opacity-0 pointer-events-none transition-all duration-300 ease-out" role="status" aria-live="polite">
-    <div class="flex items-center gap-3 px-5 py-3.5 rounded-xl bg-slate-900 border border-emerald-500/50 shadow-2xl shadow-emerald-500/20">
-      <span class="w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center text-slate-950 font-bold text-sm">✓</span>
+    <div class="flex items-center gap-3 px-5 py-3.5 rounded-xl bg-zinc-900 border border-emerald-500/50 shadow-2xl shadow-emerald-500/20">
+      <span id="toastIcon" class="w-7 h-7 shrink-0 rounded-full bg-emerald-500 flex items-center justify-center text-zinc-950 font-bold text-sm">✓</span>
       <span id="toastText" class="text-white font-semibold">Скопировано!</span>
     </div>
   </div>
@@ -474,52 +561,88 @@
   (function () {
     'use strict';
 
-    // 🔧 НАСТРОЙКА: вставь ссылку на свой Telegram-канал
+    /* ================= НАСТРОЙКИ ================= */
+    // 🔧 Вставь ссылку на свой Telegram-канал
     const TELEGRAM_URL = 'https://t.me/your_channel';
+    const FREE_TOKENS = 3;
+    const KEY_TOKENS = 'systemprompt_free_tokens';
+    const KEY_STATUS = 'systemprompt_pro_status';
 
-    const $ = (id) => document.getElementById(id);
-    const els = {
-      form: $('builderForm'),
-      role: $('role'),
-      tone: $('tone'),
-      taskContext: $('taskContext'),
-      taskCounter: $('taskCounter'),
-      proBadge: $('proBadge'),
-      payBtn: $('payBtn'),
-      payLabel: $('payLabel'),
-      paySpinner: $('paySpinner'),
-      fmtMarkdown: $('fmtMarkdown'),
-      fmtCode: $('fmtCode'),
-      fmtNoFluff: $('fmtNoFluff'),
-      protection: $('protection'),
-      output: $('output'),
-      stats: $('stats'),
-      copyBtn: $('copyBtn'),
-      resetBtn: $('resetBtn'),
-      modal: $('proModal'),
-      toast: $('toast'),
-      toastText: $('toastText')
-    };
-
-    const DEFAULTS = { role: 0, tone: 0, fmtMarkdown: true, fmtCode: false, fmtNoFluff: false, protection: false };
-
-    /* ---------- PRO-статус (тестовый режим) ---------- */
-    const PRO_KEY = 'spp_pro_unlocked';
-    let proUnlocked = false;
-    try { proUnlocked = localStorage.getItem(PRO_KEY) === '1'; } catch (e) { /* storage недоступен */ }
-
-    function applyProState() {
-      if (proUnlocked) {
-        els.proBadge.textContent = '✓ PRO';
-        els.proBadge.className = 'inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30';
-      }
+    /* ================= ХРАНИЛИЩЕ (с запасным вариантом в памяти) ================= */
+    const memStore = {};
+    function storeGet(key) {
+      try { const v = localStorage.getItem(key); return v !== null ? v : (key in memStore ? memStore[key] : null); }
+      catch (e) { return key in memStore ? memStore[key] : null; }
+    }
+    function storeSet(key, value) {
+      memStore[key] = String(value);
+      try { localStorage.setItem(key, String(value)); } catch (e) { /* storage недоступен — работаем в памяти */ }
     }
 
-    /* ---------- Сборка промпта ---------- */
+    const isPro = () => storeGet(KEY_STATUS) === 'active';
+    function getTokens() {
+      const raw = storeGet(KEY_TOKENS);
+      if (raw === null) { storeSet(KEY_TOKENS, FREE_TOKENS); return FREE_TOKENS; }
+      const n = parseInt(raw, 10);
+      return isNaN(n) ? FREE_TOKENS : Math.max(0, Math.min(FREE_TOKENS, n));
+    }
+    function spendToken() { storeSet(KEY_TOKENS, Math.max(0, getTokens() - 1)); }
+
+    /* ================= ЭЛЕМЕНТЫ ================= */
+    const $ = (id) => document.getElementById(id);
+    const els = {
+      form: $('builderForm'), role: $('role'), tone: $('tone'),
+      taskContext: $('taskContext'), taskCounter: $('taskCounter'),
+      fmtCode: $('fmtCode'), fmtNoFluff: $('fmtNoFluff'),
+      protection: $('protection'), mdTables: $('mdTables'),
+      output: $('output'), outputStatus: $('outputStatus'), stats: $('stats'),
+      staleHint: $('staleHint'), staleRegen: $('staleRegen'),
+      generateBtn: $('generateBtn'), generateLabel: $('generateLabel'),
+      copyBtn: $('copyBtn'), resetBtn: $('resetBtn'), headerProBtn: $('headerProBtn'),
+      proRolesGroup: $('proRolesGroup'),
+      modal: $('proModal'), modalReason: $('modalReason'),
+      payForm: $('payForm'), payBtn: $('payBtn'), payLabel: $('payLabel'), paySpinner: $('paySpinner'),
+      successUrl: $('formSuccessUrl'),
+      toast: $('toast'), toastText: $('toastText'), toastIcon: $('toastIcon')
+    };
+
+    /* ================= СЦЕНАРИИ PRO-РОЛЕЙ ================= */
+    const ROLE_GUIDELINES = {
+      'SMM Strategist (content plans and high-engagement social media posts)': [
+        '- Build content plans as structured calendars: date, platform, format, topic, hook, and call to action.',
+        '- Open every post with a scroll-stopping hook in the first line and close it with one clear call to action.',
+        '- Adapt tone, length, and format to each platform\'s audience and algorithm; suggest hashtags and best posting times.'
+      ],
+      'SEO Optimizer (semantic core research, LSI phrases, meta tags)': [
+        '- Group keywords into clusters by search intent: informational, commercial, transactional, and navigational.',
+        '- Enrich content with relevant LSI phrases and entities while keeping the text natural and readable for humans.',
+        '- Deliver ready-to-use meta titles (up to 60 characters) and meta descriptions (up to 160 characters) for every page.'
+      ],
+      'Psychologist & Coach (empathetic, person-centered approach of Carl Rogers)': [
+        '- Follow the person-centered approach of Carl Rogers: empathy, unconditional positive regard, and congruence.',
+        '- Reflect and clarify the user\'s feelings before offering any perspective; prefer open-ended questions over directive advice.',
+        '- You are not a substitute for a licensed mental health professional. If the user mentions a risk of harm to themselves or others, gently encourage them to contact local emergency services or a crisis helpline right away.'
+      ],
+      'Prompt Engineer (optimizing third-party prompts with the Few-Shot method)': [
+        '- Before rewriting, analyze the user\'s prompt for ambiguity, missing context, and conflicting instructions.',
+        '- Rewrite prompts with a clear role, task, constraints, and output format, and add 2-3 high-quality Few-Shot examples of expected input and output.',
+        '- After the optimized prompt, list the key improvements in a short bullet list.'
+      ]
+    };
+
+    /* ================= СБОРКА ПРОМПТА ================= */
     function buildPrompt() {
       const lines = [];
       lines.push('# SYSTEM INSTRUCTION');
       lines.push('You are an expert AI Assistant operating in the role of: ' + els.role.value + '.');
+
+      const guide = ROLE_GUIDELINES[els.role.value];
+      if (guide) {
+        lines.push('');
+        lines.push('## ROLE GUIDELINES');
+        lines.push(...guide);
+      }
+
       lines.push('');
       lines.push('## CORE OBJECTIVES & TONE');
       lines.push('Your response tone must strictly adhere to: ' + els.tone.value + '.');
@@ -532,10 +655,12 @@
       }
 
       const style = [];
-      if (els.fmtMarkdown.checked) style.push('- You must format all outputs using strict Markdown syntax, leveraging tables, bullet points, bold text, and clear structural headers where applicable.');
+      if (els.mdTables.checked) {
+        style.push('- You must format all outputs using strict Markdown syntax, leveraging tables, bullet points, bold text, and clear structural headers where applicable.');
+        style.push('- Present comparisons, structured data, parameters, and any multi-attribute information as clean Markdown tables with clear column headers.');
+      }
       if (els.fmtCode.checked) style.push('- Ensure all source code blocks are isolated, strictly structured, syntactically verified, and contain professional inline documentation/comments.');
       if (els.fmtNoFluff.checked) style.push('- Do not use any conversational preambles, introductory filler, or concluding remarks. Begin delivering the core value immediately in the first sentence.');
-
       if (style.length) {
         lines.push('');
         lines.push('## OUTPUT STYLE CONFIGURATION');
@@ -552,58 +677,205 @@
       return lines.join('\n');
     }
 
-    function render(animate) {
-      const text = buildPrompt();
-      els.output.value = text;
+    /* ================= СОСТОЯНИЕ ВЫВОДА ================= */
+    let generatedText = '';      // последний сгенерированный (оплаченный токеном) промпт
+    let typingFrame = null;
+
+    function setStats(text) {
       const words = text.trim() ? text.trim().split(/\s+/).length : 0;
       els.stats.textContent = text.length + ' chars · ' + words + ' words';
-      els.taskCounter.textContent = els.taskContext.value.length + '/1000';
-      if (animate) {
-        els.output.classList.remove('flash');
-        void els.output.offsetWidth; // перезапуск анимации
-        els.output.classList.add('flash');
+    }
+    function setStatus(label, cls) {
+      els.outputStatus.textContent = label;
+      els.outputStatus.className = 'inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ' + cls;
+    }
+    const STATUS = {
+      ready: 'bg-zinc-800 text-zinc-400 border-zinc-700',
+      typing: 'bg-violet-500/15 text-violet-300 border-violet-500/30',
+      done: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+      stale: 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+    };
+
+    const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function stopTyping() {
+      if (typingFrame) { cancelAnimationFrame(typingFrame); typingFrame = null; }
+      els.output.classList.remove('is-typing');
+      els.generateBtn.disabled = false;
+    }
+
+    // Эффект печатающегося текста
+    function typeOut(text, done) {
+      stopTyping();
+      if (reducedMotion) { els.output.value = text; finish(); return; }
+      const duration = Math.min(1800, 500 + text.length * 0.9);
+      const start = performance.now();
+      els.generateBtn.disabled = true;
+      els.output.classList.add('is-typing');
+      els.output.classList.remove('is-live');
+      setStatus('typing…', STATUS.typing);
+
+      function step(now) {
+        const p = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - p, 2);
+        const n = Math.floor(text.length * eased);
+        els.output.value = text.slice(0, n) + (p < 1 ? '▌' : '');
+        els.output.scrollTop = els.output.scrollHeight;
+        if (p < 1) { typingFrame = requestAnimationFrame(step); }
+        else { typingFrame = null; finish(); }
+      }
+      typingFrame = requestAnimationFrame(step);
+
+      function finish() {
+        els.output.value = text;
+        els.output.scrollTop = 0;
+        stopTyping();
+        els.output.classList.add('is-live');
+        setStatus(isPro() ? 'live' : 'generated', STATUS.done);
+        if (done) done();
       }
     }
 
-    // Защита от взлома — PRO-функция: без доступа открываем окно оплаты
+    function showStale(show) {
+      els.staleHint.classList.toggle('hidden', !show);
+      els.staleHint.classList.toggle('flex', show);
+      if (show) setStatus('changed', STATUS.stale);
+      else if (generatedText) setStatus(isPro() ? 'live' : 'generated', STATUS.done);
+    }
+
+    /* ================= UI ТОКЕНОВ И PRO ================= */
+    function updateTokenUI() {
+      const pro = isPro();
+      const tokens = getTokens();
+      document.body.classList.toggle('pro-unlocked', pro);
+
+      let badgeCls, dotCls, text;
+      if (pro) {
+        badgeCls = 'border-emerald-500/40 bg-gradient-to-r from-indigo-600/20 to-emerald-500/20 text-emerald-300 shadow-[0_0_20px_-6px_rgba(52,211,153,.6)]';
+        dotCls = 'bg-emerald-400';
+        text = 'PRO Активен ⚡';
+      } else {
+        if (tokens >= 3) { badgeCls = 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'; dotCls = 'bg-emerald-400'; }
+        else if (tokens === 2) { badgeCls = 'border-amber-500/40 bg-amber-500/10 text-amber-300'; dotCls = 'bg-amber-400'; }
+        else { badgeCls = 'border-red-500/40 bg-red-500/10 text-red-300'; dotCls = 'bg-red-400'; }
+        text = null;
+      }
+
+      document.querySelectorAll('[data-token-badge]').forEach((b) => {
+        b.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold font-mono whitespace-nowrap transition-colors duration-300 ' + badgeCls;
+        b.title = pro ? 'PRO-доступ активен' : 'Осталось бесплатных генераций: ' + tokens + '/' + FREE_TOKENS;
+      });
+      document.querySelectorAll('[data-token-dot]').forEach((d) => { d.className = 'w-2 h-2 rounded-full animate-pulseGlow ' + dotCls; });
+      document.querySelectorAll('[data-token-text]').forEach((t) => {
+        t.innerHTML = pro ? text : '<span class="hidden sm:inline font-sans">Осталось бесплатных генераций: </span>' + tokens + '/' + FREE_TOKENS;
+      });
+      document.querySelectorAll('[data-token-inline]').forEach((t) => {
+        t.textContent = tokens + '/' + FREE_TOKENS;
+        t.className = 'font-mono font-semibold ' + (tokens >= 3 ? 'text-emerald-400' : tokens === 2 ? 'text-amber-400' : 'text-red-400');
+      });
+
+      // Кнопка генерации
+      els.generateLabel.textContent = (!pro && tokens <= 0) ? 'Открыть PRO — 190 ₽ навсегда 🔓' : 'Сгенерировать промпт ⚡';
+
+      // Подписи PRO-ролей
+      els.proRolesGroup.label = pro ? 'PRO-роли ⚡' : 'PRO-роли 🔒';
+      els.proRolesGroup.querySelectorAll('option').forEach((o) => {
+        o.textContent = (pro ? '' : '🔒 ') + o.dataset.label;
+      });
+
+      // Кнопка PRO в шапке
+      els.headerProBtn.textContent = pro ? 'PRO ⚡' : 'PRO ✨';
+    }
+
+    /* ================= ДЕЙСТВИЯ ================= */
+    function generate() {
+      if (typingFrame) return;
+      if (!isPro()) {
+        if (getTokens() <= 0) {
+          openModal('Бесплатные генерации закончились');
+          return;
+        }
+        spendToken();
+        updateTokenUI();
+      }
+      generatedText = buildPrompt();
+      showStale(false);
+      setStats(generatedText);
+      typeOut(generatedText, () => {
+        if (!isPro()) {
+          const left = getTokens();
+          if (left === 0) showToast('Это была последняя бесплатная генерация. Откройте PRO для безлимита ⚡', 3800, 'warn');
+          else showToast('Промпт готов! Осталось бесплатных генераций: ' + left + '/' + FREE_TOKENS, 2600);
+        }
+      });
+    }
+
+    function onSettingsChange() {
+      els.taskCounter.textContent = els.taskContext.value.length + '/1000';
+      if (!generatedText) return;
+      const fresh = buildPrompt();
+      if (isPro()) {
+        // PRO: живой предпросмотр без расхода токенов
+        stopTyping();
+        generatedText = fresh;
+        els.output.value = fresh;
+        setStats(fresh);
+        showStale(false);
+      } else {
+        showStale(fresh !== generatedText);
+      }
+    }
+
+    els.form.addEventListener('input', onSettingsChange);
+    els.form.addEventListener('change', onSettingsChange);
+    els.generateBtn.addEventListener('click', generate);
+    els.staleRegen.addEventListener('click', generate);
+
+    // PRO-роли: без доступа мягко предлагаем PRO
+    let lastRoleIndex = els.role.selectedIndex;
+    els.role.addEventListener('change', () => {
+      const opt = els.role.options[els.role.selectedIndex];
+      if (opt && opt.hasAttribute('data-pro') && !isPro()) {
+        els.role.selectedIndex = lastRoleIndex;
+        onSettingsChange();
+        showToast('Эта роль доступна в PRO 🔒', 2200, 'warn');
+        setTimeout(() => openModal('Роль «' + opt.dataset.label.split(' (')[0] + '» доступна в PRO'), 350);
+        return;
+      }
+      lastRoleIndex = els.role.selectedIndex;
+    });
+
+    // Jailbreak Protection — PRO-модификатор
     els.protection.addEventListener('change', () => {
-      if (els.protection.checked && !proUnlocked) {
+      if (els.protection.checked && !isPro()) {
         els.protection.checked = false;
-        openModal();
+        onSettingsChange();
+        openModal('Защита от взлома доступна в PRO');
       }
     });
 
-    els.form.addEventListener('change', () => render(true));
-    els.form.addEventListener('input', () => render(true));
-
     els.resetBtn.addEventListener('click', () => {
-      els.role.selectedIndex = DEFAULTS.role;
-      els.tone.selectedIndex = DEFAULTS.tone;
-      els.fmtMarkdown.checked = DEFAULTS.fmtMarkdown;
-      els.fmtCode.checked = DEFAULTS.fmtCode;
-      els.fmtNoFluff.checked = DEFAULTS.fmtNoFluff;
-      els.protection.checked = DEFAULTS.protection;
+      els.role.selectedIndex = 0; lastRoleIndex = 0;
+      els.tone.selectedIndex = 0;
       els.taskContext.value = '';
-      render(true);
-      showToast('Настройки сброшены');
+      els.fmtCode.checked = false;
+      els.fmtNoFluff.checked = false;
+      els.mdTables.checked = true;
+      els.protection.checked = false;
+      onSettingsChange();
+      showToast('Настройки сброшены', 1800);
     });
 
-    /* ---------- Копирование ---------- */
+    /* ================= КОПИРОВАНИЕ ================= */
     async function copyText(text) {
       try {
-        if (navigator.clipboard && window.isSecureContext) {
-          await navigator.clipboard.writeText(text);
-          return true;
-        }
-      } catch (e) { /* переходим к запасному способу */ }
+        if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return true; }
+      } catch (e) { /* запасной способ ниже */ }
       try {
         const ta = document.createElement('textarea');
-        ta.value = text;
-        ta.setAttribute('readonly', '');
-        ta.style.position = 'fixed';
-        ta.style.opacity = '0';
-        document.body.appendChild(ta);
-        ta.select();
+        ta.value = text; ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
         const ok = document.execCommand('copy');
         document.body.removeChild(ta);
         return ok;
@@ -611,23 +883,36 @@
     }
 
     const copyLabel = els.copyBtn.innerHTML;
+    let copyTimer;
     els.copyBtn.addEventListener('click', async () => {
-      const ok = await copyText(els.output.value);
+      if (!generatedText) {
+        // Копировать нечего: без токенов — предлагаем PRO, иначе подсказываем сгенерировать
+        if (!isPro() && getTokens() <= 0) { openModal('Бесплатные генерации закончились'); return; }
+        els.generateBtn.classList.remove('shake'); void els.generateBtn.offsetWidth; els.generateBtn.classList.add('shake');
+        showToast('Сначала нажмите «Сгенерировать промпт ⚡»', 2200, 'warn');
+        return;
+      }
+      if (typingFrame) { stopTyping(); els.output.value = generatedText; setStatus(isPro() ? 'live' : 'generated', STATUS.done); }
+      const ok = await copyText(generatedText);
       if (ok) {
-        showToast('Скопировано!');
-        els.copyBtn.innerHTML = 'Copied ✓';
-        setTimeout(() => { els.copyBtn.innerHTML = copyLabel; }, 1800);
+        els.copyBtn.innerHTML = 'Скопировано! ✅';
+        clearTimeout(copyTimer);
+        copyTimer = setTimeout(() => { els.copyBtn.innerHTML = copyLabel; }, 1800);
+        showToast('Скопировано!', 1800);
       } else {
-        els.output.focus();
-        els.output.select();
-        showToast('Выделено — нажмите Ctrl+C');
+        els.output.focus(); els.output.select();
+        showToast('Выделено — нажмите Ctrl+C', 2400, 'warn');
       }
     });
 
-    /* ---------- Тост ---------- */
+    /* ================= ТОСТ ================= */
     let toastTimer;
-    function showToast(msg, duration) {
+    function showToast(msg, duration, kind) {
+      const warn = kind === 'warn';
       els.toastText.textContent = msg;
+      els.toastIcon.textContent = warn ? '!' : '✓';
+      els.toastIcon.className = 'w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-zinc-950 font-bold text-sm ' + (warn ? 'bg-amber-400' : 'bg-emerald-500');
+      els.toast.firstElementChild.className = 'flex items-center gap-3 px-5 py-3.5 rounded-xl bg-zinc-900 border shadow-2xl ' + (warn ? 'border-amber-500/50 shadow-amber-500/20' : 'border-emerald-500/50 shadow-emerald-500/20');
       els.toast.classList.remove('translate-y-24', 'opacity-0');
       els.toast.classList.add('translate-y-0', 'opacity-100');
       clearTimeout(toastTimer);
@@ -637,69 +922,92 @@
       }, duration || 2200);
     }
 
-    /* ---------- Модалка PRO ---------- */
+    /* ================= МОДАЛКА ОПЛАТЫ ================= */
     let lastFocused = null;
-    function openModal() {
+    function openModal(reason) {
+      if (isPro()) {
+        showToast(reason === 'improve'
+          ? 'У вас PRO ⚡ ИИ-оптимизатор появится в ближайшем обновлении'
+          : 'PRO уже активен ⚡ Все функции открыты', 2800);
+        return;
+      }
       lastFocused = document.activeElement;
+      // Ссылка возврата после оплаты
+      els.successUrl.value = window.location.origin + window.location.pathname + '?pay=success';
+
+      const text = reason && reason !== 'improve' ? reason : '';
+      els.modalReason.textContent = text ? '⚠ ' + text : '';
+      els.modalReason.classList.toggle('hidden', !text);
+
+      resetPayButton();
       els.modal.classList.remove('hidden');
       els.modal.classList.add('flex');
       const card = els.modal.querySelector('.modal-enter');
       card.style.animation = 'none'; void card.offsetWidth; card.style.animation = '';
       document.body.style.overflow = 'hidden';
-      const btn = els.modal.querySelector('a[data-telegram]');
-      if (btn) btn.focus();
+      els.payBtn.focus();
     }
     function closeModal() {
       els.modal.classList.add('hidden');
       els.modal.classList.remove('flex');
       document.body.style.overflow = '';
-      if (lastFocused) lastFocused.focus();
+      if (lastFocused && lastFocused.focus) lastFocused.focus();
+    }
+    function resetPayButton() {
+      els.payBtn.disabled = false;
+      els.payLabel.classList.remove('hidden');
+      els.paySpinner.classList.add('hidden');
+      els.paySpinner.classList.remove('inline-flex');
     }
 
-    document.querySelectorAll('[data-open-pro]').forEach((b) => b.addEventListener('click', openModal));
-
-    /* ---------- Симуляция оплаты (тестовый режим) ---------- */
-    let paying = false;
-    els.payBtn.addEventListener('click', () => {
-      if (paying) return;
-      paying = true;
-      els.payBtn.disabled = true;
-      els.payLabel.classList.add('hidden');
-      els.paySpinner.classList.remove('hidden');
-      els.paySpinner.classList.add('inline-flex');
-
-      setTimeout(() => {
-        paying = false;
-        els.payBtn.disabled = false;
-        els.payLabel.classList.remove('hidden');
-        els.paySpinner.classList.add('hidden');
-        els.paySpinner.classList.remove('inline-flex');
-
-        proUnlocked = true;
-        try { localStorage.setItem(PRO_KEY, '1'); } catch (e) { /* storage недоступен */ }
-        applyProState();
-        els.protection.checked = true;
-        render(true);
-        closeModal();
-        showToast('Тестовый режим оплаты активен. Доступ временно открыт!', 4200);
-      }, 2000);
+    document.querySelectorAll('[data-open-pro]').forEach((b) => {
+      b.addEventListener('click', () => openModal(b.dataset.reason || ''));
     });
     els.modal.querySelectorAll('[data-close-modal]').forEach((b) => b.addEventListener('click', closeModal));
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && !els.modal.classList.contains('hidden')) closeModal();
     });
 
-    /* ---------- Telegram-ссылки ---------- */
+    els.payForm.addEventListener('submit', () => {
+      if (!els.successUrl.value) els.successUrl.value = window.location.origin + window.location.pathname + '?pay=success';
+      els.payBtn.disabled = true;
+      els.payLabel.classList.add('hidden');
+      els.paySpinner.classList.remove('hidden');
+      els.paySpinner.classList.add('inline-flex');
+    });
+    // Если пользователь вернулся кнопкой «Назад» со страницы ЮMoney — снова активируем кнопку
+    window.addEventListener('pageshow', resetPayButton);
+
+    /* ================= TELEGRAM ================= */
     document.querySelectorAll('[data-telegram]').forEach((a) => {
-      a.href = TELEGRAM_URL;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
+      a.href = TELEGRAM_URL; a.target = '_blank'; a.rel = 'noopener noreferrer';
     });
 
-    /* ---------- Старт ---------- */
-    $('year').textContent = new Date().getFullYear();
-    applyProState();
-    render(false);
+    /* ================= СТАРТ + ВОЗВРАТ ПОСЛЕ ОПЛАТЫ ================= */
+    function init() {
+      let justPaid = false;
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('pay') === 'success') {
+        storeSet(KEY_STATUS, 'active');
+        params.delete('pay');
+        const qs = params.toString();
+        window.history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : '') + window.location.hash);
+        justPaid = true;
+      }
+
+      if (isPro()) document.body.classList.add('pro-unlocked');
+      getTokens(); // создаёт 3 токена для нового пользователя
+      updateTokenUI();
+      els.taskCounter.textContent = '0/1000';
+      $('year').textContent = new Date().getFullYear();
+
+      if (justPaid) {
+        setTimeout(() => showToast('Оплата прошла! PRO активирован навсегда ⚡', 4200), 300);
+      }
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
   })();
   </script>
 </body>
