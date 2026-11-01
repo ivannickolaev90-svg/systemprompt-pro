@@ -64,6 +64,9 @@ export async function readJsonBody(req, maxBytes = 4096) {
 }
 
 /* ---------- Хранилища ---------- */
+// Совместимость версий @netlify/blobs: старые версии возвращают undefined вместо { modified }
+export const wasModified = (res) => (res && typeof res.modified === 'boolean' ? res.modified : true);
+
 export const ordersStore = () => getStore({ name: 'sp-orders', consistency: 'strong' });
 const limitsStore = () => getStore({ name: 'sp-limits', consistency: 'strong' });
 
@@ -133,7 +136,7 @@ export async function hitLimit(key, limit, windowMs) {
     if (w.count >= limit) return { allowed: false, remaining: 0, resetAt: w.start + windowMs };
     const value = { count: w.count + 1, start: w.start };
     const opts = w.exists && w.etag ? { onlyIfMatch: w.etag } : { onlyIfNew: true };
-    const { modified } = await store.setJSON(key, value, opts);
+    const modified = wasModified(await store.setJSON(key, value, opts));
     if (modified) return { allowed: true, remaining: limit - value.count, resetAt: w.start + windowMs };
   }
   return { allowed: false, remaining: 0, resetAt: Date.now() + windowMs, busy: true };
