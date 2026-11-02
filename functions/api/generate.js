@@ -1,13 +1,13 @@
 // POST /api/generate — собирает системный промпт на сервере.
 // Бесплатно: 3 генерации в сутки на IP (из них 1 пробная через ИИ). PRO: шаблоны + до 30 ИИ-генераций в сутки.
 // ИИ вызывается только по явной кнопке (ai: true) и только при заполненной нише; иначе — локальный шаблон.
-import {
+import { handler,
   json, isSameOrigin, readJsonBody, validateSettings, buildPrompt, ROLES,
-  verifyLicense, bearer, clientKey, hitLimit, FREE_PER_DAY, DAY_MS, HOUR_MS
-} from '../lib/shared.mjs';
-import { aiGenerate, peekUserAi, AI_CFG } from '../lib/ai.mjs';
+  verifyLicense, bearer, clientKey, hitLimit, cleanupLimits, FREE_PER_DAY, DAY_MS, HOUR_MS
+} from '../../lib/shared.js';
+import { aiGenerate, peekUserAi, AI_CFG } from '../../lib/ai.js';
 
-export default async (req, context) => {
+export const onRequest = handler(async (req) => {
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405, { allow: 'POST' });
   if (!isSameOrigin(req)) return json({ error: 'forbidden' }, 403);
 
@@ -23,7 +23,7 @@ export default async (req, context) => {
     const orderId = token ? await verifyLicense(token) : null;
     const pro = !!orderId;
     const cfg = AI_CFG();
-    const ipKey = clientKey(req, context);
+    const ipKey = await clientKey(req);
     const result = { pro };
 
     if (!pro) {
@@ -57,12 +57,12 @@ export default async (req, context) => {
       else reason = ai.fallback;
     }
 
+    await cleanupLimits();
     const left = await peekUserAi(userKey, userDaily);
     return json({ ...result, prompt, mode, reason, aiLeft: left.remaining, aiDaily: userDaily });
   } catch (e) {
     console.error('generate failed:', e && e.message);
     return json({ error: 'server_error' }, 500);
   }
-};
+});
 
-export const config = { path: '/api/generate' };

@@ -1,15 +1,15 @@
 // GET /api/status — статус посетителя: PRO или сколько бесплатных генераций осталось сегодня,
 // плюс остаток ИИ-генераций и доступность ИИ.
-import { json, verifyLicense, bearer, clientKey, peekLimit, FREE_PER_DAY, DAY_MS, PRICE_RUB } from '../lib/shared.mjs';
-import { aiGlobalState, peekUserAi, AI_CFG } from '../lib/ai.mjs';
+import { handler, json, verifyLicense, bearer, clientKey, peekLimit, FREE_PER_DAY, DAY_MS, PRICE_RUB } from '../../lib/shared.js';
+import { aiGlobalState, peekUserAi, AI_CFG } from '../../lib/ai.js';
 
-export default async (req, context) => {
+export const onRequest = handler(async (req) => {
   if (req.method !== 'GET') return json({ error: 'method_not_allowed' }, 405, { allow: 'GET' });
   try {
     const cfg = AI_CFG();
     const token = bearer(req);
     const orderId = token ? await verifyLicense(token) : null;
-    const ipKey = clientKey(req, context);
+    const ipKey = await clientKey(req);
     let aiOnline = false;
     try { aiOnline = (await aiGlobalState()).ok; } catch (e) { aiOnline = false; }
 
@@ -34,6 +34,5 @@ export default async (req, context) => {
     console.error('status failed:', e && e.message);
     return json({ error: 'server_error' }, 500);
   }
-};
+});
 
-export const config = { path: '/api/status' };

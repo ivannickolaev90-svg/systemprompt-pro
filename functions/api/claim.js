@@ -1,11 +1,11 @@
 // POST /api/claim — выдаёт подписанную лицензию, если ЮMoney подтвердил оплату заказа.
 // Код заказа служит ключом восстановления доступа на другом устройстве.
-import {
+import { handler,
   json, isSameOrigin, readJsonBody, ordersStore, isOrderId, signLicense,
   clientKey, hitLimit, HOUR_MS, MAX_DEVICES_PER_ORDER
-} from '../lib/shared.mjs';
+} from '../../lib/shared.js';
 
-export default async (req, context) => {
+export const onRequest = handler(async (req) => {
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405, { allow: 'POST' });
   if (!isSameOrigin(req)) return json({ error: 'forbidden' }, 403);
 
@@ -17,11 +17,11 @@ export default async (req, context) => {
 
   try {
     // Защита от перебора кодов
-    const rl = await hitLimit('claim:' + clientKey(req, context), 60, HOUR_MS);
+    const rl = await hitLimit('claim:' + await clientKey(req), 60, HOUR_MS);
     if (!rl.allowed) return json({ error: 'rate_limited' }, 429);
 
     const store = ordersStore();
-    const res = await store.getWithMetadata(orderId, { type: 'json' });
+    const res = await store.getWithMetadata(orderId);
     if (!res || !res.data) return json({ error: 'not_found' }, 404);
     const order = res.data;
 
@@ -33,11 +33,10 @@ export default async (req, context) => {
     if (claims >= MAX_DEVICES_PER_ORDER) return json({ error: 'device_limit' }, 403);
     await store.setJSON(orderId, { ...order, claims: claims + 1, lastClaimAt: new Date().toISOString() }, { onlyIfMatch: res.etag });
 
-    return json({ status: 'paid', license: signLicense(orderId) });
+    return json({ status: 'paid', license: await signLicense(orderId) });
   } catch (e) {
     console.error('claim failed:', e && e.message);
     return json({ error: 'server_error' }, 500);
   }
-};
+});
 
-export const config = { path: '/api/claim' };

@@ -1,22 +1,21 @@
 // POST /api/yoomoney-webhook — HTTP-уведомления ЮMoney о входящих платежах.
 // Подлинность проверяется подписью `sign` (HMAC-SHA256 с секретом из настроек ЮMoney).
 // Документация: https://yoomoney.ru/docs/payment-buttons/using-api/notifications
-import crypto from 'node:crypto';
-import { env, json, safeEqual, ordersStore, isOrderId, PRICE_RUB } from '../lib/shared.mjs';
+import { handler, env, json, safeEqual, hmacHex, ordersStore, isOrderId, PRICE_RUB } from '../../lib/shared.js';
 
 // RFC 3986: encodeURIComponent + экранирование !'()*
 const rfc3986 = (s) => encodeURIComponent(s).replace(/[!'()*]/g, (c) => '%' + c.charCodeAt(0).toString(16).toUpperCase());
 
-function verifySign(params, secret) {
+async function verifySign(params, secret) {
   const sign = params.get('sign');
   if (!sign) return false;
   const keys = [...new Set([...params.keys()])].filter((k) => k !== 'sign').sort();
   const base = keys.map((k) => k + '=' + rfc3986(params.get(k) ?? '')).join('&');
-  const expected = crypto.createHmac('sha256', secret).update(base, 'utf8').digest('hex');
+  const expected = await hmacHex(secret, base);
   return safeEqual(sign.toLowerCase(), expected);
 }
 
-export default async (req) => {
+export const onRequest = handler(async (req) => {
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405, { allow: 'POST' });
 
   const secret = env('YOOMONEY_NOTIFICATION_SECRET');
@@ -29,7 +28,7 @@ export default async (req) => {
   if (raw.length > 8192) return json({ error: 'too_large' }, 413);
   const params = new URLSearchParams(raw);
 
-  if (!verifySign(params, secret)) {
+  if (!(await verifySign(params, secret))) {
     console.warn('yoomoney: invalid signature');
     return json({ error: 'invalid_signature' }, 403);
   }
@@ -47,7 +46,7 @@ export default async (req) => {
 
   try {
     const store = ordersStore();
-    const res = await store.getWithMetadata(orderId, { type: 'json' });
+    const res = await store.getWithMetadata(orderId);
     if (!res || !res.data) {
       console.warn('yoomoney: unknown order', orderId);
       return json({ ok: true, ignored: 'unknown_order' });
@@ -71,6 +70,5 @@ export default async (req) => {
     // 500 — ЮMoney повторит уведомление позже
     return json({ error: 'server_error' }, 500);
   }
-};
+});
 
-export const config = { path: '/api/yoomoney-webhook' };

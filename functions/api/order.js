@@ -1,12 +1,12 @@
 // POST /api/order — создаёт заказ с уникальной случайной меткой для формы ЮMoney.
-import { json, isSameOrigin, ordersStore, wasModified, newOrderId, clientKey, hitLimit, HOUR_MS, PRICE_RUB } from '../lib/shared.mjs';
+import { handler, json, isSameOrigin, ordersStore, wasModified, newOrderId, clientKey, hitLimit, HOUR_MS, PRICE_RUB } from '../../lib/shared.js';
 
-export default async (req, context) => {
+export const onRequest = handler(async (req) => {
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405, { allow: 'POST' });
   if (!isSameOrigin(req)) return json({ error: 'forbidden' }, 403);
 
   try {
-    const rl = await hitLimit('order:' + clientKey(req, context), 20, HOUR_MS);
+    const rl = await hitLimit('order:' + await clientKey(req), 20, HOUR_MS);
     if (!rl.allowed) return json({ error: 'rate_limited' }, 429);
 
     const orderId = newOrderId();
@@ -23,6 +23,5 @@ export default async (req, context) => {
     console.error('order failed:', e && e.message);
     return json({ error: 'server_error' }, 500);
   }
-};
+});
 
-export const config = { path: '/api/order' };
