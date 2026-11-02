@@ -52,7 +52,7 @@ export const onRequest = handler(async (req) => {
     if (!wantAi) reason = 'live';
     else if (!settings.task) reason = 'no_task';
     else {
-      const ai = await aiGenerate({ basePrompt: base, task: settings.task, userKey, userDaily });
+      const ai = await aiGenerate({ basePrompt: base, task: settings.task, lang: settings.lang, userKey, userDaily });
       if (ai.prompt) { prompt = ai.prompt; mode = 'ai'; }
       else reason = ai.fallback;
     }

@@ -45,7 +45,7 @@
   /* ================= ЭЛЕМЕНТЫ ================= */
   const $ = (id) => document.getElementById(id);
   const els = {
-    form: $('builderForm'), role: $('role'), tone: $('tone'),
+    form: $('builderForm'), role: $('role'), tone: $('tone'), lang: $('lang'),
     taskContext: $('taskContext'), taskCounter: $('taskCounter'),
     fmtCode: $('fmtCode'), fmtNoFluff: $('fmtNoFluff'),
     protection: $('protection'), mdTables: $('mdTables'),
@@ -215,6 +215,7 @@
     return {
       role: els.role.value,
       tone: els.tone.value,
+      lang: els.lang.value,
       task: els.taskContext.value,
       code: els.fmtCode.checked,
       noFluff: els.fmtNoFluff.checked,
@@ -519,6 +520,7 @@
   els.resetBtn.addEventListener('click', () => {
     els.role.selectedIndex = 0; lastRoleIndex = 0;
     els.tone.selectedIndex = 0;
+    els.lang.selectedIndex = 0;
     els.taskContext.value = '';
     els.fmtCode.checked = false;
     els.fmtNoFluff.checked = false;

@@ -107,7 +107,7 @@
         Конструктор системных инструкций <span class="text-gradient">для ИИ-агентов</span>
       </h1>
       <p class="mt-5 text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-        Соберите профессиональный System Prompt за 10 секунд. Выберите роль, тон и формат — нажмите «Сгенерировать», и готовая инструкция на английском напечатается справа.
+        Соберите профессиональный System Prompt за 10 секунд. Выберите роль, тон и формат — нажмите «Сгенерировать», и готовая структурированная инструкция на русском или английском напечатается справа.
       </p>
       <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
         <a href="#builder" class="group inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-lg shadow-indigo-600/30 hover:bg-indigo-500 hover:shadow-indigo-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200">
@@ -142,10 +142,10 @@
             </label>
             <select id="role" class="custom-select w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 hover:border-zinc-700 transition-all cursor-pointer">
               <optgroup label="Базовые роли">
-                <option value="fullstack">Senior Fullstack Developer</option>
-                <option value="prompt-architect">Senior Prompt Engineer &amp; AI Architect</option>
-                <option value="marketer">Professional Marketer &amp; Copywriter</option>
-                <option value="data">Data Scientist &amp; Business Analyst</option>
+                <option value="fullstack">Fullstack-разработчик (код, отладка, архитектура)</option>
+                <option value="prompt-architect">Prompt-инженер и AI-архитектор (промпты и ИИ-ассистенты)</option>
+                <option value="marketer">Маркетолог и копирайтер (продающие тексты)</option>
+                <option value="data">Аналитик данных (выводы, отчёты, SQL/Python)</option>
               </optgroup>
               <optgroup id="proRolesGroup" label="PRO-роли 🔒">
                 <option data-pro data-label="SMM-стратег (Генерация контент-планов и вовлекающих постов)" value="smm">SMM-стратег (Генерация контент-планов и вовлекающих постов)</option>
@@ -163,17 +163,29 @@
               <span class="text-emerald-400 font-mono text-xs">02</span> Тон и стиль ответов
             </label>
             <select id="tone" class="custom-select w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 hover:border-zinc-700 transition-all cursor-pointer">
-              <option value="technical">Strictly technical, direct and concise</option>
-              <option value="creative">Creative, inspiring, out-of-the-box</option>
-              <option value="academic">Academic, analytical, step-by-step</option>
-              <option value="business">Business-oriented, ROI &amp; metrics</option>
+              <option value="technical">Строго по делу — кратко, точно, без «воды»</option>
+              <option value="friendly">Дружелюбно и просто — понятным языком</option>
+              <option value="business">По-деловому — выгода, цифры, метрики</option>
+              <option value="creative">Креативно — свежие идеи и нестандартные ходы</option>
+              <option value="academic">Глубоко и аналитично — пошаговые рассуждения</option>
             </select>
           </div>
 
-          <!-- 03. Специфика задачи -->
+          <!-- 03. Язык промпта -->
+          <div>
+            <label for="lang" class="flex items-center gap-2 text-sm font-semibold text-zinc-300 mb-2.5">
+              <span class="text-emerald-400 font-mono text-xs">03</span> Язык промпта
+            </label>
+            <select id="lang" class="custom-select w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 hover:border-zinc-700 transition-all cursor-pointer">
+              <option value="ru">🇷🇺 Русский — удобно читать и править</option>
+              <option value="en">🇬🇧 English — модели понимают чуть точнее</option>
+            </select>
+          </div>
+
+          <!-- 04. Специфика задачи -->
           <div>
             <label for="taskContext" class="flex items-center justify-between gap-2 text-sm font-semibold text-zinc-300 mb-2.5">
-              <span class="flex items-center gap-2"><span class="text-emerald-400 font-mono text-xs">03</span> Специфика вашей задачи <span class="font-normal text-zinc-500">(Необязательно)</span></span>
+              <span class="flex items-center gap-2"><span class="text-emerald-400 font-mono text-xs">04</span> Специфика вашей задачи <span class="font-normal text-zinc-500">(Необязательно)</span></span>
               <span id="taskCounter" class="font-mono text-[11px] font-normal text-zinc-600">0/1000</span>
             </label>
             <textarea id="taskContext" rows="4" maxlength="1000" spellcheck="true"
@@ -184,16 +196,16 @@
           <!-- 04. Форматирование -->
           <fieldset>
             <legend class="flex items-center gap-2 text-sm font-semibold text-zinc-300 mb-2.5">
-              <span class="text-emerald-400 font-mono text-xs">04</span> Форматирование вывода
+              <span class="text-emerald-400 font-mono text-xs">05</span> Форматирование ответов
             </legend>
             <div class="space-y-2.5">
               <label class="flex items-start gap-3 p-3.5 rounded-xl border border-zinc-800 bg-zinc-950/60 hover:border-indigo-500/50 hover:bg-zinc-950 cursor-pointer transition-all has-[:checked]:border-indigo-500/60 has-[:checked]:bg-indigo-600/10">
                 <input type="checkbox" id="fmtCode" class="mt-0.5 w-4 h-4 rounded accent-indigo-600 cursor-pointer shrink-0">
-                <span class="text-sm text-zinc-300 leading-snug">Clean code blocks <span class="block text-xs text-zinc-500 mt-0.5">markdown + inline comments</span></span>
+                <span class="text-sm text-zinc-300 leading-snug">Чистые блоки кода <span class="block text-xs text-zinc-500 mt-0.5">код в отдельных блоках с комментариями</span></span>
               </label>
               <label class="flex items-start gap-3 p-3.5 rounded-xl border border-zinc-800 bg-zinc-950/60 hover:border-indigo-500/50 hover:bg-zinc-950 cursor-pointer transition-all has-[:checked]:border-indigo-500/60 has-[:checked]:bg-indigo-600/10">
                 <input type="checkbox" id="fmtNoFluff" class="mt-0.5 w-4 h-4 rounded accent-indigo-600 cursor-pointer shrink-0">
-                <span class="text-sm text-zinc-300 leading-snug">No conversational filler <span class="block text-xs text-zinc-500 mt-0.5">без «Sure, I can help with that...»</span></span>
+                <span class="text-sm text-zinc-300 leading-snug">Без лишних слов <span class="block text-xs text-zinc-500 mt-0.5">без «Конечно, я с радостью помогу...» — сразу к сути</span></span>
               </label>
             </div>
           </fieldset>
@@ -201,7 +213,7 @@
           <!-- 05. Быстрые модификаторы (тумблеры) -->
           <fieldset>
             <legend class="flex items-center gap-2 text-sm font-semibold text-zinc-300 mb-2.5">
-              <span class="text-emerald-400 font-mono text-xs">05</span> Быстрые модификаторы
+              <span class="text-emerald-400 font-mono text-xs">06</span> Быстрые модификаторы
             </legend>
             <div class="space-y-2.5">
               <!-- Jailbreak Protection -->
@@ -358,8 +370,8 @@
             <li><strong>Протокол безопасности</strong> — правила поведения при попытках манипуляции и взлома.</li>
           </ul>
 
-          <h3>Почему системные промпты пишут на английском</h3>
-          <p>Большинство современных языковых моделей обучались преимущественно на англоязычных данных. Инструкции на английском интерпретируются ими однозначнее, а значит, модель реже «додумывает» и отклоняется от заданных правил. При этом сам ассистент может спокойно отвечать пользователю на русском — язык инструкции и язык общения не обязаны совпадать.</p>
+          <h3>На каком языке писать системный промпт</h3>
+          <p>Современные модели (GPT, Claude, Gemini, DeepSeek) отлично понимают инструкции на русском, поэтому промпт на русском удобно читать и дорабатывать под себя. Английский вариант модели интерпретируют чуть однозначнее, так как большая часть их обучающих данных на английском. В конструкторе можно выбрать любой язык, а ассистент в обоих случаях будет отвечать пользователю на его языке.</p>
 
           <h2>Как работают кастомные инструкции в ChatGPT и Claude</h2>
           <p><strong>Custom Instructions</strong> и <strong>Custom GPTs</strong> в ChatGPT, а также <strong>Claude Projects</strong> у Anthropic — это удобные интерфейсы для задания системного промпта без программирования. Вы один раз описываете, как должен вести себя ассистент, и эти правила автоматически применяются ко всем новым диалогам внутри проекта или GPT.</p>
@@ -396,7 +408,7 @@
           </ul>
 
           <h2>Как пользоваться конструктором SystemPrompt PRO</h2>
-          <p>Выберите профессиональную роль ассистента, задайте тон ответов, опишите специфику своей задачи, отметьте параметры форматирования и включите нужные модификаторы. Нажмите «Сгенерировать промпт» — готовая инструкция на английском языке напечатается в окне справа, останется скопировать её в один клик и вставить в Custom GPT, Claude Project или код вашего Telegram-бота. Каждый день доступны 3 бесплатные генерации без регистрации, а PRO-доступ за 190 ₽ навсегда снимает лимиты, открывает продвинутые роли со встроенными сценариями и живой предпросмотр.</p>
+          <p>Выберите профессиональную роль ассистента, задайте тон ответов, опишите специфику своей задачи, отметьте параметры форматирования и включите нужные модификаторы. Нажмите «Сгенерировать промпт» — готовая структурированная инструкция на русском или английском языке напечатается в окне справа, останется скопировать её в один клик и вставить в Custom GPT, Claude Project или код вашего Telegram-бота. Каждый день доступны 3 бесплатные генерации без регистрации, а PRO-доступ за 190 ₽ навсегда снимает лимиты, открывает продвинутые роли со встроенными сценариями и живой предпросмотр.</p>
         </article>
       </div>
     </section>
