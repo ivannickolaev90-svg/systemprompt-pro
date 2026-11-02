@@ -1,5 +1,8 @@
-// ИИ-адаптация промптов под нишу клиента через Netlify AI Gateway (OpenAI SDK).
-// Главный приоритет — не допустить перерасхода кредитов Netlify:
+// ИИ-адаптация промптов под нишу клиента (OpenAI SDK).
+// Провайдер:
+//   • DeepSeek — если задан DEEPSEEK_API_KEY (оплата напрямую DeepSeek, кредиты Netlify не тратятся);
+//   • иначе Netlify AI Gateway (OPENAI_API_KEY / OPENAI_BASE_URL подставляет Netlify).
+// Главный приоритет — не допустить перерасхода бюджета:
 //   • месячный бюджет кредитов (по умолчанию 100) — при 90% ИИ автоматически выключается;
 //   • общий дневной лимит ИИ-вызовов на весь сайт;
 //   • «предохранитель»: при ошибках оплаты/лимитов от шлюза ИИ отключается на время;
@@ -13,24 +16,46 @@ const num = (name, def) => {
   const v = parseFloat(env(name));
   return Number.isFinite(v) && v >= 0 ? v : def;
 };
-export const AI_CFG = () => ({
-  enabled: String(env('AI_ENABLED') || 'true').toLowerCase() !== 'false',
-  model: env('AI_MODEL') || 'gpt-4o-mini',
-  monthlyCredits: num('AI_MONTHLY_CREDITS', 100),   // бюджет кредитов Netlify на ИИ в месяц
-  stopAt: 0.9,                                       // выключаемся при 90% бюджета
-  dailyMax: num('AI_DAILY_MAX', 60),                 // всего ИИ-вызовов в сутки на сайт
-  proDaily: num('AI_PRO_DAILY', 30),                 // ИИ-генераций в сутки на одного PRO
-  freeTrialDaily: num('AI_FREE_TRIAL_DAILY', 1),     // пробных ИИ-генераций в сутки для бесплатных
-  priceInPerM: num('AI_PRICE_IN_PER_M', 0.15),       // $ за 1M входных токенов (gpt-4o-mini)
-  priceOutPerM: num('AI_PRICE_OUT_PER_M', 0.60),     // $ за 1M выходных токенов
-  creditsPerUsd: 180,                                // курс Netlify: $1 = 180 кредитов
-  safety: 1.5,                                       // запас на погрешность оценки
-  maxOutputTokens: 1100,
-  timeoutMs: 20000
-});
+export const AI_CFG = () => {
+  const deepseek = !!env('DEEPSEEK_API_KEY');
+  const common = {
+    enabled: String(env('AI_ENABLED') || 'true').toLowerCase() !== 'false',
+    stopAt: 0.9,                                       // выключаемся при 90% бюджета
+    dailyMax: num('AI_DAILY_MAX', 60),                 // всего ИИ-вызовов в сутки на сайт
+    proDaily: num('AI_PRO_DAILY', 30),                 // ИИ-генераций в сутки на одного PRO
+    freeTrialDaily: num('AI_FREE_TRIAL_DAILY', 1),     // пробных ИИ-генераций в сутки для бесплатных
+    safety: 1.5,                                       // запас на погрешность оценки
+    maxOutputTokens: 1100
+  };
+  if (deepseek) {
+    return {
+      ...common,
+      provider: 'deepseek',
+      apiKey: env('DEEPSEEK_API_KEY'),
+      baseURL: env('DEEPSEEK_BASE_URL') || 'https://api.deepseek.com',
+      model: env('AI_MODEL') || 'deepseek-chat',
+      monthlyCredits: num('AI_MONTHLY_USD', 3),        // бюджет в $ на месяц (баланс DeepSeek)
+      priceInPerM: num('AI_PRICE_IN_PER_M', 0.6),      // $ за 1M входных токенов (с запасом)
+      priceOutPerM: num('AI_PRICE_OUT_PER_M', 1.7),    // $ за 1M выходных токенов (с запасом)
+      creditsPerUsd: 1,                                // учёт ведём прямо в долларах
+      timeoutMs: 26000                                 // лимит синхронной функции Netlify — 30 с
+    };
+  }
+  return {
+    ...common,
+    provider: 'netlify',
+    model: env('AI_MODEL') || 'gpt-4o-mini',
+    monthlyCredits: num('AI_MONTHLY_CREDITS', 100),    // бюджет кредитов Netlify на ИИ в месяц
+    priceInPerM: num('AI_PRICE_IN_PER_M', 0.15),       // $ за 1M входных токенов (gpt-4o-mini)
+    priceOutPerM: num('AI_PRICE_OUT_PER_M', 0.60),     // $ за 1M выходных токенов
+    creditsPerUsd: 180,                                // курс Netlify: $1 = 180 кредитов
+    timeoutMs: 20000
+  };
+};
 
 const aiStore = () => getStore({ name: 'sp-ai', consistency: 'strong' });
-const monthKey = () => 'month:' + new Date().toISOString().slice(0, 7);
+// У каждого провайдера свой счётчик расходов (кредиты Netlify и доллары DeepSeek не смешиваются)
+const monthKey = () => (AI_CFG().provider === 'deepseek' ? 'ds-month:' : 'month:') + new Date().toISOString().slice(0, 7);
 
 function creditsFor(cfg, inTok, outTok) {
   const usd = (inTok * cfg.priceInPerM + outTok * cfg.priceOutPerM) / 1e6;
@@ -43,7 +68,7 @@ const maxCallCredits = (cfg) => creditsFor(cfg, 3000, cfg.maxOutputTokens);
 export async function aiGlobalState() {
   const cfg = AI_CFG();
   if (!cfg.enabled) return { ok: false, reason: 'disabled' };
-  if (!env('OPENAI_API_KEY') && !env('OPENAI_BASE_URL')) return { ok: false, reason: 'not_configured' };
+  if (cfg.provider === 'netlify' && !env('OPENAI_API_KEY') && !env('OPENAI_BASE_URL')) return { ok: false, reason: 'not_configured' };
 
   const store = aiStore();
   const breaker = await store.get('breaker', { type: 'json' });
@@ -126,7 +151,9 @@ export async function aiGenerate({ basePrompt, task, userKey, userDaily }) {
   }
 
   try {
-    const client = new OpenAI({ timeout: cfg.timeoutMs, maxRetries: 0 });
+    const client = cfg.provider === 'deepseek'
+      ? new OpenAI({ apiKey: cfg.apiKey, baseURL: cfg.baseURL, timeout: cfg.timeoutMs, maxRetries: 0 })
+      : new OpenAI({ timeout: cfg.timeoutMs, maxRetries: 0 });
     const completion = await client.chat.completions.create({
       model: cfg.model,
       temperature: 0.6,
@@ -156,7 +183,7 @@ export async function aiGenerate({ basePrompt, task, userKey, userDaily }) {
   } catch (e) {
     const status = e && (e.status || (e.response && e.response.status));
     const msg = String((e && e.message) || '').toLowerCase();
-    console.error('AI call failed:', status, msg.slice(0, 200));
+    console.error('AI call failed [' + cfg.provider + ']:', status, msg.slice(0, 200));
     if (status === 402 || status === 403 || /credit|quota|insufficient|billing|limit exceeded/.test(msg)) {
       await tripBreaker(12 * 60 * 60 * 1000, 'gateway_credits_' + (status || 'msg'));   // кредиты на исходе — стоп на 12 ч
     } else if (status === 429) {
