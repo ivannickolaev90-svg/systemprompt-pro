@@ -9,3 +9,6 @@
 
 /api/*
   Cache-Control: no-store
+
+/covers/*
+  Access-Control-Allow-Origin: *
