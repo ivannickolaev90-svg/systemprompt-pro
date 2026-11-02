@@ -32,7 +32,7 @@ export const onRequest = handler(async (req) => {
     });
   } catch (e) {
     console.error('status failed:', e && e.message);
-    return json({ error: 'server_error', detail: String((e && e.message) || e).slice(0, 200) }, 500);
+    return json({ error: 'server_error' }, 500);
   }
 });
 
