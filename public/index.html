@@ -83,6 +83,7 @@
       <nav class="flex items-center gap-1 sm:gap-2 text-sm">
         <a href="#builder" class="hidden md:inline-block px-3 py-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors">Конструктор</a>
         <a href="#knowledge" class="hidden md:inline-block px-3 py-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors">База знаний</a>
+        <a href="/prompts/" class="hidden md:inline-block px-3 py-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors">Готовые промпты</a>
 
         <!-- Счётчик бесплатных генераций -->
         <span data-token-badge class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold font-mono whitespace-nowrap transition-colors duration-300">
@@ -297,10 +298,16 @@
                 <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
                 system_prompt.md
               </span>
+              <div class="flex items-center gap-2">
+              <button type="button" id="shareBtn" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-zinc-700 text-zinc-300 hover:text-white hover:border-zinc-600 hover:bg-zinc-800 text-sm font-semibold transition-all duration-200 whitespace-nowrap" aria-label="Поделиться сайтом">
+                <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>
+                <span class="hidden sm:inline">Поделиться</span>
+              </button>
               <button type="button" id="copyBtn" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:scale-[.97] text-white text-sm font-semibold shadow-md shadow-indigo-950/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60 transition-all duration-200 whitespace-nowrap">
                 <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                 <span data-copy-label>Скопировать</span>
               </button>
+              </div>
             </div>
 
             <!-- Пустое состояние / ожидание ИИ -->
@@ -418,9 +425,10 @@
   <footer class="relative z-10 border-t border-zinc-800 bg-zinc-950">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-zinc-500">
       <p>© <span id="year"></span> SystemPrompt PRO — конструктор системных промптов для ИИ</p>
-      <div class="flex gap-5">
+      <div class="flex flex-wrap justify-center gap-x-5 gap-y-2">
         <a href="#builder" class="hover:text-emerald-400 transition-colors">Конструктор</a>
         <a href="#knowledge" class="hover:text-emerald-400 transition-colors">База знаний</a>
+        <a href="/prompts/" class="hover:text-emerald-400 transition-colors">Готовые промпты</a>
         <a href="#" data-telegram class="hover:text-emerald-400 transition-colors">Telegram</a>
         <a href="/offer" class="hover:text-emerald-400 transition-colors">Оферта</a>
         <a href="/contacts" class="hover:text-emerald-400 transition-colors">Реквизиты</a>
@@ -518,6 +526,7 @@
   </div>
 
   <!-- ===== ЛОГИКА ===== -->
+  <script src="/metrika.js"></script>
   <script src="/app.js" defer></script>
 </body>
 </html>

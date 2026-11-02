@@ -8,6 +8,8 @@
   // 🔧 Вставь ссылку на свой Telegram-канал
   const TELEGRAM_URL = 'https://t.me/your_channel';
   const KEY_LICENSE = 'systemprompt_license';
+  // Цели Яндекс Метрики (работают, только если в /metrika.js указан номер счётчика)
+  const goal = (name) => { try { if (typeof window.spGoal === 'function') window.spGoal(name); } catch (e) { /* без аналитики */ } };
   const KEY_ORDER = 'systemprompt_order';
 
   /* ================= ХРАНИЛИЩЕ ================= */
@@ -391,6 +393,7 @@
         generatedText = data.prompt;
         generatedKey = key;
         generatedMode = data.mode === 'ai' ? 'ai' : 'template';
+        goal(generatedMode === 'ai' ? 'generate_ai' : 'generate');
         const modeNote = aiModeNote(data);
         showStale(false);
         setStats(generatedText);
@@ -549,6 +552,19 @@
   const copyLabelEl = els.copyBtn.querySelector('[data-copy-label]') || els.copyBtn;
   const copyLabelText = copyLabelEl.textContent.trim();
   let copyTimer;
+  // Поделиться ссылкой на сайт (системное меню на телефоне или копирование ссылки)
+  const shareBtn = $('shareBtn');
+  if (shareBtn) shareBtn.addEventListener('click', async () => {
+    const url = 'https://systemprompt-pro.pages.dev/';
+    const text = 'Конструктор системных промптов для ChatGPT, Claude и Telegram-ботов — собирает готовый промпт за 10 секунд, бесплатно';
+    goal('share');
+    try {
+      if (navigator.share) { await navigator.share({ title: 'SystemPrompt PRO', text, url }); return; }
+    } catch (e) { if (e && e.name === 'AbortError') return; }
+    const ok = await copyText(url);
+    showToast(ok ? 'Ссылка на сайт скопирована — отправьте её другу 🙌' : url, 3000);
+  });
+
   els.copyBtn.addEventListener('click', async () => {
     if (!generatedText) {
       if (!state.pro && state.tokensLeft === 0) { openModal('Бесплатные генерации на сегодня закончились'); return; }
@@ -590,6 +606,7 @@
   let lastFocused = null;
   function openModal(reason, opts) {
     opts = opts || {};
+    goal('open_pro');
     if (state.pro && !opts.force && reason === 'improve') {
       if (!els.taskContext.value.trim()) {
         els.taskContext.focus();
@@ -647,6 +664,7 @@
   els.payForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (els.payBtn.disabled) return;
+    goal('pay_click');
     els.payBtn.disabled = true;
     els.payLabel.classList.add('hidden');
     els.paySpinner.classList.remove('hidden');
@@ -692,6 +710,7 @@
   }
 
   async function onPaid(orderId) {
+    goal('paid');
     await refreshStatus();
     closeModal();
     showToast('Оплата подтверждена! PRO активирован навсегда ⚡ Код доступа: ' + orderId, 6000);
@@ -734,7 +753,10 @@
   });
 
   /* ================= TELEGRAM ================= */
+  // Пока канал не указан, ссылки на Telegram скрыты, чтобы не вести посетителей в никуда
+  const telegramReady = /^https:\/\/t\.me\/[A-Za-z0-9_]{4,}$/.test(TELEGRAM_URL) && TELEGRAM_URL.indexOf('your_channel') === -1;
   document.querySelectorAll('[data-telegram]').forEach((a) => {
+    if (!telegramReady) { a.classList.add('hidden'); return; }
     a.href = TELEGRAM_URL; a.target = '_blank'; a.rel = 'noopener noreferrer';
   });
 

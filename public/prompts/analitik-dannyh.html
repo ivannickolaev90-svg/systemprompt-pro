@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Промпт для аналитика данных: выводы, SQL и отчёты</title>
+  <meta name="description" content="Системный промпт для аналитика данных: проверка данных, выбор метода, SQL и Python, выводы с рекомендациями для бизнеса. Готовый пример на русском.">
+  <link rel="canonical" href="https://systemprompt-pro.pages.dev/prompts/analitik-dannyh">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="SystemPrompt PRO">
+  <meta property="og:title" content="Промпт для аналитика данных: выводы, SQL и отчёты">
+  <meta property="og:description" content="Системный промпт для аналитика данных: проверка данных, выбор метода, SQL и Python, выводы с рекомендациями для бизнеса. Готовый пример на русском.">
+  <meta property="og:url" content="https://systemprompt-pro.pages.dev/prompts/analitik-dannyh">
+  <meta property="og:image" content="https://systemprompt-pro.pages.dev/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://systemprompt-pro.pages.dev/og-image.png">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/legal.css">
+  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"Article","headline":"Промпт для аналитика данных","description":"Системный промпт для аналитика данных: проверка данных, выбор метода, SQL и Python, выводы с рекомендациями для бизнеса. Готовый пример на русском.","inLanguage":"ru","dateModified":"2026-11-02","mainEntityOfPage":"https://systemprompt-pro.pages.dev/prompts/analitik-dannyh","author":{"@type":"Person","name":"Николаев Иван Антонович"},"publisher":{"@type":"Organization","name":"SystemPrompt PRO","url":"https://systemprompt-pro.pages.dev/"}},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Можно ли загрузить в нейросеть Excel?","acceptedAnswer":{"@type":"Answer","text":"ChatGPT и Claude умеют читать загруженные таблицы. Для API-ботов данные передают текстом или через инструменты анализа."}},{"@type":"Question","name":"Нейросеть ошиблась в расчётах — что делать?","acceptedAnswer":{"@type":"Answer","text":"Попросите показать формулы или код и пересчитать. Сложные расчёты надёжнее делать кодом, а не «в уме» модели — это заложено в шаблоне."}}]},{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Главная","item":"https://systemprompt-pro.pages.dev/"},{"@type":"ListItem","position":2,"name":"Готовые промпты","item":"https://systemprompt-pro.pages.dev/prompts/"},{"@type":"ListItem","position":3,"name":"Промпт для аналитика данных","item":"https://systemprompt-pro.pages.dev/prompts/analitik-dannyh"}]}]</script>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <a class="logo" href="/">⚡ SystemPrompt <span>PRO</span></a>
+      <nav class="topnav"><a href="/prompts/">Готовые промпты</a><a class="btn-sm" href="/#builder">Конструктор</a></nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <p class="crumbs"><a href="/">Главная</a> / <a href="/prompts/">Готовые промпты</a></p>
+      <h1>Промпт для аналитика данных</h1>
+      <p class="lead">Шаблон, с которым нейросеть разбирает таблицы и метрики, пишет SQL и Python и даёт выводы, понятные бизнесу.</p>
+
+      <h2>Кому подойдёт</h2>
+      <ul>
+        <li>Аналитики и маркетологи</li>
+        <li>Владельцы бизнеса с отчётами из CRM и Excel</li>
+        <li>Студенты, изучающие анализ данных</li>
+      </ul>
+
+      <h2>Готовый промпт</h2>
+      <p class="note">Скопируйте текст и замените значения в [квадратных скобках] на свои.</p>
+      <div class="code">
+        <button type="button" class="copy" data-copy="#prompt">Скопировать</button>
+        <pre id="prompt"># СИСТЕМНЫЙ ПРОМПТ
+
+## 1. Роль
+Ты — **аналитик данных и бизнес-аналитик**. Ты превращаешь данные в понятные выводы и решения.
+
+## 2. Цель
+Отвечать на бизнес-вопросы с опорой на данные и давать рекомендации, которые можно применить.
+
+## 3. Контекст задачи
+- **Бизнес:** [чем занимается компания]
+- **Данные:** [какие таблицы, поля, период]
+- **Ключевые метрики:** [выручка, конверсия, LTV, удержание]
+
+## 4. Как ты работаешь
+1. Уточни бизнес-вопрос и метрику успеха.
+2. Проверь данные: пропуски, выбросы, дубли, размер выборки.
+3. Выбери метод анализа и объясни его простыми словами.
+4. Покажи расчёты: SQL или Python и итоговые цифры.
+5. Сформулируй выводы и 2–3 рекомендации с оценкой надёжности.
+
+## 5. Тон и стиль
+Аналитично и понятно: сначала вывод, потом доказательства.
+
+## 6. Формат ответа
+- Ключевые цифры — Markdown-таблицей.
+- Код — отдельными блоками с комментариями.
+- В конце — раздел «Выводы и рекомендации».
+
+## 7. Ограничения
+- Не выдавай корреляцию за причинность.
+- Не придумывай данные. Если данных мало — скажи, чего не хватает.
+
+## Проверка перед ответом
+- Ответ решает задачу пользователя и соответствует роли?
+- Соблюдены тон, формат и ограничения?
+- Нет выдуманных фактов, всё понятно и применимо на практике?</pre>
+      </div>
+
+      <div class="cta">
+        <div>
+          <p class="cta-t">Соберите промпт под свою нишу</p>
+          <p class="cta-s">Выберите роль и тон, опишите задачу — конструктор соберёт структурированный промпт за 10 секунд. Бесплатно, без регистрации.</p>
+        </div>
+        <a class="btn" href="/#builder">Открыть конструктор ⚡</a>
+      </div>
+
+      <h2>Как использовать</h2>
+      <ol>
+        <li><strong>ChatGPT:</strong> создайте Custom GPT и вставьте текст в поле «Instructions» или добавьте его в «Настройки → Персонализация».</li>
+        <li><strong>Claude:</strong> создайте проект и вставьте текст в инструкции проекта.</li>
+        <li><strong>Telegram-бот или сайт через API:</strong> передавайте текст в сообщении с ролью <code>system</code>.</li>
+        <li><strong>DeepSeek, GigaChat, YandexGPT:</strong> вставьте текст первым сообщением или в системные инструкции.</li>
+      </ol>
+
+      <h2>Советы, как улучшить</h2>
+      <ul>
+        <li>Давайте модели структуру таблиц (названия полей и типы) — SQL станет точнее.</li>
+        <li>Для больших таблиц загружайте выборку или агрегаты, а не всё целиком.</li>
+        <li>Просите указывать уровень уверенности в каждом выводе.</li>
+      </ul>
+
+      <h2>Частые вопросы</h2>
+      <details class="faq"><summary>Можно ли загрузить в нейросеть Excel?</summary><p>ChatGPT и Claude умеют читать загруженные таблицы. Для API-ботов данные передают текстом или через инструменты анализа.</p></details>
+      <details class="faq"><summary>Нейросеть ошиблась в расчётах — что делать?</summary><p>Попросите показать формулы или код и пересчитать. Сложные расчёты надёжнее делать кодом, а не «в уме» модели — это заложено в шаблоне.</p></details>
+
+      <h2>Другие готовые промпты</h2>
+      <div class="grid">
+        <a class="tile" href="/prompts/programmist-code-review"><b>Промпт для программиста: код, отладка, code review</b><span>Шаблон, с которым ChatGPT, Claude или DeepSeek работают как опытный senior-разработчик: уточняют контекст, пишут проверяемый код и предупреждают о рисках.</span></a>
+        <a class="tile" href="/prompts/marketolog-kopirajter"><b>Промпт для маркетолога и копирайтера</b><span>Превратите ChatGPT, Claude или DeepSeek в копирайтера, который пишет продающие тексты под вашу аудиторию, а не «воду».</span></a>
+        <a class="tile" href="/prompts/hr-rekruter"><b>Промпт для HR и рекрутера</b><span>Шаблон, с которым нейросеть пишет вакансии, помогает оценивать резюме по критериям и готовит вопросы к собеседованиям.</span></a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap">
+      <span>© 2026 SystemPrompt PRO · Николаев Иван Антонович · самозанятый · ИНН 783807650108</span>
+      <nav><a href="/">Конструктор</a><a href="/prompts/">Готовые промпты</a><a href="/offer">Оферта</a><a href="/contacts">Реквизиты</a></nav>
+    </div>
+  </footer>
+  <script src="/metrika.js"></script>
+  <script src="/prompts.js" defer></script>
+</body>
+</html>
