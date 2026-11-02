@@ -1,0 +1,62 @@
+/* Стили для страниц «Реквизиты» и «Оферта» (без внешних библиотек) */
+:root {
+  --bg: #09090b;
+  --panel: #18181b;
+  --border: #27272a;
+  --text: #d4d4d8;
+  --muted: #a1a1aa;
+  --title: #ffffff;
+  --accent: #34d399;
+  --accent2: #818cf8;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+}
+a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+a:hover { color: #6ee7b7; }
+.wrap { max-width: 780px; margin: 0 auto; padding: 0 16px; }
+.top {
+  border-bottom: 1px solid var(--border);
+  background: rgba(9, 9, 11, .85);
+  position: sticky; top: 0; z-index: 2;
+  backdrop-filter: blur(12px);
+}
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 60px; }
+.logo { color: var(--title); font-weight: 800; text-decoration: none; letter-spacing: -.01em; }
+.logo span { color: var(--accent); }
+.back { color: var(--muted); font-size: 14px; text-decoration: none; }
+.back:hover { color: var(--title); }
+main { padding: 40px 0 56px; }
+h1 { color: var(--title); font-size: 30px; line-height: 1.2; letter-spacing: -.02em; margin: 0 0 8px; }
+.lead { color: var(--muted); margin: 0 0 32px; }
+h2 { color: var(--title); font-size: 19px; margin: 32px 0 10px; }
+p, li { margin: 0 0 10px; }
+ul, ol { padding-left: 22px; margin: 0 0 12px; }
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 6px 20px;
+  margin: 0 0 20px;
+}
+.row { display: flex; flex-wrap: wrap; gap: 4px 16px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.row:last-child { border-bottom: 0; }
+.row dt { color: var(--muted); min-width: 190px; }
+.row dd { margin: 0; color: var(--title); font-weight: 600; word-break: break-word; }
+.note { color: var(--muted); font-size: 14px; }
+.foot { border-top: 1px solid var(--border); padding: 24px 0 32px; color: var(--muted); font-size: 14px; }
+.foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 20px; justify-content: space-between; }
+.foot nav { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.foot a { color: var(--muted); text-decoration: none; }
+.foot a:hover { color: var(--accent); }
+@media (max-width: 520px) {
+  h1 { font-size: 25px; }
+  .row dt { min-width: 0; width: 100%; }
+}
