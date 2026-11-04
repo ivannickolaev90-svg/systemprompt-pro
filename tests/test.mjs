@@ -64,14 +64,14 @@ r = await call(gen, 'POST', '/api/generate', JSON.stringify({ settings }), { ori
 ok(r.s === 403, 'CSRF blocked');
 
 // Оплата
-r = await call(order, 'POST', '/api/order', '{}');
+r = await call(order, 'POST', '/api/order', '{"plan":"pro"}');
 ok(r.s === 200 && /^[a-f0-9]{32}$/.test(r.d.orderId), 'order created');
 const oid = r.d.orderId;
 r = await call(claim, 'POST', '/api/claim', JSON.stringify({ orderId: oid }));
 ok(r.s === 202 && r.d.status === 'pending', 'claim pending');
 
 const rfc = (s) => encodeURIComponent(s).replace(/[!'()*]/g, (c) => '%' + c.charCodeAt(0).toString(16).toUpperCase());
-const p = { notification_type: 'p2p-incoming', operation_id: 'op1', amount: '185.25', withdraw_amount: '190.00', currency: '643', datetime: '2026-11-02T10:00:00Z', sender: '', codepro: 'false', label: 'sp_' + oid, unaccepted: 'false' };
+const p = { notification_type: 'p2p-incoming', operation_id: 'op1', amount: '185.25', withdraw_amount: '399.00', currency: '643', datetime: '2026-11-02T10:00:00Z', sender: '', codepro: 'false', label: 'sp_' + oid, unaccepted: 'false' };
 const base = Object.keys(p).sort().map((k) => k + '=' + rfc(p[k])).join('&');
 const badParams = new URLSearchParams({ ...p, sign: 'deadbeef' });
 r = await call(hook, 'POST', '/api/yoomoney-webhook', badParams.toString(), { origin: '' });

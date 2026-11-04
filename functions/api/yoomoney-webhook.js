@@ -1,7 +1,7 @@
 // POST /api/yoomoney-webhook — HTTP-уведомления ЮMoney о входящих платежах.
 // Подлинность проверяется подписью `sign` (HMAC-SHA256 с секретом из настроек ЮMoney).
 // Документация: https://yoomoney.ru/docs/payment-buttons/using-api/notifications
-import { handler, env, json, safeEqual, hmacHex, ordersStore, isOrderId, PRICE_RUB } from '../../lib/shared.js';
+import { handler, env, json, safeEqual, hmacHex, ordersStore, isOrderId, PRICE_RUB, paidPeriod, afterPaid } from '../../lib/shared.js';
 
 // RFC 3986: encodeURIComponent + экранирование !'()*
 const rfc3986 = (s) => encodeURIComponent(s).replace(/[!'()*]/g, (c) => '%' + c.charCodeAt(0).toString(16).toUpperCase());
@@ -54,15 +54,17 @@ export const onRequest = handler(async (req) => {
     const order = res.data;
     if (order.status === 'paid') return json({ ok: true, duplicate: true });
 
-    const status = paid + 0.001 >= PRICE_RUB ? 'paid' : 'underpaid';
+    const status = paid + 0.001 >= (order.price || PRICE_RUB) ? 'paid' : 'underpaid';
     await store.setJSON(orderId, {
       ...order,
+      ...(status === 'paid' ? paidPeriod(order) : {}),
       status,
       paidAmount: paid,
       operationId,
       notificationType: params.get('notification_type') || '',
       paidAt: new Date().toISOString()
     });
+    if (status === 'paid') await afterPaid(order);
     console.log('yoomoney: order', orderId, status, paid);
     return json({ ok: true });
   } catch (e) {

@@ -107,3 +107,26 @@ header [data-token-badge] { display: none !important; }
 .b-settings > summary span { font-weight: 400; font-size: .75rem; color: #71717a; }
 .b-settings-body { padding: .25rem 1rem 1rem; }
 .b-settings-body > * + * { margin-top: 1.5rem; }
+
+/* Окно PRO: тарифы */
+.pl-grid { display: grid; gap: .6rem; margin-bottom: .75rem; text-align: left; }
+@media (min-width: 640px) { .pl-grid { grid-template-columns: 1fr 1fr; } .pl-grid .pl-card:has(input[value="pro"]) { grid-column: 1 / -1; } }
+.pl-card { position: relative; display: block; cursor: pointer; padding: .8rem .9rem; border: 1px solid #27272a; border-radius: .9rem; background: rgba(9,9,11,.6); transition: border-color .15s, background .15s; }
+.pl-card:hover { border-color: #3f3f46; }
+.pl-card input { position: absolute; opacity: 0; pointer-events: none; }
+.pl-card:has(input:checked) { border-color: #10b981; background: rgba(16,185,129,.08); box-shadow: 0 0 0 1px #10b981 inset; }
+.pl-card:has(input:focus-visible) { outline: 2px solid #818cf8; outline-offset: 2px; }
+.pl-head { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; }
+.pl-name { font-weight: 700; color: #fff; }
+.pl-price { font-weight: 800; font-size: 1.15rem; color: #fff; white-space: nowrap; }
+.pl-per { display: block; font-size: .75rem; color: #a1a1aa; margin-top: .1rem; }
+.pl-list { margin: .45rem 0 0; padding: 0; list-style: none; font-size: .8rem; color: #d4d4d8; }
+.pl-list li { padding-left: 1.1rem; position: relative; margin-top: .15rem; }
+.pl-list li::before { content: '✓'; position: absolute; left: 0; color: #34d399; font-weight: 700; }
+.pl-badge { position: absolute; top: -.55rem; right: .8rem; font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; padding: .1rem .5rem; border-radius: 999px; background: #10b981; color: #052e1f; }
+.pl-note { font-size: .72rem; color: #71717a; margin: 0 0 1rem; }
+.pay-row { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
+.pay-btn { padding: .95rem .75rem; border-radius: .8rem; font-weight: 700; color: #fff; border: 1px solid #3f3f46; background: #18181b; cursor: pointer; transition: filter .15s, opacity .15s; }
+.pay-btn:hover { filter: brightness(1.15); }
+.pay-btn-main { border-color: transparent; background: linear-gradient(90deg, #4f46e5, #7c3aed, #10b981); }
+.pay-btn:disabled { opacity: .6; cursor: wait; }

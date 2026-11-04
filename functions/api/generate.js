@@ -3,7 +3,7 @@
 // ИИ вызывается только по явной кнопке (ai: true) и только при заполненной нише; иначе — локальный шаблон.
 import { handler,
   json, isSameOrigin, readJsonBody, validateSettings, buildPrompt, ROLES,
-  verifyLicense, bearer, clientKey, hitLimit, cleanupLimits, FREE_PER_DAY, DAY_MS, HOUR_MS
+  licenseInfo, TIERS, bearer, clientKey, hitLimit, cleanupLimits, FREE_PER_DAY, DAY_MS, HOUR_MS
 } from '../../lib/shared.js';
 import { aiGenerate, peekUserAi, AI_CFG } from '../../lib/ai.js';
 
@@ -20,8 +20,10 @@ export const onRequest = handler(async (req) => {
 
   try {
     const token = bearer(req);
-    const orderId = token ? await verifyLicense(token) : null;
-    const pro = !!orderId;
+    const lic = token ? await licenseInfo(token) : null;
+    // Тариф «Старт» — только готовые тексты; конструктор с PRO-возможностями — с PRO
+    const pro = !!(lic && TIERS[lic.tier].builder);
+    const orderId = pro ? lic.orderId : null;
     const cfg = AI_CFG();
     const ipKey = await clientKey(req);
     const result = { pro };
@@ -43,7 +45,7 @@ export const onRequest = handler(async (req) => {
 
     const base = buildPrompt(settings);
     const userKey = pro ? 'pro:' + orderId : 'free:' + ipKey;
-    const userDaily = pro ? cfg.proDaily : cfg.freeTrialDaily;
+    const userDaily = pro ? Math.max(cfg.proDaily, TIERS[lic.tier].ai) : cfg.freeTrialDaily;
 
     let mode = 'template';
     let reason = null;

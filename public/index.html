@@ -62,7 +62,7 @@
     "description": "Интерактивный генератор системных промптов и кастомных инструкций для ИИ-агентов с защитой от промпт-инъекций.",
     "offers": [
       { "@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "RUB" },
-      { "@type": "Offer", "name": "PRO (доступ навсегда)", "price": "190", "priceCurrency": "RUB" }
+      { "@type": "Offer", "name": "PRO на 30 дней", "price": "399", "priceCurrency": "RUB" }
     ]
   }
   </script>
@@ -501,22 +501,34 @@
         <span class="inline-block text-[11px] font-mono uppercase tracking-widest text-emerald-400 mb-2">PRO Access</span>
         <h3 id="proTitle" class="text-xl sm:text-2xl font-extrabold text-white mb-5">Разблокировать SystemPrompt PRO ⚡</h3>
 
-        <ul class="text-left text-sm text-zinc-300 space-y-2.5 mb-6 bg-zinc-950/60 border border-zinc-800 rounded-xl p-4">
-          <li class="flex gap-2.5"><span class="text-emerald-400 font-bold">✓</span> До 100 готовых текстов в сутки вместо 5 ✨</li>
-          <li class="flex gap-2.5"><span class="text-emerald-400 font-bold">✓</span> ИИ-адаптация промпта под вашу нишу — до 30 в сутки ✨</li>
-          <li class="flex gap-2.5"><span class="text-emerald-400 font-bold">✓</span> Безлимитные шаблонные генерации и живой предпросмотр</li>
-          <li class="flex gap-2.5"><span class="text-emerald-400 font-bold">✓</span> Конструктор промптов без ограничений</li>
-          <li class="flex gap-2.5"><span class="text-emerald-400 font-bold">✓</span> Ультимативная защита от Prompt Injection</li>
-          <li class="flex gap-2.5"><span class="text-emerald-400 font-bold">✓</span> Генерация промптов со встроенными сценариями</li>
-        </ul>
-
-        <div class="mb-6">
-          <div class="flex items-baseline justify-center gap-3">
-            <span class="text-lg text-zinc-600 line-through">490 ₽</span>
-            <span class="text-5xl font-extrabold tracking-tight text-white">190 ₽</span>
-          </div>
-          <p class="mt-1 text-sm font-semibold text-emerald-400">Доступ навсегда · единоразовый платёж</p>
+        <div id="planList" class="pl-grid" role="radiogroup" aria-label="Тариф">
+          <label class="pl-card"><input type="radio" name="plan" value="trial">
+            <span class="pl-head"><span class="pl-name">Пробный</span><span class="pl-price">99 ₽</span></span>
+            <span class="pl-per">7 дней · один раз</span>
+            <ul class="pl-list"><li>Всё, что в PRO</li></ul>
+          </label>
+          <label class="pl-card"><input type="radio" name="plan" value="start">
+            <span class="pl-head"><span class="pl-name">Старт</span><span class="pl-price">199 ₽</span></span>
+            <span class="pl-per">30 дней</span>
+            <ul class="pl-list"><li>30 готовых текстов в сутки</li><li>Доработка: короче, теплее, официальнее</li></ul>
+          </label>
+          <label class="pl-card"><input type="radio" name="plan" value="pro" checked><span class="pl-badge">Популярный</span>
+            <span class="pl-head"><span class="pl-name">PRO</span><span class="pl-price">399 ₽</span></span>
+            <span class="pl-per">30 дней</span>
+            <ul class="pl-list"><li>100 готовых текстов в сутки</li><li>Конструктор промптов без ограничений</li><li>ИИ-адаптация под нишу, защита от взлома</li></ul>
+          </label>
+          <label class="pl-card"><input type="radio" name="plan" value="pro_year">
+            <span class="pl-head"><span class="pl-name">PRO на год</span><span class="pl-price">2 990 ₽</span></span>
+            <span class="pl-per">365 дней · выгода 37%</span>
+            <ul class="pl-list"><li>Всё, что в PRO</li><li>Платите один раз в год</li></ul>
+          </label>
+          <label class="pl-card"><input type="radio" name="plan" value="max">
+            <span class="pl-head"><span class="pl-name">Максимум</span><span class="pl-price">799 ₽</span></span>
+            <span class="pl-per">30 дней</span>
+            <ul class="pl-list"><li>300 готовых текстов в сутки</li><li>До 100 ИИ-генераций промптов</li><li>Всё, что в PRO</li></ul>
+          </label>
         </div>
+        <p class="pl-note">Оплата за период, без автосписаний. Продлить можно в любой момент — новый срок добавится к текущему.</p>
 
         <!--
           ===== ФОРМА ОПЛАТЫ ЮMONEY =====
@@ -526,24 +538,22 @@
         -->
         <form id="payForm" method="POST" action="https://yoomoney.ru/quickpay/confirm">
           <input type="hidden" name="receiver" value="4100119673882088"><!-- 🔧 ТВОЙ КОШЕЛЁК ЮMONEY -->
-          <input type="hidden" name="formcomment" value="Подписка SystemPrompt PRO: Бесконечный доступ">
-          <input type="hidden" name="short-dest" value="Подписка SystemPrompt PRO: Бесконечный доступ">
-          <input type="hidden" name="targets" value="Подписка SystemPrompt PRO: Бесконечный доступ">
+          <input type="hidden" name="formcomment" value="SystemPrompt PRO">
+          <input type="hidden" name="short-dest" value="SystemPrompt PRO">
+          <input type="hidden" name="targets" value="SystemPrompt PRO">
           <input type="hidden" name="label" id="formLabel" value=""><!-- уникальная метка заказа, выдаёт сервер -->
           <input type="hidden" name="quickpay-form" value="button">
-          <input type="hidden" name="sum" value="190" data-type="number">
+          <input type="hidden" name="sum" id="formSum" value="399" data-type="number">
           <input type="hidden" name="paymentType" value="AC"><!-- AC = банковская карта, PC = кошелёк ЮMoney -->
           <input type="hidden" name="successURL" id="formSuccessUrl" value="">
 
-          <button type="submit" id="payBtn" class="group relative w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-emerald-500 bg-[length:200%_auto] hover:bg-right text-white text-base font-bold shadow-lg shadow-indigo-600/40 hover:shadow-emerald-500/40 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-80 disabled:cursor-wait disabled:hover:translate-y-0 transition-all duration-500">
-            <span id="payLabel">Оплатить: СБП, SberPay, карта 💳</span>
-            <span id="paySpinner" class="hidden items-center gap-2.5">
-              <svg class="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" class="opacity-25"/><path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
-              Создаём заказ...
-            </span>
-          </button>
+          <div class="pay-row">
+            <button type="submit" id="payBtn" data-method="sbp" class="pay-btn pay-btn-main">По СБП ⚡</button>
+            <button type="submit" id="payCardBtn" data-method="card" class="pay-btn">Картой 💳</button>
+          </div>
         </form>
-        <p class="mt-2 text-[11px] text-zinc-500">🔐 Безопасная оплата через ЮKassa · СБП, SberPay, T-Pay, карты Мир, Visa, Mastercard</p>
+        <p class="mt-2 text-[11px] text-zinc-500">🔐 Безопасная оплата через ЮKassa · СБП, карты Мир, Visa, Mastercard</p>
+        <p class="mt-1 text-[11px] text-zinc-500">Если страница оплаты не открывается — отключите VPN.</p>
         <p class="mt-2 text-[11px] text-zinc-500">Нажимая «Оплатить», вы принимаете условия <a href="/offer" target="_blank" class="underline hover:text-emerald-400 transition-colors">публичной оферты</a></p>
 
         <a href="#" data-telegram target="_blank" rel="noopener noreferrer" class="mt-5 inline-flex items-center gap-1 text-xs text-zinc-400 hover:text-emerald-400 underline decoration-zinc-700 underline-offset-4 hover:decoration-emerald-400 transition-colors">

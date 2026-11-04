@@ -1,7 +1,7 @@
 // POST /api/task — выполняет сценарий: поля формы → готовый текст от ИИ.
 // Всегда возвращает и «переносимый» запрос (prompt), чтобы человек мог открыть его в ChatGPT/Claude/…,
 // даже если наш ИИ временно недоступен или лимит на сегодня закончился.
-import { handler, json, isSameOrigin, readJsonBody, verifyLicense, bearer, clientKey, hitLimit, peekLimit, HOUR_MS, DAY_MS } from '../../lib/shared.js';
+import { handler, json, isSameOrigin, readJsonBody, licenseInfo, TIERS, bearer, clientKey, hitLimit, peekLimit, HOUR_MS, DAY_MS } from '../../lib/shared.js';
 import { aiComplete, AI_CFG } from '../../lib/ai.js';
 import { getTask, validateFields, buildMessages, buildPortablePrompt, TWEAKS } from '../../lib/tasks.js';
 
@@ -30,7 +30,8 @@ export const onRequest = handler(async (req) => {
   const cfg = AI_CFG();
   const ipKey = await clientKey(req);
   const token = bearer(req);
-  const orderId = token ? await verifyLicense(token) : null;
+  const lic = token ? await licenseInfo(token) : null;
+  const orderId = lic ? lic.orderId : null;
   const pro = !!orderId;
 
   // Защита от ботов: не больше 60 запросов в час с одного адреса (PRO — 300)
@@ -38,7 +39,7 @@ export const onRequest = handler(async (req) => {
   if (!rl.allowed) return json({ error: 'rate_limited' }, 429);
 
   const userKey = pro ? 'pro:' + orderId : 'free:' + ipKey;
-  const perDay = pro ? cfg.taskProDaily : cfg.taskFreeDaily;
+  const perDay = pro ? TIERS[lic.tier].tasks : cfg.taskFreeDaily;
   const prompt = buildPortablePrompt(task, v.fields);
 
   const r = await aiComplete({

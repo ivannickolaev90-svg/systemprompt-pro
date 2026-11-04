@@ -56,7 +56,7 @@
     generateBtn: $('generateBtn'), generateLabel: $('generateLabel'),
     copyBtn: $('copyBtn'), resetBtn: $('resetBtn'), headerProBtn: $('headerProBtn'),
     modal: $('proModal'), modalReason: $('modalReason'),
-    payForm: $('payForm'), payBtn: $('payBtn'), payLabel: $('payLabel'), paySpinner: $('paySpinner'),
+    payForm: $('payForm'), payBtn: $('payBtn'), payCardBtn: $('payCardBtn'), formSum: $('formSum'),
     formLabel: $('formLabel'), successUrl: $('formSuccessUrl'),
     restoreBox: $('restoreBox'), restoreForm: $('restoreForm'), restoreCode: $('restoreCode'),
     restoreBtn: $('restoreBtn'), restoreMsg: $('restoreMsg'), aiHint: $('aiHint'),
@@ -327,7 +327,7 @@
       t.className = 'font-mono font-semibold ' + (left === null ? 'text-zinc-400' : left >= max ? 'text-emerald-400' : left === max - 1 ? 'text-amber-400' : 'text-red-400');
     });
 
-    els.generateLabel.textContent = (!pro && left === 0) ? 'Открыть PRO — 190 ₽ навсегда 🔓' : 'Сгенерировать промпт ⚡';
+    els.generateLabel.textContent = (!pro && left === 0) ? 'Открыть PRO — от 99 ₽ 🔓' : 'Сгенерировать промпт ⚡';
     els.headerProBtn.textContent = pro ? 'PRO ⚡' : 'PRO ✨';
     updateAiHint();
   }
@@ -350,7 +350,10 @@
       const { status, data } = await api('/api/status');
       if (status !== 200) throw new Error('status ' + status);
       if (data.licenseInvalid) storeDel(KEY_LICENSE);
-      state.pro = data.pro === true;
+      // «Старт» — только готовые тексты; PRO-возможности конструктора — с тарифа PRO
+      state.pro = data.pro === true && data.builderPro !== false;
+      state.paid = data.pro === true;
+      state.expiresAt = data.expiresAt || null;
       state.tokensLeft = state.pro ? null : (typeof data.tokensLeft === 'number' ? data.tokensLeft : null);
       if (typeof data.freePerDay === 'number') state.freePerDay = data.freePerDay;
       state.aiOnline = data.aiOnline === true;
@@ -628,9 +631,9 @@
   }
   function resetPayButton() {
     els.payBtn.disabled = false;
-    els.payLabel.classList.remove('hidden');
-    els.paySpinner.classList.add('hidden');
-    els.paySpinner.classList.remove('inline-flex');
+    els.payCardBtn.disabled = false;
+    els.payBtn.textContent = 'По СБП ⚡';
+    els.payCardBtn.textContent = 'Картой 💳';
   }
 
   document.querySelectorAll('[data-open-pro]').forEach((b) => {
@@ -645,13 +648,16 @@
   els.payForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (els.payBtn.disabled) return;
+    const method = (e.submitter && e.submitter.dataset.method) || 'sbp';
+    const checked = document.querySelector('#planList input[name="plan"]:checked');
+    const plan = checked ? checked.value : 'pro';
     goal('pay_click');
     els.payBtn.disabled = true;
-    els.payLabel.classList.add('hidden');
-    els.paySpinner.classList.remove('hidden');
-    els.paySpinner.classList.add('inline-flex');
+    els.payCardBtn.disabled = true;
+    (method === 'card' ? els.payCardBtn : els.payBtn).textContent = 'Создаём заказ…';
     try {
-      const { status, data } = await api('/api/order', { method: 'POST', body: {} });
+      const { status, data } = await api('/api/order', { method: 'POST', body: { plan, method, renew: storeGet(KEY_LICENSE) || '' } });
+      if (status === 409) { resetPayButton(); showToast('Пробный тариф уже был использован — выберите другой', 3500, 'warn'); return; }
       if (status !== 200 || !ORDER_RE.test(data.orderId || '')) throw new Error('order ' + status);
       storeSet(KEY_ORDER, data.orderId);
       // ЮKassa: СБП, SberPay, T-Pay, карта — переходим на страницу оплаты
@@ -660,6 +666,7 @@
         return;
       }
       els.formLabel.value = data.label;
+      if (typeof data.sum === 'number') els.formSum.value = String(data.sum);
       els.successUrl.value = window.location.origin + window.location.pathname + '?pay=success&order=' + data.orderId;
       els.payForm.submit(); // программная отправка не вызывает submit-обработчик повторно
     } catch (err) {
@@ -699,7 +706,7 @@
     goal('paid');
     await refreshStatus();
     closeModal();
-    showToast('Оплата подтверждена! PRO активирован навсегда ⚡ Код доступа: ' + orderId, 6000);
+    showToast('Оплата подтверждена! Доступ активирован' + (state.expiresAt ? ' до ' + new Date(state.expiresAt).toLocaleDateString('ru-RU') : '') + ' ⚡ Код доступа: ' + orderId, 6000);
     if (generatedText) liveUpdate();
   }
 
@@ -727,7 +734,7 @@
     els.restoreBtn.disabled = false;
     const messages = {
       pending: 'Оплата по этому заказу ещё не поступила. Если вы только что оплатили — подождите минуту и проверьте снова.',
-      underpaid: 'Сумма платежа меньше 190 ₽. Напишите нам в Telegram.',
+      underpaid: 'Сумма платежа меньше цены тарифа. Позвоните нам: +7 981 717-18-14.',
       not_found: 'Заказ не найден. Проверьте код.',
       device_limit: 'Превышен лимит устройств для этого заказа. Напишите нам в Telegram.',
       revoked: 'Доступ по этому заказу отозван.',
