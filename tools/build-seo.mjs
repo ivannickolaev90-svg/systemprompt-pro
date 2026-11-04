@@ -59,10 +59,38 @@ const foot = `
 </html>
 `;
 
+// SEO-страница → подходящая задача «готовый текст за 10 секунд»
+const TASK_FOR = {
+  'internet-magazin': ['otvet-na-otzyv', 'Ответить на отзыв покупателя'],
+  'telegram-bot-podderzhki': ['otvet-klientu', 'Написать ответ клиенту'],
+  'marketolog-kopirajter': ['post-telegram', 'Написать продающий пост'],
+  'smm-kontent-plan': ['kontent-plan', 'Составить контент-план на неделю'],
+  'kartochki-tovarov-marketplace': ['kartochka-tovara', 'Написать описание товара'],
+  'menedzher-po-prodazham': ['kommercheskoe-predlozhenie', 'Написать коммерческое предложение'],
+  'hr-rekruter': ['soprovoditelnoe-pismo', 'Написать сопроводительное письмо'],
+  'chto-takoe-sistemnyj-prompt': ['uluchshit-prompt', 'Улучшить свой промпт'],
+  'programmist-code-review': ['uluchshit-prompt', 'Улучшить свой промпт'],
+  'seo-statya': ['kartochka-tovara', 'Написать SEO-описание товара'],
+  'restoran-kafe': ['post-telegram', 'Написать пост для заведения'],
+  'yurist-pomoshchnik': ['delovoe-pismo', 'Написать деловое письмо или претензию']
+};
+const taskCta = (slug) => {
+  const t = TASK_FOR[slug];
+  if (!t) return '';
+  return `
+      <div class="cta">
+        <div>
+          <p class="cta-t">Нужен готовый текст прямо сейчас?</p>
+          <p class="cta-s">Ответьте на пару вопросов — ИИ сделает за 10 секунд. Бесплатно, без регистрации, можно открыть в ChatGPT или Claude.</p>
+        </div>
+        <a class="btn" href="/#task=${t[0]}">${t[1]} ⚡</a>
+      </div>`;
+};
+
 const cta = `
       <div class="cta">
         <div>
-          <p class="cta-t">Соберите промпт под свою нишу</p>
+          <p class="cta-t">Соберите промпт для своего бота или GPT</p>
           <p class="cta-s">Выберите роль и тон, опишите задачу — конструктор соберёт структурированный промпт за 10 секунд. Бесплатно, без регистрации.</p>
         </div>
         <a class="btn" href="/#builder">Открыть конструктор ⚡</a>
@@ -98,7 +126,7 @@ function pageHtml(p) {
       <p class="crumbs"><a href="/">Главная</a> / <a href="/prompts/">Готовые промпты</a></p>
       <h1>${esc(p.h1)}</h1>
       <p class="lead">${esc(p.lead)}</p>
-${intro ? intro + '\n' : ''}
+${intro ? intro + '\n' : ''}${taskCta(p.slug)}
       <h2>Кому подойдёт</h2>
       <ul>
 ${p.audience.map((a) => `        <li>${esc(a)}</li>`).join('\n')}

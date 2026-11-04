@@ -2,7 +2,8 @@
 
 Структура:
 - `public/` — сайт (статичные файлы), `public/_headers` — заголовки безопасности;
-- `functions/api/*.js` — серверные функции (`/api/generate`, `/api/status`, `/api/order`, `/api/claim`, `/api/yoomoney-webhook`);
+- `functions/api/*.js` — серверные функции (`/api/task`, `/api/tasks`, `/api/generate`, `/api/status`, `/api/order`, `/api/claim`, `/api/yoomoney-webhook`);
+- `lib/tasks.js` — сценарии задач «выбери задачу → готовый текст» (поля формы и инструкции для ИИ);
 - `lib/` — общая серверная логика (лицензии, лимиты, хранилище D1, ИИ).
 
 ## Настройки проекта Cloudflare Pages
@@ -20,5 +21,6 @@
 | `AI_ENABLED` | нет | `false` — выключить ИИ |
 | `AI_DAILY_MAX`, `AI_PRO_DAILY`, `AI_FREE_TRIAL_DAILY` | нет | лимиты (60 / 30 / 1 в сутки) |
 | `AI_MONTHLY_USD` | нет | бюджет в $ для платного ИИ (по умолчанию 3) |
+| `AI_TASK_FREE_DAILY`, `AI_TASK_PRO_DAILY`, `AI_TASK_DAILY_MAX` | нет | лимиты задач «готовый текст» (5 / 100 в сутки на человека, 900 в сутки на сайт) |
 
 URL уведомлений ЮMoney: `https://<домен>/api/yoomoney-webhook`.

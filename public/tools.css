@@ -1,0 +1,97 @@
+/* Блок «Выберите задачу → получите готовый результат» */
+.t-wrap { max-width: 80rem; margin: 0 auto; padding: 0 16px 64px; }
+@media (min-width: 640px) { .t-wrap { padding: 0 24px 80px; } }
+.t-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+.t-title { color: #fff; font-size: 24px; font-weight: 800; letter-spacing: -.02em; margin: 0; }
+.t-sub { color: #a1a1aa; font-size: 14px; margin: 6px 0 0; }
+.t-quota { font: 600 12px "JetBrains Mono", ui-monospace, monospace; color: #a1a1aa; border: 1px solid #27272a; border-radius: 999px; padding: 6px 12px; background: rgba(24,24,27,.7); white-space: nowrap; }
+.t-quota b { color: #34d399; }
+.t-quota button { all: unset; cursor: pointer; color: #34d399; margin-left: 6px; text-decoration: underline; text-underline-offset: 3px; }
+
+.t-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+@media (min-width: 768px) { .t-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .t-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+.t-card {
+  all: unset; box-sizing: border-box; cursor: pointer; display: flex; flex-direction: column; gap: 6px;
+  padding: 14px; border-radius: 14px; border: 1px solid #27272a; background: rgba(24,24,27,.85);
+  transition: border-color .2s, transform .2s, background .2s;
+}
+.t-card:hover { border-color: rgba(129,140,248,.6); transform: translateY(-2px); }
+.t-card:focus-visible { outline: 2px solid #818cf8; outline-offset: 2px; }
+.t-card[aria-pressed="true"] { border-color: #6366f1; background: rgba(79,70,229,.14); }
+.t-card .e { font-size: 22px; line-height: 1; }
+.t-card .n { color: #fff; font-weight: 700; font-size: 15px; line-height: 1.3; }
+.t-card .d { color: #a1a1aa; font-size: 12.5px; line-height: 1.45; }
+
+.t-panel { margin-top: 16px; display: grid; grid-template-columns: 1fr; gap: 16px; scroll-margin-top: 84px; }
+@media (min-width: 1024px) { .t-panel { grid-template-columns: 2fr 3fr; } }
+.t-box { border: 1px solid #27272a; border-radius: 18px; background: rgba(24,24,27,.92); padding: 18px; min-width: 0; }
+@media (min-width: 640px) { .t-box { padding: 22px; } }
+.t-box h3 { color: #fff; font-size: 18px; font-weight: 800; margin: 0 0 4px; }
+.t-box .t-hint { color: #71717a; font-size: 13px; margin: 0 0 16px; }
+
+.t-field { display: block; margin: 0 0 14px; }
+.t-field span { display: block; color: #d4d4d8; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.t-field span i { color: #f87171; font-style: normal; }
+.t-field input, .t-field textarea, .t-field select {
+  box-sizing: border-box; width: 100%; background: #09090b; color: #e4e4e7; border: 1px solid #27272a; border-radius: 12px;
+  padding: 11px 13px; font: 14px/1.5 Inter, system-ui, sans-serif;
+}
+.t-field textarea { resize: vertical; min-height: 96px; }
+.t-field input:focus, .t-field textarea:focus, .t-field select:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,.25); }
+.t-field .err { color: #f87171; font-size: 12px; margin-top: 4px; display: none; }
+.t-field.bad .err { display: block; }
+.t-field.bad input, .t-field.bad textarea { border-color: #f87171; }
+
+.t-go {
+  all: unset; box-sizing: border-box; cursor: pointer; width: 100%; text-align: center; padding: 13px 18px; border-radius: 12px;
+  background: linear-gradient(90deg, #4f46e5, #7c3aed); color: #fff; font-weight: 700; font-size: 15px;
+  box-shadow: 0 10px 30px -10px rgba(99,102,241,.7); transition: filter .2s, transform .2s;
+}
+.t-go:hover { filter: brightness(1.12); }
+.t-go:active { transform: scale(.98); }
+.t-go[disabled] { opacity: .6; cursor: progress; }
+
+.t-out { min-height: 220px; color: #d4d4d8; font-size: 15px; line-height: 1.65; overflow-wrap: anywhere; }
+.t-out .ph { color: #71717a; }
+.t-out p { margin: 0 0 10px; }
+.t-out h4 { color: #fff; font-size: 16px; margin: 14px 0 6px; }
+.t-out ul, .t-out ol { margin: 0 0 10px; padding-left: 22px; }
+.t-out ul { list-style: disc; }
+.t-out ol { list-style: decimal; }
+.t-out li::marker { color: #818cf8; }
+.t-out li { margin: 0 0 4px; }
+.t-out b { color: #fff; }
+.t-out pre { white-space: pre-wrap; background: #09090b; border: 1px solid #27272a; border-radius: 12px; padding: 12px 14px; font: 13px/1.6 "JetBrains Mono", ui-monospace, monospace; color: #e4e4e7; margin: 0 0 12px; }
+.t-out .tbl { overflow-x: auto; margin: 0 0 12px; border: 1px solid #27272a; border-radius: 12px; }
+.t-out table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+.t-out th, .t-out td { text-align: left; padding: 8px 10px; border-top: 1px solid #27272a; vertical-align: top; }
+.t-out tr:first-child th { border-top: 0; background: rgba(39,39,42,.6); color: #fff; }
+.t-loading { display: flex; align-items: center; gap: 10px; color: #a1a1aa; }
+.t-loading::before { content: ""; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #3f3f46; border-top-color: #818cf8; animation: tspin .8s linear infinite; }
+@keyframes tspin { to { transform: rotate(360deg); } }
+.t-note { border: 1px solid rgba(251,191,36,.35); background: rgba(251,191,36,.08); color: #fcd34d; border-radius: 12px; padding: 10px 12px; font-size: 13.5px; margin-bottom: 12px; }
+
+.t-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.t-btn {
+  all: unset; box-sizing: border-box; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 12px; border-radius: 10px; border: 1px solid #3f3f46; color: #d4d4d8; font-size: 13px; font-weight: 600; background: #18181b;
+}
+.t-btn:hover { border-color: #71717a; color: #fff; }
+.t-btn.primary { background: #4f46e5; border-color: #4f46e5; color: #fff; }
+.t-btn.primary:hover { background: #6366f1; }
+.t-btn[disabled] { opacity: .5; cursor: progress; }
+.t-open { margin-top: 16px; padding-top: 14px; border-top: 1px solid #27272a; }
+.t-open p { color: #a1a1aa; font-size: 13px; margin: 0 0 8px; }
+.t-hidden { display: none !important; }
+
+.t-toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 120px); opacity: 0; z-index: 70; max-width: calc(100vw - 32px);
+  background: #18181b; border: 1px solid #3f3f46; color: #fff; border-radius: 12px; padding: 12px 16px; font-size: 14px; box-shadow: 0 20px 50px rgba(0,0,0,.5); transition: all .3s; }
+.t-toast.on { transform: translate(-50%, 0); opacity: 1; }
+
+/* Счётчик старого конструктора в шапке путает с лимитом задач — показываем его только внутри конструктора */
+header [data-token-badge] { display: none !important; }
+/* На телефоне первый экран компактнее, чтобы задачи были ближе */
+@media (max-width: 639px) {
+  #tasks { margin-top: -12px; }
+}
