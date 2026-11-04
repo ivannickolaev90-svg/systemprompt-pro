@@ -3,7 +3,7 @@
    Пока номер пустой, ничего не загружается и никакие данные не собираются. */
 (function () {
   'use strict';
-  var METRIKA_ID = '';
+  var METRIKA_ID = '114070191';
 
   window.spGoal = function () {};
   if (!/^\d{5,12}$/.test(METRIKA_ID)) return;
