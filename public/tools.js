@@ -242,7 +242,7 @@
     if (!t || !lastPrompt) return;
     const copied = await copy(lastPrompt);
     const enc = encodeURIComponent(lastPrompt);
-    const direct = t.url && enc.length <= 7000;
+    const direct = t.url && enc.length <= 12000;
     window.open(direct ? t.url(enc) : t.home, '_blank', 'noopener');
     goal('open_in_' + key);
     if (direct) toast('Открываю ' + t.name + ' с готовым запросом');
