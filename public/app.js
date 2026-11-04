@@ -654,6 +654,11 @@
       const { status, data } = await api('/api/order', { method: 'POST', body: {} });
       if (status !== 200 || !ORDER_RE.test(data.orderId || '')) throw new Error('order ' + status);
       storeSet(KEY_ORDER, data.orderId);
+      // ЮKassa: СБП, SberPay, T-Pay, карта — переходим на страницу оплаты
+      if (typeof data.payUrl === 'string' && /^https:\/\/yoomoney\.ru\//.test(data.payUrl)) {
+        window.location.href = data.payUrl;
+        return;
+      }
       els.formLabel.value = data.label;
       els.successUrl.value = window.location.origin + window.location.pathname + '?pay=success&order=' + data.orderId;
       els.payForm.submit(); // программная отправка не вызывает submit-обработчик повторно

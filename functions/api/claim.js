@@ -4,6 +4,7 @@ import { handler,
   json, isSameOrigin, readJsonBody, ordersStore, isOrderId, signLicense,
   clientKey, hitLimit, HOUR_MS, MAX_DEVICES_PER_ORDER
 } from '../../lib/shared.js';
+import { ykConfigured, ykGetPayment, ykApplyPayment } from '../../lib/yookassa.js';
 
 export const onRequest = handler(async (req) => {
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405, { allow: 'POST' });
@@ -21,9 +22,19 @@ export const onRequest = handler(async (req) => {
     if (!rl.allowed) return json({ error: 'rate_limited' }, 429);
 
     const store = ordersStore();
-    const res = await store.getWithMetadata(orderId);
+    let res = await store.getWithMetadata(orderId);
     if (!res || !res.data) return json({ error: 'not_found' }, 404);
-    const order = res.data;
+    let order = res.data;
+
+    // Уведомление ЮKassa могло задержаться — спрашиваем статус платежа напрямую
+    if (order.status === 'pending' && order.ykPaymentId && ykConfigured()) {
+      try {
+        if ((await ykApplyPayment(await ykGetPayment(order.ykPaymentId))) !== 'pending') {
+          res = await store.getWithMetadata(orderId);
+          order = res.data;
+        }
+      } catch (e) { console.warn('yookassa check failed:', e && e.message); }
+    }
 
     if (order.revoked) return json({ error: 'revoked' }, 403);
     if (order.status === 'underpaid') return json({ status: 'underpaid' }, 402);
