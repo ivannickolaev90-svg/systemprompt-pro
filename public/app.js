@@ -55,7 +55,6 @@
     staleHint: $('staleHint'), staleRegen: $('staleRegen'),
     generateBtn: $('generateBtn'), generateLabel: $('generateLabel'),
     copyBtn: $('copyBtn'), resetBtn: $('resetBtn'), headerProBtn: $('headerProBtn'),
-    proRolesGroup: $('proRolesGroup'),
     modal: $('proModal'), modalReason: $('modalReason'),
     payForm: $('payForm'), payBtn: $('payBtn'), payLabel: $('payLabel'), paySpinner: $('paySpinner'),
     formLabel: $('formLabel'), successUrl: $('formSuccessUrl'),
@@ -329,8 +328,6 @@
     });
 
     els.generateLabel.textContent = (!pro && left === 0) ? 'Открыть PRO — 190 ₽ навсегда 🔓' : 'Сгенерировать промпт ⚡';
-    els.proRolesGroup.label = pro ? 'PRO-роли ⚡' : 'PRO-роли 🔒';
-    els.proRolesGroup.querySelectorAll('option').forEach((o) => { o.textContent = (pro ? '' : '🔒 ') + o.dataset.label; });
     els.headerProBtn.textContent = pro ? 'PRO ⚡' : 'PRO ✨';
     updateAiHint();
   }
@@ -497,21 +494,6 @@
   els.generateBtn.addEventListener('click', generate);
   els.staleRegen.addEventListener('click', generate);
 
-  // PRO-роли: без доступа мягко предлагаем PRO (сервер всё равно проверит)
-  let lastRoleIndex = els.role.selectedIndex;
-  els.role.addEventListener('change', () => {
-    const opt = els.role.options[els.role.selectedIndex];
-    if (opt && opt.hasAttribute('data-pro') && !state.pro) {
-      els.role.selectedIndex = lastRoleIndex;
-      onSettingsChange();
-      showToast('Эта роль доступна в PRO 🔒', 2200, 'warn');
-      const name = (opt.dataset.label || '').split(' (')[0];
-      setTimeout(() => openModal('Роль «' + name + '» доступна в PRO'), 350);
-      return;
-    }
-    lastRoleIndex = els.role.selectedIndex;
-  });
-
   els.protection.addEventListener('change', () => {
     if (els.protection.checked && !state.pro) {
       els.protection.checked = false;
@@ -521,7 +503,6 @@
   });
 
   els.resetBtn.addEventListener('click', () => {
-    els.role.selectedIndex = 0; lastRoleIndex = 0;
     els.tone.selectedIndex = 0;
     els.lang.selectedIndex = 0;
     els.taskContext.value = '';

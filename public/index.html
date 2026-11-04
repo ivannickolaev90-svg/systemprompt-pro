@@ -182,36 +182,30 @@
             <span class="w-8 h-8 rounded-lg bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">⚙️</span>
             <div>
               <h2 class="font-bold text-white">Промпт для своего бота или GPT</h2>
-              <p class="text-xs text-zinc-500">Для Telegram-ботов, Custom GPT и проектов Claude: настройте и нажмите «Сгенерировать»</p>
+              <p class="text-xs text-zinc-500">Для Telegram-ботов, Custom GPT и проектов Claude: опишите задачу и нажмите «Сгенерировать»</p>
             </div>
           </div>
 
-          <!-- 01. Роль -->
+          <input type="hidden" id="role" value="auto">
+
+          <!-- 04. Специфика задачи -->
           <div>
-            <label for="role" class="flex items-center gap-2 text-sm font-semibold text-zinc-300 mb-2.5">
-              <span class="text-emerald-400 font-mono text-xs">01</span> Роль / Профессия
+            <label for="taskContext" class="flex items-center justify-between gap-2 text-sm font-semibold text-zinc-300 mb-2.5">
+              <span>Что должен делать ваш бот? <span class="font-normal text-zinc-500">— ИИ сам подберёт роль и стиль</span></span>
+              <span id="taskCounter" class="font-mono text-[11px] font-normal text-zinc-600">0/1000</span>
             </label>
-            <select id="role" class="custom-select w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 hover:border-zinc-700 transition-all cursor-pointer">
-              <optgroup label="Базовые роли">
-                <option value="fullstack">Fullstack-разработчик (код, отладка, архитектура)</option>
-                <option value="prompt-architect">Prompt-инженер и AI-архитектор (промпты и ИИ-ассистенты)</option>
-                <option value="marketer">Маркетолог и копирайтер (продающие тексты)</option>
-                <option value="data">Аналитик данных (выводы, отчёты, SQL/Python)</option>
-              </optgroup>
-              <optgroup id="proRolesGroup" label="PRO-роли 🔒">
-                <option data-pro data-label="SMM-стратег (Генерация контент-планов и вовлекающих постов)" value="smm">SMM-стратег (Генерация контент-планов и вовлекающих постов)</option>
-                <option data-pro data-label="SEO-оптимизатор (Сбор семантики, LSI-фразы, мета-теги)" value="seo">SEO-оптимизатор (Сбор семантики, LSI-фразы, мета-теги)</option>
-                <option data-pro data-label="Психолог/Коуч (Эмпатичный разбор ситуаций по методу К. Роджерса)" value="coach">Психолог/Коуч (Эмпатичный разбор ситуаций по методу К. Роджерса)</option>
-                <option data-pro data-label="Prompt-Инженер (Оптимизатор чужих промптов по методу Few-Shot)" value="prompt-engineer">Prompt-Инженер (Оптимизатор чужих промптов по методу Few-Shot)</option>
-              </optgroup>
-            </select>
-            <p class="pro-lock mt-2 text-xs text-zinc-500">🔒 4 продвинутые роли со встроенными сценариями доступны в <button type="button" data-open-pro class="text-indigo-300 hover:text-emerald-400 underline underline-offset-2 transition-colors">PRO</button></p>
+            <textarea id="taskContext" rows="5" maxlength="1000" spellcheck="true"
+              placeholder="Например: отвечать клиентам цветочного магазина в Telegram — про цены, доставку и сроки, вежливо и коротко"
+              class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-600 leading-relaxed resize-y focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 hover:border-zinc-700 transition-all"></textarea>
           </div>
 
+          <details class="b-settings">
+            <summary>Настройки <span>тон, язык, формат, защита — по желанию</span></summary>
+            <div class="b-settings-body">
           <!-- 02. Тон -->
           <div>
             <label for="tone" class="flex items-center gap-2 text-sm font-semibold text-zinc-300 mb-2.5">
-              <span class="text-emerald-400 font-mono text-xs">02</span> Тон и стиль ответов
+              Тон и стиль ответов
             </label>
             <select id="tone" class="custom-select w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 hover:border-zinc-700 transition-all cursor-pointer">
               <option value="technical">Строго по делу — кратко, точно, без «воды»</option>
@@ -225,7 +219,7 @@
           <!-- 03. Язык промпта -->
           <div>
             <label for="lang" class="flex items-center gap-2 text-sm font-semibold text-zinc-300 mb-2.5">
-              <span class="text-emerald-400 font-mono text-xs">03</span> Язык промпта
+              Язык промпта
             </label>
             <select id="lang" class="custom-select w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 hover:border-zinc-700 transition-all cursor-pointer">
               <option value="ru">🇷🇺 Русский — удобно читать и править</option>
@@ -233,21 +227,10 @@
             </select>
           </div>
 
-          <!-- 04. Специфика задачи -->
-          <div>
-            <label for="taskContext" class="flex items-center justify-between gap-2 text-sm font-semibold text-zinc-300 mb-2.5">
-              <span class="flex items-center gap-2"><span class="text-emerald-400 font-mono text-xs">04</span> Специфика вашей задачи <span class="font-normal text-zinc-500">(Необязательно)</span></span>
-              <span id="taskCounter" class="font-mono text-[11px] font-normal text-zinc-600">0/1000</span>
-            </label>
-            <textarea id="taskContext" rows="4" maxlength="1000" spellcheck="true"
-              placeholder="Например: писать прогревающие посты для продажи одежды, искать логические ошибки в коде Smart-контрактов..."
-              class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-600 leading-relaxed resize-y focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 hover:border-zinc-700 transition-all"></textarea>
-          </div>
-
           <!-- 04. Форматирование -->
           <fieldset>
             <legend class="flex items-center gap-2 text-sm font-semibold text-zinc-300 mb-2.5">
-              <span class="text-emerald-400 font-mono text-xs">05</span> Форматирование ответов
+              Форматирование ответов
             </legend>
             <div class="space-y-2.5">
               <label class="flex items-start gap-3 p-3.5 rounded-xl border border-zinc-800 bg-zinc-950/60 hover:border-indigo-500/50 hover:bg-zinc-950 cursor-pointer transition-all has-[:checked]:border-indigo-500/60 has-[:checked]:bg-indigo-600/10">
@@ -264,7 +247,7 @@
           <!-- 05. Быстрые модификаторы (тумблеры) -->
           <fieldset>
             <legend class="flex items-center gap-2 text-sm font-semibold text-zinc-300 mb-2.5">
-              <span class="text-emerald-400 font-mono text-xs">06</span> Быстрые модификаторы
+              Быстрые модификаторы
             </legend>
             <div class="space-y-2.5">
               <!-- Jailbreak Protection -->
@@ -295,6 +278,9 @@
               </label>
             </div>
           </fieldset>
+
+            </div>
+          </details>
 
           <!-- Генерация -->
           <div class="space-y-3 pt-1">
@@ -398,8 +384,8 @@
         </div>
         <div class="group p-6 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-violet-500/50 hover:shadow-[0_0_40px_-12px_rgba(139,92,246,.5)] hover:-translate-y-1 transition-all duration-300">
           <div class="text-2xl mb-3 group-hover:scale-110 transition-transform inline-block">🎯</div>
-          <h3 class="font-bold text-white mb-1.5">Роли со сценариями</h3>
-          <p class="text-sm text-zinc-400 leading-relaxed">PRO-роли SMM, SEO, коуча и промпт-инженера уже содержат проверенные сценарии работы — не нужно объяснять ИИ азы.</p>
+          <h3 class="font-bold text-white mb-1.5">Подстраивается сам</h3>
+          <p class="text-sm text-zinc-400 leading-relaxed">Не нужно выбирать роль: опишите задачу своими словами — ИИ сам поймёт нишу и соберёт промпт под неё.</p>
         </div>
       </div>
     </section>
@@ -465,7 +451,7 @@
           </ul>
 
           <h2>Как пользоваться конструктором SystemPrompt PRO</h2>
-          <p>Выберите профессиональную роль ассистента, задайте тон ответов, опишите специфику своей задачи, отметьте параметры форматирования и включите нужные модификаторы. Нажмите «Сгенерировать промпт» — готовая структурированная инструкция на русском или английском языке напечатается в окне справа, останется скопировать её в один клик и вставить в Custom GPT, Claude Project или код вашего Telegram-бота. Каждый день доступны 3 бесплатные генерации без регистрации, а PRO-доступ за 190 ₽ навсегда снимает лимиты, открывает продвинутые роли со встроенными сценариями и живой предпросмотр.</p>
+          <p>Опишите своими словами, что должен делать бот, и нажмите «Сгенерировать». Тон, язык, формат ответов и защиту от взлома можно настроить в блоке «Настройки» — по желанию. Готовый промпт скопируйте в Custom GPT, проект Claude или своего Telegram-бота.</p>
         </article>
       </div>
     </section>
@@ -508,7 +494,7 @@
           <li class="flex gap-2.5"><span class="text-emerald-400 font-bold">✓</span> До 100 готовых текстов в сутки вместо 5 ✨</li>
           <li class="flex gap-2.5"><span class="text-emerald-400 font-bold">✓</span> ИИ-адаптация промпта под вашу нишу — до 30 в сутки ✨</li>
           <li class="flex gap-2.5"><span class="text-emerald-400 font-bold">✓</span> Безлимитные шаблонные генерации и живой предпросмотр</li>
-          <li class="flex gap-2.5"><span class="text-emerald-400 font-bold">✓</span> Доступ ко всем премиум-ролям</li>
+          <li class="flex gap-2.5"><span class="text-emerald-400 font-bold">✓</span> Конструктор промптов без ограничений</li>
           <li class="flex gap-2.5"><span class="text-emerald-400 font-bold">✓</span> Ультимативная защита от Prompt Injection</li>
           <li class="flex gap-2.5"><span class="text-emerald-400 font-bold">✓</span> Генерация промптов со встроенными сценариями</li>
         </ul>
