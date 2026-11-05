@@ -51,7 +51,7 @@ const foot = `
   <footer class="foot">
     <div class="wrap">
       <span>© 2026 SystemPrompt PRO · ${SELLER}</span>
-      <nav><a href="/">Главная</a><a href="/generator-otvetov-na-otzyvy">Ответ на отзыв</a><a href="/opisanie-tovara-nejroset">Описание товара</a><a href="/obyavlenie-avito-nejroset">Объявление Авито</a><a href="/post-dlya-telegram-nejroset">Пост для Telegram</a><a href="/prompts/">Готовые промпты</a><a href="/offer">Оферта</a><a href="/contacts">Реквизиты</a></nav>
+      <nav><a href="/">Главная</a><a href="/nejroset-dlya-tekstov">Нейросеть для текстов</a><a href="/generator-otvetov-na-otzyvy">Ответ на отзыв</a><a href="/opisanie-tovara-nejroset">Описание товара</a><a href="/obyavlenie-avito-nejroset">Объявление Авито</a><a href="/post-dlya-telegram-nejroset">Пост для Telegram</a><a href="/prompts/">Готовые промпты</a><a href="/offer">Оферта</a><a href="/contacts">Реквизиты</a></nav>
     </div>
   </footer>
   <script src="/metrika.js"></script>
@@ -251,6 +251,64 @@ ${t.related.filter((s) => toolBySlug[s]).map((s) => `        <a class="tile" hre
 }
 for (const t of TOOLS) fs.writeFileSync(path.join(pub, t.slug + '.html'), toolHtml(t));
 
+// Общая страница под запросы «нейросеть для текстов», «ИИ онлайн бесплатно»
+function hubHtml() {
+  const url = `${SITE}/nejroset-dlya-tekstov`;
+  const title = 'Нейросеть для написания текстов онлайн бесплатно, на русском и без регистрации';
+  const description = 'ИИ для текстов на русском: ответы на отзывы, посты, описания товаров, объявления, письма клиентам и коммерческие предложения за 10 секунд. 5 текстов в день бесплатно, без регистрации.';
+  const extra = [
+    ['/#task=delovoe-pismo', 'Деловое письмо', 'Напоминание об оплате, претензия, вежливый отказ или запрос — в деловом стиле.'],
+    ['/#task=uluchshit-prompt', 'Улучшить промпт', 'Вставьте свой запрос к ChatGPT, DeepSeek или GigaChat — ИИ перепишет его так, чтобы ответ был точнее.'],
+    ['/#builder', 'Промпт для своего бота или GPT', 'Опишите, что должен делать бот, — получите готовые инструкции для Custom GPT, Claude или Telegram-бота.']
+  ];
+  const faq = [
+    { q: 'Это бесплатно?', a: 'Да, 5 готовых текстов в сутки бесплатно и без регистрации. Нужно больше — есть тарифы от 99 ₽.' },
+    { q: 'Чем это отличается от ChatGPT?', a: 'Не нужно придумывать запрос: выбираете задачу, отвечаете на 2–4 вопроса, а правильный запрос к ИИ уже составлен за вас. Готовый текст можно открыть и в ChatGPT, Claude, DeepSeek, GigaChat или Алисе одной кнопкой.' },
+    { q: 'На каком языке пишет нейросеть?', a: 'На русском. Тексты пишутся под российские площадки: Wildberries, Ozon, Авито, Telegram, ВКонтакте, hh.ru.' },
+    { q: 'Нужна ли регистрация или иностранный номер?', a: 'Нет. Открыли сайт — выбрали задачу — получили текст.' }
+  ];
+  const jsonld = [
+    { '@context': 'https://schema.org', '@type': 'WebApplication', name: 'SystemPrompt PRO — нейросеть для текстов', description, url,
+      applicationCategory: 'BusinessApplication', operatingSystem: 'Web', inLanguage: 'ru', offers: { '@type': 'Offer', price: '0', priceCurrency: 'RUB' } },
+    { '@context': 'https://schema.org', '@type': 'FAQPage',
+      mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }
+  ];
+  return head({ title, description, url, jsonld }) + `
+  <main>
+    <div class="wrap">
+      <p class="crumbs"><a href="/">Главная</a></p>
+      <h1>Нейросеть для текстов онлайн — бесплатно и на русском</h1>
+      <p class="lead">Не нужно учиться «правильно спрашивать» ИИ. Выберите задачу, ответьте на пару простых вопросов — нейросеть за 10 секунд напишет готовый текст, который можно сразу отправить или опубликовать.</p>
+      <div class="cta">
+        <div>
+          <p class="cta-t">Попробуйте бесплатно</p>
+          <p class="cta-s">5 текстов в сутки без регистрации. Доработка одной кнопкой: короче, подробнее, теплее, официальнее.</p>
+        </div>
+        <a class="btn" href="/#tasks">Выбрать задачу ⚡</a>
+      </div>
+
+      <h2>Что умеет нейросеть</h2>
+      <div class="grid">
+${TOOLS.map((t) => `        <a class="tile" href="/${t.slug}"><b>${esc(t.h1)}</b><span>${esc(t.lead)}</span></a>`).join('\n')}
+${extra.map(([h, b, d]) => `        <a class="tile" href="${h}"><b>${esc(b)}</b><span>${esc(d)}</span></a>`).join('\n')}
+      </div>
+
+      <h2>Почему тексты получаются лучше, чем в обычном чате с ИИ</h2>
+      <ul>
+        <li>Запрос к нейросети уже составлен под задачу: с ролью, примерами, ограничениями и форматом ответа.</li>
+        <li>Вы отвечаете только на важные вопросы — нейросеть не додумывает за вас и не пишет «воду».</li>
+        <li>Тексты учитывают площадку: длину, тон и правила Wildberries, Ozon, Авито, Telegram или hh.ru.</li>
+        <li>Готовый запрос можно открыть в ChatGPT, Claude, DeepSeek, GigaChat или Алисе, если хотите продолжить там.</li>
+      </ul>
+
+      <h2>Частые вопросы</h2>
+${faq.map((f) => `      <details class="faq"><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join('\n')}
+    </div>
+  </main>
+` + foot;
+}
+fs.writeFileSync(path.join(pub, 'nejroset-dlya-tekstov.html'), hubHtml());
+
 fs.mkdirSync(path.join(pub, 'prompts'), { recursive: true });
 for (const p of PAGES) fs.writeFileSync(path.join(pub, 'prompts', p.slug + '.html'), pageHtml(p));
 fs.writeFileSync(path.join(pub, 'prompts', 'index.html'), catalogHtml());
@@ -258,6 +316,7 @@ fs.writeFileSync(path.join(pub, 'prompts', 'index.html'), catalogHtml());
 // sitemap.xml целиком
 const urls = [
   { loc: SITE + '/', freq: 'daily', pri: '1.0' },
+  { loc: SITE + '/nejroset-dlya-tekstov', freq: 'weekly', pri: '0.9' },
   ...TOOLS.map((t) => ({ loc: `${SITE}/${t.slug}`, freq: 'weekly', pri: '0.9' })),
   { loc: SITE + '/prompts/', freq: 'weekly', pri: '0.8' },
   ...PAGES.map((p) => ({ loc: `${SITE}/prompts/${p.slug}`, freq: 'monthly', pri: '0.7' })),
