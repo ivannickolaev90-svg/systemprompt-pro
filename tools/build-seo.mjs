@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { PAGES } from './seo-pages.mjs';
+import { TOOLS } from './tool-pages.mjs';
 
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const pub = path.join(root, 'public');
@@ -50,7 +51,7 @@ const foot = `
   <footer class="foot">
     <div class="wrap">
       <span>© 2026 SystemPrompt PRO · ${SELLER}</span>
-      <nav><a href="/">Конструктор</a><a href="/prompts/">Готовые промпты</a><a href="/offer">Оферта</a><a href="/contacts">Реквизиты</a></nav>
+      <nav><a href="/">Главная</a><a href="/generator-otvetov-na-otzyvy">Ответ на отзыв</a><a href="/opisanie-tovara-nejroset">Описание товара</a><a href="/obyavlenie-avito-nejroset">Объявление Авито</a><a href="/post-dlya-telegram-nejroset">Пост для Telegram</a><a href="/prompts/">Готовые промпты</a><a href="/offer">Оферта</a><a href="/contacts">Реквизиты</a></nav>
     </div>
   </footer>
   <script src="/metrika.js"></script>
@@ -194,6 +195,62 @@ ${cta}
 ` + foot;
 }
 
+const toolBySlug = Object.fromEntries(TOOLS.map((t) => [t.slug, t]));
+function toolHtml(t) {
+  const url = `${SITE}/${t.slug}`;
+  const jsonld = [
+    { '@context': 'https://schema.org', '@type': 'WebApplication', name: t.h1, description: t.description, url,
+      applicationCategory: 'BusinessApplication', operatingSystem: 'Web', inLanguage: 'ru',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'RUB' } },
+    { '@context': 'https://schema.org', '@type': 'FAQPage',
+      mainEntity: t.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
+    { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Главная', item: SITE + '/' },
+      { '@type': 'ListItem', position: 2, name: t.h1, item: url } ] }
+  ];
+  const btn = `
+      <div class="cta">
+        <div>
+          <p class="cta-t">Попробуйте прямо сейчас — бесплатно</p>
+          <p class="cta-s">5 готовых текстов в сутки без регистрации. Результат можно доработать одной кнопкой или открыть в ChatGPT, Claude, GigaChat и Алисе.</p>
+        </div>
+        <a class="btn" href="/#task=${t.task}">${esc(t.cta)} ⚡</a>
+      </div>`;
+  return head({ title: t.title, description: t.description, url, jsonld }) + `
+  <main>
+    <div class="wrap">
+      <p class="crumbs"><a href="/">Главная</a></p>
+      <h1>${esc(t.h1)}</h1>
+      <p class="lead">${esc(t.lead)}</p>
+${btn}
+      <h2>Как это работает</h2>
+      <ol>
+${t.steps.map((x) => `        <li>${esc(x)}</li>`).join('\n')}
+      </ol>
+
+      <h2>Пример</h2>
+      <p class="note"><strong>Что ввели:</strong> ${esc(t.example.input)}</p>
+      <div class="code"><pre>${esc(t.example.output)}</pre></div>
+      <p class="note">Каждый раз текст пишется заново под ваши данные, поэтому результат будет другим.</p>
+${btn}
+      <h2>Советы</h2>
+      <ul>
+${t.tips.map((x) => `        <li>${esc(x)}</li>`).join('\n')}
+      </ul>
+
+      <h2>Частые вопросы</h2>
+${t.faq.map((f) => `      <details class="faq"><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join('\n')}
+
+      <h2>Другие бесплатные инструменты</h2>
+      <div class="grid">
+${t.related.filter((s) => toolBySlug[s]).map((s) => `        <a class="tile" href="/${s}"><b>${esc(toolBySlug[s].h1)}</b><span>${esc(toolBySlug[s].lead)}</span></a>`).join('\n')}
+      </div>
+    </div>
+  </main>
+` + foot;
+}
+for (const t of TOOLS) fs.writeFileSync(path.join(pub, t.slug + '.html'), toolHtml(t));
+
 fs.mkdirSync(path.join(pub, 'prompts'), { recursive: true });
 for (const p of PAGES) fs.writeFileSync(path.join(pub, 'prompts', p.slug + '.html'), pageHtml(p));
 fs.writeFileSync(path.join(pub, 'prompts', 'index.html'), catalogHtml());
@@ -201,6 +258,7 @@ fs.writeFileSync(path.join(pub, 'prompts', 'index.html'), catalogHtml());
 // sitemap.xml целиком
 const urls = [
   { loc: SITE + '/', freq: 'daily', pri: '1.0' },
+  ...TOOLS.map((t) => ({ loc: `${SITE}/${t.slug}`, freq: 'weekly', pri: '0.9' })),
   { loc: SITE + '/prompts/', freq: 'weekly', pri: '0.8' },
   ...PAGES.map((p) => ({ loc: `${SITE}/prompts/${p.slug}`, freq: 'monthly', pri: '0.7' })),
   { loc: SITE + '/offer', freq: 'monthly', pri: '0.3' },
@@ -216,4 +274,4 @@ ${urls.map((u) => `   <url>
    </url>`).join('\n')}
 </urlset>
 `);
-console.log('built', PAGES.length, 'pages + catalog + sitemap');
+console.log('built', TOOLS.length, 'tool pages,', PAGES.length, 'prompt pages + catalog + sitemap');
