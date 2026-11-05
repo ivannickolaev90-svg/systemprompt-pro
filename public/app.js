@@ -539,7 +539,7 @@
   // Поделиться ссылкой на сайт (системное меню на телефоне или копирование ссылки)
   const shareBtn = $('shareBtn');
   if (shareBtn) shareBtn.addEventListener('click', async () => {
-    const url = 'https://systemprompt-pro.pages.dev/';
+    const url = 'https://systemprompt-pro.com/';
     const text = 'Конструктор системных промптов для ChatGPT, Claude и Telegram-ботов — собирает готовый промпт за 10 секунд, бесплатно';
     goal('share');
     try {

@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://systemprompt-pro.pages.dev/sitemap.xml
+Sitemap: https://systemprompt-pro.com/sitemap.xml

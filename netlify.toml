@@ -6,6 +6,6 @@
 
 [[redirects]]
   from = "/*"
-  to = "https://systemprompt-pro.pages.dev/:splat"
+  to = "https://systemprompt-pro.com/:splat"
   status = 301
   force = true

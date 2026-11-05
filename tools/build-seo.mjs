@@ -6,7 +6,7 @@ import { PAGES } from './seo-pages.mjs';
 
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const pub = path.join(root, 'public');
-const SITE = 'https://systemprompt-pro.pages.dev';
+const SITE = 'https://systemprompt-pro.com';
 const TODAY = new Date().toISOString().slice(0, 10);
 const SELLER = 'Николаев Иван Антонович · самозанятый · ИНН 783807650108';
 
