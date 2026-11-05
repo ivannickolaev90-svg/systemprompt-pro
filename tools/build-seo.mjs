@@ -28,9 +28,9 @@ const head = ({ title, description, url, jsonld }) => `<!DOCTYPE html>
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(description)}">
   <meta property="og:url" content="${url}">
-  <meta property="og:image" content="${SITE}/og-image.png">
+  <meta property="og:image" content="${SITE}/og-image.png?v=2">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="${SITE}/og-image.png">
+  <meta name="twitter:image" content="${SITE}/og-image.png?v=2">
   <link rel="icon" href="/favicon.ico" sizes="48x48">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

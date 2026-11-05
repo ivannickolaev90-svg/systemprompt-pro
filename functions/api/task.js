@@ -1,7 +1,7 @@
 // POST /api/task — выполняет сценарий: поля формы → готовый текст от ИИ.
 // Всегда возвращает и «переносимый» запрос (prompt), чтобы человек мог открыть его в ChatGPT/Claude/…,
 // даже если наш ИИ временно недоступен или лимит на сегодня закончился.
-import { handler, json, isSameOrigin, readJsonBody, licenseInfo, TIERS, bearer, clientKey, hitLimit, peekLimit, HOUR_MS, DAY_MS } from '../../lib/shared.js';
+import { handler, json, isSameOrigin, readJsonBody, licenseInfo, TIERS, bumpCounter, bearer, clientKey, hitLimit, peekLimit, HOUR_MS, DAY_MS } from '../../lib/shared.js';
 import { aiComplete, AI_CFG } from '../../lib/ai.js';
 import { getTask, validateFields, buildMessages, buildPortablePrompt, TWEAKS } from '../../lib/tasks.js';
 
@@ -57,5 +57,6 @@ export const onRequest = handler(async (req) => {
 
   const result = r.text.replace(/^```(?:markdown|md|text)?\s*\n?/i, '').replace(/\n?```\s*$/, '').trim();
   if (result.length < 20) return json({ error: 'ai_unavailable', reason: 'bad_output', ...meta }, 503);
+  await bumpCounter('texts');
   return json({ result: result.slice(0, 12000), ...meta });
 });

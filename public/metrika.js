@@ -17,5 +17,5 @@
   document.head.appendChild(s);
 
   window.ym(id, 'init', { clickmap: true, trackLinks: true, accurateTrackBounce: true });
-  window.spGoal = function (name) { window.ym(id, 'reachGoal', name); };
+  window.spGoal = function (name, params) { if (params) window.ym(id, 'reachGoal', name, params); else window.ym(id, 'reachGoal', name); };
 })();

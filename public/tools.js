@@ -213,6 +213,7 @@
       out.appendChild(el('div', 't-note', 'Бесплатные задачи на сегодня закончились. Откройте PRO — или отправьте этот запрос в ChatGPT, Claude или другую нейросеть кнопками ниже, он уже собран.'));
       if (lastResult) render(lastResult);
       openBox.classList.remove('t-hidden');
+      window.spPreferTrial = true;
       openPro();
     } else if (res.status === 503) {
       out.appendChild(el('div', 't-note', 'Наш ИИ сейчас перегружен. Запрос уже собран — отправьте его в любую нейросеть кнопками ниже, результат будет тем же.'));
@@ -273,6 +274,16 @@
     tasks = res.data.tasks;
     state = { left: res.data.left, perDay: res.data.perDay, pro: !!res.data.pro };
     buildGrid(); showQuota();
+    // Счётчик «уже написано N текстов» — показываем, когда цифра уже солидная
+    const total = res.data.textsTotal;
+    const sub = document.querySelector('#tasks .t-sub');
+    if (typeof total === 'number' && total >= 100 && sub && !document.getElementById('tTotal')) {
+      const n10 = total % 10, n100 = total % 100;
+      const word = (n10 === 1 && n100 !== 11) ? 'текст' : (n10 >= 2 && n10 <= 4 && (n100 < 12 || n100 > 14)) ? 'текста' : 'текстов';
+      const c = el('p', 't-total', '⚡ Нейросеть уже написала ' + total.toLocaleString('ru-RU') + ' ' + word);
+      c.id = 'tTotal';
+      sub.insertAdjacentElement('afterend', c);
+    }
     const m = /^#task=([a-z0-9-]+)$/.exec(location.hash || '');
     if (m) select(m[1], true);
   }

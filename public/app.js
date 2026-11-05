@@ -369,7 +369,7 @@
   /* ================= ГЕНЕРАЦИЯ ================= */
   async function generate() {
     if (busy || typingFrame) return;
-    if (!state.pro && state.tokensLeft === 0) { openModal('Бесплатные генерации на сегодня закончились'); return; }
+    if (!state.pro && state.tokensLeft === 0) { openModal('Бесплатные генерации на сегодня закончились', { trial: true }); return; }
 
     const key = settingsKey();
     const aiLikely = state.aiOnline && state.aiLeft !== 0 && els.taskContext.value.trim().length > 0;
@@ -442,7 +442,7 @@
     setStatus(generatedText ? doneLabel() : 'ready', generatedText ? STATUS.done : STATUS.ready);
     if (status === 402 && data.error === 'quota') {
       state.tokensLeft = 0; updateStatusUI();
-      openModal('Бесплатные генерации на сегодня закончились');
+      openModal('Бесплатные генерации на сегодня закончились', { trial: true });
     } else if (status === 402 && data.error === 'pro_required') {
       // Лицензия могла стать недействительной — обновим статус
       refreshStatus();
@@ -551,7 +551,7 @@
 
   els.copyBtn.addEventListener('click', async () => {
     if (!generatedText) {
-      if (!state.pro && state.tokensLeft === 0) { openModal('Бесплатные генерации на сегодня закончились'); return; }
+      if (!state.pro && state.tokensLeft === 0) { openModal('Бесплатные генерации на сегодня закончились', { trial: true }); return; }
       els.generateBtn.classList.remove('shake'); void els.generateBtn.offsetWidth; els.generateBtn.classList.add('shake');
       showToast('Сначала нажмите «Сгенерировать промпт ⚡»', 2200, 'warn');
       return;
@@ -590,6 +590,8 @@
   let lastFocused = null;
   function openModal(reason, opts) {
     opts = opts || {};
+    const fromTasks = window.spPreferTrial === true;
+    window.spPreferTrial = false;
     goal('open_pro');
     if (state.pro && !opts.force && reason === 'improve') {
       if (!els.taskContext.value.trim()) {
@@ -608,6 +610,15 @@
       return;
     }
     lastFocused = document.activeElement;
+    // Кончились бесплатные тексты — сразу предлагаем пробный тариф (тексты из блока задач ставят флаг spPreferTrial)
+    const wantTrial = opts.trial || fromTasks;
+    if (fromTasks) reason = 'Бесплатные тексты на сегодня закончились';
+    const planInput = document.querySelector('#planList input[value="' + (wantTrial ? 'trial' : 'pro') + '"]');
+    if (planInput) planInput.checked = true;
+    if (wantTrial) {
+      goal('open_pro_trial');
+      reason = (reason && reason !== 'improve' ? reason + '. ' : '') + 'Продолжите за 99 ₽ — 7 дней без ограничений';
+    }
     const text = reason && reason !== 'improve' ? reason : '';
     els.modalReason.textContent = text ? '⚠ ' + text : '';
     els.modalReason.classList.toggle('hidden', !text);
@@ -691,6 +702,7 @@
       if (status === 200 && data.license) {
         storeSet(KEY_LICENSE, data.license);
         storeSet(KEY_ORDER, orderId);
+        lastPaid = { price: Number(data.price) || 0, plan: data.plan || '' };
         return 'paid';
       }
       if (status === 202) return 'pending';
@@ -702,8 +714,12 @@
     } catch (e) { return 'error'; }
   }
 
-  async function onPaid(orderId) {
-    goal('paid');
+  let lastPaid = { price: 0, plan: '' };
+  async function onPaid(orderId, fresh) {
+    // Выручка в Метрике — только при новой оплате, не при восстановлении доступа
+    if (fresh) {
+      try { if (typeof window.spGoal === 'function') window.spGoal('paid', { order_price: lastPaid.price, currency: 'RUB', plan: lastPaid.plan }); } catch (e) { /* без аналитики */ }
+    } else goal('restore');
     await refreshStatus();
     closeModal();
     showToast('Оплата подтверждена! Доступ активирован' + (state.expiresAt ? ' до ' + new Date(state.expiresAt).toLocaleDateString('ru-RU') : '') + ' ⚡ Код доступа: ' + orderId, 6000);
@@ -715,7 +731,7 @@
     showToast('Проверяем оплату…', 60000);
     for (let i = 0; i < 20; i++) {
       const r = await claimOnce(orderId);
-      if (r === 'paid') { await onPaid(orderId); return; }
+      if (r === 'paid') { await onPaid(orderId, true); return; }
       if (r !== 'pending' && r !== 'error') break;
       await new Promise((res) => setTimeout(res, 3000));
     }
@@ -741,7 +757,7 @@
       rate_limited: 'Слишком много попыток. Подождите немного.',
       error: 'Нет связи с сервером. Попробуйте ещё раз.'
     };
-    if (r === 'paid') { setRestoreMsg('Доступ восстановлен ⚡', 'ok'); await onPaid(code); return; }
+    if (r === 'paid') { setRestoreMsg('Доступ восстановлен ⚡', 'ok'); await onPaid(code, false); return; }
     setRestoreMsg(messages[r] || messages.error, 'warn');
   });
 

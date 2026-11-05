@@ -130,3 +130,4 @@ header [data-token-badge] { display: none !important; }
 .pay-btn:hover { filter: brightness(1.15); }
 .pay-btn-main { border-color: transparent; background: linear-gradient(90deg, #4f46e5, #7c3aed, #10b981); }
 .pay-btn:disabled { opacity: .6; cursor: wait; }
+.t-total { margin: .35rem 0 0; font-size: .8rem; font-weight: 600; color: #34d399; }

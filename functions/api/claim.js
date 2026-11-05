@@ -44,7 +44,7 @@ export const onRequest = handler(async (req) => {
     if (claims >= MAX_DEVICES_PER_ORDER) return json({ error: 'device_limit' }, 403);
     await store.setJSON(orderId, { ...order, claims: claims + 1, lastClaimAt: new Date().toISOString() }, { onlyIfMatch: res.etag });
 
-    return json({ status: 'paid', license: await signLicense(orderId) });
+    return json({ status: 'paid', license: await signLicense(orderId), plan: order.plan || 'lifetime', price: order.paidAmount || order.price || 0 });
   } catch (e) {
     console.error('claim failed:', e && e.message);
     return json({ error: 'server_error' }, 500);
