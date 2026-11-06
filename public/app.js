@@ -6,7 +6,7 @@
 
   /* ================= НАСТРОЙКИ ================= */
   // 🔧 Вставь ссылку на свой Telegram-канал
-  const TELEGRAM_URL = 'https://t.me/your_channel';
+  const TELEGRAM_URL = 'https://t.me/system_promptPRO';
   const KEY_LICENSE = 'systemprompt_license';
   // Цели Яндекс Метрики (работают, только если в /metrika.js указан номер счётчика)
   const goal = (name) => { try { if (typeof window.spGoal === 'function') window.spGoal(name); } catch (e) { /* без аналитики */ } };
