@@ -131,3 +131,11 @@ header [data-token-badge] { display: none !important; }
 .pay-btn-main { border-color: transparent; background: linear-gradient(90deg, #4f46e5, #7c3aed, #10b981); }
 .pay-btn:disabled { opacity: .6; cursor: wait; }
 .t-total { margin: .35rem 0 0; font-size: .8rem; font-weight: 600; color: #34d399; }
+
+/* Поле «Напишите, что нужно» */
+.t-quick{display:flex;gap:10px;align-items:stretch;margin:4px 0 6px}
+.t-quick textarea{flex:1;min-width:0;resize:vertical;border:1px solid #4f46e5;border-radius:12px;padding:12px 14px;font:16px/1.45 Inter,system-ui,sans-serif;background:#09090b;color:#e4e4e7}
+.t-quick textarea:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.2)}
+.t-quick .t-go{margin:0;width:auto;white-space:nowrap}
+.t-or{margin:10px 0 8px;font-size:14px;color:#a1a1aa}
+@media (max-width:600px){.t-quick{flex-direction:column}.t-quick .t-go{width:100%}}

@@ -18,7 +18,7 @@ const call = async (mod, method, body, headers = {}) => { const res = await mod.
 const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) process.exitCode = 1; };
 
 let r = await call(tasksFn, 'GET');
-ok(r.s === 200 && r.d.tasks.length === 10 && r.d.left === 5 && !('system' in r.d.tasks[0]) && r.d.tasks[0].fields.length > 0, 'list tasks, no system prompts leaked, 5 left');
+ok(r.s === 200 && r.d.tasks.length === 11 && r.d.tasks.filter((t) => !t.hidden).length === 10 && r.d.left === 5 && !('system' in r.d.tasks[0]) && r.d.tasks[0].fields.length > 0, 'list tasks, no system prompts leaked, 5 left');
 
 const f = { review: 'Пришла куртка не того размера, очень расстроена', rating: '2 ★', shop: 'Магазин курток', tone: 'Вежливо и по делу' };
 r = await call(taskFn, 'POST', JSON.stringify({ task: 'otvet-na-otzyv', fields: f }));

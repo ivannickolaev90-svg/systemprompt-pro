@@ -121,6 +121,7 @@
   function buildGrid() {
     grid.textContent = '';
     tasks.forEach((t) => {
+      if (t.hidden) return;
       const b = el('button', 't-card');
       b.type = 'button'; b.dataset.task = t.id; b.setAttribute('aria-pressed', 'false');
       b.appendChild(el('span', 'e', t.emoji));
@@ -261,6 +262,23 @@
     else if (a) run(a);
   });
   openBox.addEventListener('click', (e) => { const b = e.target.closest('button[data-open]'); if (b) openIn(b.dataset.open); });
+
+  /* ---------- Поле «Напишите, что нужно» ---------- */
+  const qBox = $('#tQuick'), qText = $('#tQuickText');
+  function quick() {
+    const v = (qText.value || '').trim();
+    if (!v) { qText.focus(); return; }
+    if (!tasks.some((t) => t.id === 'svoya-zadacha')) return;
+    select('svoya-zadacha', true);
+    const inp = form.querySelector('[name="request"]');
+    if (inp) inp.value = v.slice(0, 2000);
+    goal('quick_ask');
+    run(null);
+  }
+  if (qBox) {
+    qBox.addEventListener('submit', (e) => { e.preventDefault(); quick(); });
+    qText.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); quick(); } });
+  }
 
   /* ---------- Старт ---------- */
   async function init() {
