@@ -59,3 +59,28 @@ sql.exec("DELETE FROM kv"); mode = 'ok';
 globalThis.fetch = async () => new Response(JSON.stringify({ choices: [{ message: { content: '# СИСТЕМНЫЙ ПРОМПТ\n## 1. Роль\n' + 'текст '.repeat(60) } }] }), { status: 200 });
 r = await call(gen, 'POST', JSON.stringify({ ai: true, settings: { role: 'marketer', tone: 'friendly', task: 'кофейня' } }));
 ok(r.s === 200 && r.d.mode === 'ai', 'constructor AI generation still works after refactor');
+
+// «Приведи друга»
+{
+  sql.exec("DELETE FROM kv");
+  globalThis.fetch = async () => new Response(JSON.stringify({ choices: [{ message: { content: 'Готовый текст для покупателя, вежливый и понятный.' } }] }), { status: 200 });
+  const refFn = await import(R + 'ref.js');
+  const owner = 'a'.repeat(32), friendRid = 'b'.repeat(32);
+  const T = (rid, ref, ip) => call(taskFn, 'POST', JSON.stringify({ task: 'svoya-zadacha', fields: { request: 'пост про кофейню' }, rid, ref }), { 'cf-connecting-ip': ip });
+  let o = await call(refFn, 'POST', JSON.stringify({ rid: owner }), { 'cf-connecting-ip': '1.1.1.1' });
+  ok(o.s === 200 && /^[a-f0-9]{10}$/.test(o.d.code) && o.d.bonus === 0, 'ref code issued, 0 bonus');
+  const code = o.d.code;
+  await T(owner, code, '1.1.1.1');
+  o = await call(refFn, 'POST', JSON.stringify({ rid: owner }), { 'cf-connecting-ip': '1.1.1.1' });
+  ok(o.d.bonus === 0, 'own link / same IP gives no bonus');
+  await T(friendRid, code, '2.2.2.2');
+  await T(friendRid, code, '2.2.2.2');
+  o = await call(refFn, 'POST', JSON.stringify({ rid: owner }), { 'cf-connecting-ip': '1.1.1.1' });
+  ok(o.d.bonus === 3, 'friend first text -> +3 once');
+  for (let i = 0; i < 4; i++) await T(owner, null, '1.1.1.1'); // 5 бесплатных израсходованы
+  let x = await T(owner, null, '1.1.1.1');
+  ok(x.s === 200 && x.d.bonus === 2, 'after daily limit bonus text used');
+  await T(owner, null, '1.1.1.1'); await T(owner, null, '1.1.1.1');
+  x = await T(owner, null, '1.1.1.1');
+  ok(x.s === 402 && x.d.bonus === 0, 'bonus exhausted -> 402');
+}

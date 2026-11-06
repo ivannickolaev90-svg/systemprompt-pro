@@ -1,7 +1,7 @@
 // POST /api/task — выполняет сценарий: поля формы → готовый текст от ИИ.
 // Всегда возвращает и «переносимый» запрос (prompt), чтобы человек мог открыть его в ChatGPT/Claude/…,
 // даже если наш ИИ временно недоступен или лимит на сегодня закончился.
-import { handler, json, isSameOrigin, readJsonBody, licenseInfo, TIERS, bumpCounter, bearer, clientKey, hitLimit, peekLimit, HOUR_MS, DAY_MS } from '../../lib/shared.js';
+import { handler, json, isSameOrigin, readJsonBody, licenseInfo, TIERS, bumpCounter, bearer, clientKey, hitLimit, peekLimit, HOUR_MS, DAY_MS, isRid, isRefCode, refCode, refBalance, refAdd, refTake, refStore, REF_BONUS, REF_DAILY_FRIENDS } from '../../lib/shared.js';
 import { aiComplete, AI_CFG } from '../../lib/ai.js';
 import { getTask, validateFields, buildMessages, buildPortablePrompt, TWEAKS } from '../../lib/tasks.js';
 
@@ -42,15 +42,25 @@ export const onRequest = handler(async (req) => {
   const perDay = pro ? TIERS[lic.tier].tasks : cfg.taskFreeDaily;
   const prompt = buildPortablePrompt(task, v.fields);
 
+  // «Приведи друга»: когда бесплатные на сегодня кончились — тратим бонусные тексты
+  const myRef = !pro && isRid(d.rid) ? await refCode(d.rid) : null;
+  let useBonus = false;
+  if (myRef) {
+    const before = await peekLimit('task-user:' + userKey, perDay, DAY_MS);
+    if (before.remaining <= 0) useBonus = await refTake(myRef);
+  }
+
   const r = await aiComplete({
     messages: buildMessages(task, v.fields, tweak, previous),
     maxTokens: (task.maxTokens || 1200) + 1500,
-    userLimit: { key: 'task-user:' + userKey, perDay },
+    userLimit: useBonus ? null : { key: 'task-user:' + userKey, perDay },
     siteLimit: { key: 'task-day', perDay: cfg.taskDailyMax },
     temperature: tweak === 'another' ? 0.9 : 0.7
   });
   const left = await peekLimit('task-user:' + userKey, perDay, DAY_MS);
+  if (useBonus && r.fallback) { try { await refAdd(myRef, 1); } catch (e) { /* бонус не вернулся */ } }
   const meta = { pro, prompt, left: left.remaining, perDay, resetAt: left.resetAt };
+  if (myRef) meta.bonus = await refBalance(myRef);
 
   if (r.fallback === 'user_limit') return json({ error: 'quota', ...meta }, 402);
   if (r.fallback) return json({ error: 'ai_unavailable', reason: r.fallback, ...meta }, 503);
@@ -58,5 +68,19 @@ export const onRequest = handler(async (req) => {
   const result = r.text.replace(/^```(?:markdown|md|text)?\s*\n?/i, '').replace(/\n?```\s*$/, '').trim();
   if (result.length < 20) return json({ error: 'ai_unavailable', reason: 'bad_output', ...meta }, 503);
   await bumpCounter('texts');
+  // Новый человек пришёл по чужой ссылке и получил первый текст → владельцу ссылки +3
+  if (!pro && !tweak && isRefCode(d.ref) && d.ref !== myRef) {
+    try {
+      const st = refStore();
+      const ownerIp = await st.get('ip:' + d.ref);
+      if (ownerIp && ownerIp !== ipKey) {
+        const first = await st.setJSON('seen:' + ipKey, d.ref, { onlyIfNew: true });
+        if (first.modified) {
+          const cap = await hitLimit('refcap:' + d.ref, REF_DAILY_FRIENDS, DAY_MS);
+          if (cap.allowed) await refAdd(d.ref, REF_BONUS);
+        }
+      }
+    } catch (e) { console.warn('ref credit failed:', e && e.message); }
+  }
   return json({ result: result.slice(0, 12000), ...meta });
 });

@@ -3,7 +3,7 @@
 // Тело: { rows: [{ store, key, value }] }; существующие записи не перезаписываются.
 import { handler, json, env, getStore, safeEqual, wasModified } from '../../lib/shared.js';
 
-const ALLOWED = new Set(['sp-orders', 'sp-trials']);
+const ALLOWED = new Set(['sp-orders', 'sp-trials', 'sp-ref']);
 
 export const onRequest = handler(async (req) => {
   const token = env('ADMIN_TOKEN');

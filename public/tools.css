@@ -139,3 +139,8 @@ header [data-token-badge] { display: none !important; }
 .t-quick .t-go{margin:0;width:auto;white-space:nowrap}
 .t-or{margin:10px 0 8px;font-size:14px;color:#a1a1aa}
 @media (max-width:600px){.t-quick{flex-direction:column}.t-quick .t-go{width:100%}}
+
+/* Приведи друга */
+.t-ref{margin:0 0 12px;font-size:14px;color:#d4d4d8;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.t-ref b{color:#34d399}
+.t-ref button{all:unset;cursor:pointer;color:#34d399;text-decoration:underline;text-underline-offset:3px;font-weight:600}

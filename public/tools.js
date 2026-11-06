@@ -13,6 +13,13 @@
   const license = () => { try { return localStorage.getItem(LICENSE_KEY) || ''; } catch (e) { return ''; } };
   const goal = (n) => { try { if (typeof window.spGoal === 'function') window.spGoal(n); } catch (e) { /* без аналитики */ } };
 
+  /* «Приведи друга»: свой секрет rid и код пригласившего (из ссылки ?r=) */
+  const ls = (k, v) => { try { if (v === undefined) return localStorage.getItem(k) || ''; localStorage.setItem(k, v); } catch (e) { /* без хранилища */ } return ''; };
+  let rid = ls('sp_rid');
+  if (!/^[a-f0-9]{32}$/.test(rid)) { rid = Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, '0')).join(''); ls('sp_rid', rid); }
+  try { const r = new URLSearchParams(location.search).get('r'); if (r && /^[a-f0-9]{10}$/.test(r) && !ls('sp_ref')) ls('sp_ref', r); } catch (e) { /* нет параметра */ }
+  let refInfo = null;
+
   let tasks = [], current = null, lastFields = null, lastResult = '', lastPrompt = '', busy = false, state = { left: null, perDay: null, pro: false };
 
   /* ---------- Утилиты ---------- */
@@ -117,6 +124,29 @@
     }
   }
 
+  /* ---------- Приведи друга ---------- */
+  const refBox = $('#tRef');
+  function showRef() {
+    if (!refBox || !refInfo || state.pro) return;
+    refBox.textContent = '';
+    refBox.appendChild(document.createTextNode('🎁 Приведи друга — +' + refInfo.per + ' текста за каждого'));
+    if (refInfo.bonus > 0) refBox.appendChild(el('b', '', ' · бонус: ' + refInfo.bonus));
+    const b = el('button', '', 'Скопировать ссылку');
+    b.type = 'button';
+    b.addEventListener('click', async () => {
+      const link = location.origin + '/?r=' + refInfo.code;
+      const ok = await copy(link);
+      toast(ok ? 'Ссылка скопирована ✓ Отправьте её другу' : link);
+      goal('ref_copy');
+    });
+    refBox.appendChild(b);
+    refBox.classList.remove('t-hidden');
+  }
+  async function loadRef() {
+    if (state.pro) return;
+    try { const r = await api('/api/ref', { rid }); if (r.status === 200 && r.data.code) { refInfo = r.data; showRef(); } } catch (e) { /* без бонусов */ }
+  }
+
   /* ---------- Сетка задач ---------- */
   function buildGrid() {
     grid.textContent = '';
@@ -193,12 +223,14 @@
     let fields = lastFields;
     if (!tweak) { fields = readFields(); if (!fields) return; }
     setBusy(true, tweak ? 'Переписываю…' : 'ИИ пишет текст…');
-    const body = { task: current.id, fields };
+    const body = { task: current.id, fields, rid };
+    const inv = ls('sp_ref'); if (inv && (!refInfo || inv !== refInfo.code)) body.ref = inv;
     if (tweak) { body.tweak = tweak; body.previous = lastResult; }
     let res;
     try { res = await api('/api/task', body); } catch (e) { res = { status: 0, data: {} }; }
     setBusy(false);
     const d = res.data || {};
+    if (typeof d.bonus === 'number' && refInfo) { refInfo.bonus = d.bonus; showRef(); }
     if (typeof d.left === 'number') { state.left = d.left; state.perDay = d.perDay; state.pro = !!d.pro; showQuota(); }
     if (d.prompt) { lastPrompt = d.prompt; lastFields = fields; }
 
@@ -211,7 +243,7 @@
     }
     out.textContent = '';
     if (res.status === 402) {
-      out.appendChild(el('div', 't-note', 'Бесплатные задачи на сегодня закончились. Откройте PRO — или отправьте этот запрос в ChatGPT, Claude или другую нейросеть кнопками ниже, он уже собран.'));
+      out.appendChild(el('div', 't-note', 'Бесплатные задачи на сегодня закончились. Откройте PRO, пригласите друга (+3 текста за каждого — ссылка над задачами) или отправьте этот запрос в ChatGPT, Claude или другую нейросеть кнопками ниже, он уже собран.'));
       if (lastResult) render(lastResult);
       openBox.classList.remove('t-hidden');
       window.spPreferTrial = true;
@@ -291,7 +323,7 @@
     }
     tasks = res.data.tasks;
     state = { left: res.data.left, perDay: res.data.perDay, pro: !!res.data.pro };
-    buildGrid(); showQuota();
+    buildGrid(); showQuota(); loadRef();
     // Счётчик «уже написано N текстов» — показываем, когда цифра уже солидная
     const total = res.data.textsTotal;
     const sub = document.querySelector('#tasks .t-sub');
