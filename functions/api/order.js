@@ -35,6 +35,7 @@ export const onRequest = handler(async (req) => {
       status: 'pending', plan: planId, price: plan.price, method,
       createdAt: new Date().toISOString(), claims: 0,
       ...(extendFrom ? { extendFrom } : {}),
+      ...(typeof body.data.ch === 'string' && /^[a-z0-9_-]{1,32}$/.test(body.data.ch) ? { channel: body.data.ch } : {}),
       ...(planId === 'trial' ? { trialKey: ipKey } : {})
     };
     if (!wasModified(await store.setJSON(orderId, order, { onlyIfNew: true }))) return json({ error: 'server_error' }, 500);

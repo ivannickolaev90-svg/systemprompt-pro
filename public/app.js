@@ -667,7 +667,7 @@
     els.payCardBtn.disabled = true;
     (method === 'card' ? els.payCardBtn : els.payBtn).textContent = 'Создаём заказ…';
     try {
-      const { status, data } = await api('/api/order', { method: 'POST', body: { plan, method, renew: storeGet(KEY_LICENSE) || '' } });
+      const { status, data } = await api('/api/order', { method: 'POST', body: { plan, method, renew: storeGet(KEY_LICENSE) || '', ch: storeGet('sp_ch') || '' } });
       if (status === 409) { resetPayButton(); showToast('Пробный тариф уже был использован — выберите другой', 3500, 'warn'); return; }
       if (status !== 200 || !ORDER_RE.test(data.orderId || '')) throw new Error('order ' + status);
       storeSet(KEY_ORDER, data.orderId);
@@ -714,11 +714,53 @@
     } catch (e) { return 'error'; }
   }
 
+  // Промокод канала: SP-XXXX-XXXX-XXXX
+  const PROMO_RE = /^\s*(sp)?[\s-]*[a-z2-9]{4}[\s-]*[a-z2-9]{4}[\s-]*[a-z2-9]{4}\s*$/i;
+  async function activatePromo(code) {
+    try {
+      const { status, data } = await api('/api/promo', { method: 'POST', body: { code } });
+      if (status === 200 && data.license) {
+        storeSet(KEY_LICENSE, data.license);
+        storeSet(KEY_ORDER, data.orderId);
+        if (data.channel) storeSet('sp_ch', data.channel);
+        try { if (typeof window.spGoal === 'function') window.spGoal('promo_activated', { channel: data.channel, type: data.type }); } catch (e) { /* без аналитики */ }
+        await refreshStatus();
+        closeModal();
+        showToast('Промокод активирован! PRO' + (data.expiresAt ? ' до ' + new Date(data.expiresAt).toLocaleDateString('ru-RU') : ' навсегда') + ' ⚡ Код доступа: ' + data.orderId, 7000);
+        return 'ok';
+      }
+      return ({ 404: 'not_found', 409: 'used', 410: 'expired', 429: 'rate_limited', 403: 'revoked' })[status] || 'error';
+    } catch (e) { return 'error'; }
+  }
+  const PROMO_MSG = {
+    not_found: 'Такого промокода нет. Проверьте, что ввели его без ошибок.',
+    used: 'Этот промокод уже использован.',
+    expired: 'Срок действия этого промокода закончился.',
+    revoked: 'Промокод отключён.',
+    rate_limited: 'Слишком много попыток. Подождите час.',
+    error: 'Нет связи с сервером. Попробуйте ещё раз.'
+  };
+  // Ссылки каналов: ?ch=метка и ?promo=КОД
+  try {
+    const q = new URLSearchParams(location.search);
+    const ch = q.get('ch');
+    if (ch && /^[a-z0-9_-]{1,32}$/.test(ch)) storeSet('sp_ch', ch);
+    const pc = q.get('promo');
+    if (pc && PROMO_RE.test(pc)) {
+      q.delete('promo');
+      try { history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + location.hash); } catch (e) { /* без смены адреса */ }
+      setTimeout(async () => {
+        const r = await activatePromo(pc);
+        if (r !== 'ok') showToast(PROMO_MSG[r] || PROMO_MSG.error, 6000, 'warn');
+      }, 300);
+    }
+  } catch (e) { /* без параметров */ }
+
   let lastPaid = { price: 0, plan: '' };
   async function onPaid(orderId, fresh) {
     // Выручка в Метрике — только при новой оплате, не при восстановлении доступа
     if (fresh) {
-      try { if (typeof window.spGoal === 'function') window.spGoal('paid', { order_price: lastPaid.price, currency: 'RUB', plan: lastPaid.plan }); } catch (e) { /* без аналитики */ }
+      try { if (typeof window.spGoal === 'function') window.spGoal('paid', { order_price: lastPaid.price, currency: 'RUB', plan: lastPaid.plan, channel: storeGet('sp_ch') || 'none' }); } catch (e) { /* без аналитики */ }
     } else goal('restore');
     await refreshStatus();
     closeModal();
@@ -743,6 +785,14 @@
   els.restoreForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const code = els.restoreCode.value.trim().toLowerCase();
+    if (!ORDER_RE.test(code) && PROMO_RE.test(code)) {
+      els.restoreBtn.disabled = true;
+      setRestoreMsg('Проверяем промокод…');
+      const pr = await activatePromo(code);
+      els.restoreBtn.disabled = false;
+      if (pr !== 'ok') setRestoreMsg(PROMO_MSG[pr] || PROMO_MSG.error, 'warn');
+      return;
+    }
     if (!ORDER_RE.test(code)) { setRestoreMsg('Код заказа — 32 символа (цифры и буквы a–f).', 'warn'); return; }
     els.restoreBtn.disabled = true;
     setRestoreMsg('Проверяем…');

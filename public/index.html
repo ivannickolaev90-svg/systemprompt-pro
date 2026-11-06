@@ -595,10 +595,10 @@
         </a>
         <!-- Восстановление / проверка доступа -->
         <details id="restoreBox" class="mt-5 text-left rounded-xl border border-zinc-800 bg-zinc-950/60 open:border-indigo-500/40">
-          <summary class="cursor-pointer select-none px-4 py-3 text-sm font-semibold text-zinc-300 hover:text-white">Уже оплатили? Восстановить доступ</summary>
+          <summary class="cursor-pointer select-none px-4 py-3 text-sm font-semibold text-zinc-300 hover:text-white">Уже оплатили или есть промокод? Активировать доступ</summary>
           <form id="restoreForm" class="px-4 pb-4 space-y-2.5" novalidate>
-            <label for="restoreCode" class="block text-xs text-zinc-500 leading-relaxed">Введите код заказа — он показывается после оплаты. Доступ откроется, как только ЮMoney подтвердит платёж.</label>
-            <input id="restoreCode" type="text" inputmode="text" autocomplete="off" spellcheck="false" maxlength="40" placeholder="32 символа, например 3f9a…"
+            <label for="restoreCode" class="block text-xs text-zinc-500 leading-relaxed">Введите код заказа (показывается после оплаты) или промокод вида SP-XXXX-XXXX-XXXX.</label>
+            <input id="restoreCode" type="text" inputmode="text" autocomplete="off" spellcheck="false" maxlength="40" placeholder="Код заказа или промокод"
               class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2.5 font-mono text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30">
             <button type="submit" id="restoreBtn" class="w-full py-2.5 rounded-lg bg-zinc-800 text-sm font-semibold text-zinc-200 hover:bg-zinc-700 disabled:opacity-60 disabled:cursor-wait transition-colors">Проверить оплату</button>
             <p id="restoreMsg" class="hidden text-xs leading-relaxed"></p>
@@ -619,7 +619,7 @@
 
   <!-- ===== ЛОГИКА ===== -->
   <script src="/metrika.js"></script>
-  <script src="/app.js" defer></script>
+  <script src="/app.js?v=4" defer></script>
   <script src="/tools.js?v=4" defer></script>
 </body>
 </html>
