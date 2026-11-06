@@ -18,6 +18,13 @@ export const onRequest = handler(async (req) => {
   const v = validateFields(task, d.fields);
   if (v.error) return json({ error: v.error, field: v.field || null }, 400);
 
+  // Профиль магазина (необязательно): хранится в браузере, приходит с каждым запросом
+  let profile = '';
+  if (d.profile !== undefined && d.profile !== null && d.profile !== '') {
+    if (typeof d.profile !== 'string' || d.profile.length > 800) return json({ error: 'bad_profile' }, 400);
+    profile = d.profile.replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, '').trim();
+  }
+
   let tweak = null;
   let previous = null;
   if (d.tweak !== undefined && d.tweak !== null) {
@@ -33,6 +40,10 @@ export const onRequest = handler(async (req) => {
   const lic = token ? await licenseInfo(token) : null;
   const orderId = lic ? lic.orderId : null;
   const pro = !!orderId;
+  // PRO-сценарии (ответы пачкой) — только для тарифов с PRO-возможностями
+  if (task.pro && !(lic && TIERS[lic.tier] && TIERS[lic.tier].builder)) {
+    return json({ error: 'pro_only', pro, prompt: buildPortablePrompt(task, v.fields, profile) }, 402);
+  }
 
   // Защита от ботов: не больше 60 запросов в час с одного адреса (PRO — 300)
   const rl = await hitLimit((pro ? 'taskrl-pro:' + orderId : 'taskrl:' + ipKey), pro ? 300 : 60, HOUR_MS);
@@ -40,7 +51,7 @@ export const onRequest = handler(async (req) => {
 
   const userKey = pro ? 'pro:' + orderId : 'free:' + ipKey;
   const perDay = pro ? TIERS[lic.tier].tasks : cfg.taskFreeDaily;
-  const prompt = buildPortablePrompt(task, v.fields);
+  const prompt = buildPortablePrompt(task, v.fields, profile);
 
   // «Приведи друга»: когда бесплатные на сегодня кончились — тратим бонусные тексты
   const myRef = !pro && isRid(d.rid) ? await refCode(d.rid) : null;
@@ -51,7 +62,7 @@ export const onRequest = handler(async (req) => {
   }
 
   const r = await aiComplete({
-    messages: buildMessages(task, v.fields, tweak, previous),
+    messages: buildMessages(task, v.fields, tweak, previous, profile),
     maxTokens: (task.maxTokens || 1200) + 1500,
     userLimit: useBonus ? null : { key: 'task-user:' + userKey, perDay },
     siteLimit: { key: 'task-day', perDay: cfg.taskDailyMax },

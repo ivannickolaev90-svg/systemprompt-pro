@@ -18,7 +18,7 @@ const call = async (mod, method, body, headers = {}) => { const res = await mod.
 const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) process.exitCode = 1; };
 
 let r = await call(tasksFn, 'GET');
-ok(r.s === 200 && r.d.tasks.length === 11 && r.d.tasks.filter((t) => !t.hidden).length === 10 && r.d.left === 5 && !('system' in r.d.tasks[0]) && r.d.tasks[0].fields.length > 0, 'list tasks, no system prompts leaked, 5 left');
+ok(r.s === 200 && r.d.tasks.length === 12 && r.d.tasks.filter((t) => !t.hidden).length === 11 && r.d.left === 5 && !('system' in r.d.tasks[0]) && r.d.tasks[0].fields.length > 0, 'list tasks, no system prompts leaked, 5 left');
 
 const f = { review: 'Пришла куртка не того размера, очень расстроена', rating: '2 ★', shop: 'Магазин курток', tone: 'Вежливо и по делу' };
 r = await call(taskFn, 'POST', JSON.stringify({ task: 'otvet-na-otzyv', fields: f }));
@@ -83,4 +83,17 @@ ok(r.s === 200 && r.d.mode === 'ai', 'constructor AI generation still works afte
   await T(owner, null, '1.1.1.1'); await T(owner, null, '1.1.1.1');
   x = await T(owner, null, '1.1.1.1');
   ok(x.s === 402 && x.d.bonus === 0, 'bonus exhausted -> 402');
+}
+
+// Ответы пачкой (PRO) и профиль магазина
+{
+  sql.exec("DELETE FROM kv");
+  let last = null;
+  globalThis.fetch = async (u, init) => { last = JSON.parse(init.body); return new Response(JSON.stringify({ choices: [{ message: { content: 'Отзыв 1:\nСпасибо!\n\nОтзыв 2:\nПростите за неудобства.' } }] }), { status: 200 }); };
+  let x = await call(taskFn, 'POST', JSON.stringify({ task: 'otvety-pachkoj', fields: { reviews: '5 супер\n\n2 плохо' } }));
+  ok(x.s === 402 && x.d.error === 'pro_only' && x.d.prompt.includes('Отзыв 2'), 'batch for free user -> 402 pro_only with prompt');
+  x = await call(taskFn, 'POST', JSON.stringify({ task: 'svoya-zadacha', fields: { request: 'пост' }, profile: 'Магазин «Ромашка», возврат 14 дней' }));
+  ok(x.s === 200 && last.messages[1].content.includes('Ромашка') && x.d.prompt.includes('Ромашка'), 'profile goes into AI request and portable prompt');
+  x = await call(taskFn, 'POST', JSON.stringify({ task: 'svoya-zadacha', fields: { request: 'пост' }, profile: 'x'.repeat(801) }));
+  ok(x.s === 400, 'too long profile rejected');
 }

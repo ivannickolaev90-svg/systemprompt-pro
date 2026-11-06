@@ -76,7 +76,7 @@
 
   <!-- Стили собраны заранее (Tailwind), без внешних скриптов -->
   <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/tools.css?v=3">
+  <link rel="stylesheet" href="/tools.css?v=4">
 </head>
 
 <body class="bg-zinc-950 text-zinc-200 font-sans min-h-screen overflow-x-hidden selection:bg-indigo-600/50 selection:text-white">
@@ -152,6 +152,11 @@
           <textarea id="tQuickText" rows="2" maxlength="2000" aria-label="Что нужно написать?" placeholder="Напишите, что нужно. Например: ответь на отзыв «товар пришёл мятым», вежливо, предложи обмен"></textarea>
           <button type="submit" class="t-go">Написать ⚡</button>
         </form>
+        <details class="t-prof">
+          <summary>🏪 Профиль магазина <span id="tProfileState" class="t-prof-ok"></span><small>— один раз расскажите о себе, и все тексты будут это учитывать</small></summary>
+          <textarea id="tProfile" rows="3" maxlength="800" aria-label="Профиль магазина" placeholder="Например: магазин детской одежды «Ромашка» на Wildberries и Ozon. Тон тёплый, на «вы». Возврат 14 дней через площадку, отправка за 1–2 дня."></textarea>
+          <p class="t-prof-hint">Сохраняется только в вашем браузере. Не пишите сюда телефоны и личные данные.</p>
+        </details>
         <p class="t-or">или выберите готовую задачу:</p>
         <div id="tGrid" class="t-grid"><p class="t-sub">Загружаем задачи…</p></div>
 
@@ -615,6 +620,6 @@
   <!-- ===== ЛОГИКА ===== -->
   <script src="/metrika.js"></script>
   <script src="/app.js" defer></script>
-  <script src="/tools.js?v=3" defer></script>
+  <script src="/tools.js?v=4" defer></script>
 </body>
 </html>

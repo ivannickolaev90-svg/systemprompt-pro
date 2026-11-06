@@ -124,6 +124,17 @@
     }
   }
 
+  /* ---------- Профиль магазина (хранится только в браузере) ---------- */
+  const profText = $('#tProfile');
+  if (profText) {
+    profText.value = ls('sp_profile');
+    const profState = $('#tProfileState');
+    const mark = () => { if (profState) profState.textContent = profText.value.trim() ? '✓ заполнен' : ''; };
+    mark();
+    profText.addEventListener('input', () => { ls('sp_profile', profText.value.slice(0, 800)); mark(); });
+    profText.addEventListener('change', () => goal('profile_saved'));
+  }
+
   /* ---------- Приведи друга ---------- */
   const refBox = $('#tRef');
   function showRef() {
@@ -156,6 +167,7 @@
       b.type = 'button'; b.dataset.task = t.id; b.setAttribute('aria-pressed', 'false');
       b.appendChild(el('span', 'e', t.emoji));
       b.appendChild(el('span', 'n', t.title));
+      if (t.pro) b.querySelector('.n').appendChild(el('span', 't-pro', 'PRO'));
       b.appendChild(el('span', 'd', t.desc));
       b.addEventListener('click', () => select(t.id, true));
       grid.appendChild(b);
@@ -180,7 +192,7 @@
         input = el('select');
         f.options.forEach((o) => { const op = el('option', '', o); op.value = o; input.appendChild(op); });
       } else if (f.type === 'textarea') {
-        input = el('textarea'); input.rows = 4; input.maxLength = f.max; input.placeholder = f.placeholder || '';
+        input = el('textarea'); input.rows = f.max > 3000 ? 10 : 4; input.maxLength = f.max; input.placeholder = f.placeholder || '';
       } else {
         input = el('input'); input.type = 'text'; input.maxLength = f.max; input.placeholder = f.placeholder || '';
       }
@@ -224,6 +236,7 @@
     if (!tweak) { fields = readFields(); if (!fields) return; }
     setBusy(true, tweak ? 'Переписываю…' : 'ИИ пишет текст…');
     const body = { task: current.id, fields, rid };
+    const prof = ls('sp_profile').trim().slice(0, 800); if (prof) body.profile = prof;
     const inv = ls('sp_ref'); if (inv && (!refInfo || inv !== refInfo.code)) body.ref = inv;
     if (tweak) { body.tweak = tweak; body.previous = lastResult; }
     let res;
@@ -242,7 +255,13 @@
       return;
     }
     out.textContent = '';
-    if (res.status === 402) {
+    if (res.status === 402 && d.error === 'pro_only') {
+      out.appendChild(el('div', 't-note', 'Ответы пачкой — в тарифе PRO: до 15 отзывов за раз, 100 текстов в сутки. Попробуйте 7 дней за 99 ₽. А пока можно отправить этот запрос в ChatGPT, Claude или другую нейросеть кнопками ниже.'));
+      openBox.classList.remove('t-hidden');
+      window.spPreferTrial = true;
+      goal('batch_pro');
+      openPro();
+    } else if (res.status === 402) {
       out.appendChild(el('div', 't-note', 'Бесплатные задачи на сегодня закончились. Откройте PRO, пригласите друга (+3 текста за каждого — ссылка над задачами) или отправьте этот запрос в ChatGPT, Claude или другую нейросеть кнопками ниже, он уже собран.'));
       if (lastResult) render(lastResult);
       openBox.classList.remove('t-hidden');

@@ -144,3 +144,14 @@ header [data-token-badge] { display: none !important; }
 .t-ref{margin:0 0 12px;font-size:14px;color:#d4d4d8;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
 .t-ref b{color:#34d399}
 .t-ref button{all:unset;cursor:pointer;color:#34d399;text-decoration:underline;text-underline-offset:3px;font-weight:600}
+
+/* Профиль магазина и метка PRO */
+.t-prof{margin:2px 0 6px;border:1px solid #27272a;border-radius:12px;background:rgba(24,24,27,.6);padding:8px 12px}
+.t-prof summary{cursor:pointer;font-size:14px;color:#e4e4e7;font-weight:600;list-style:none}
+.t-prof summary::-webkit-details-marker{display:none}
+.t-prof summary small{font-weight:400;color:#a1a1aa;margin-left:6px}
+.t-prof-ok{color:#34d399;font-weight:600;font-size:13px}
+.t-prof textarea{box-sizing:border-box;width:100%;margin-top:8px;resize:vertical;background:#09090b;color:#e4e4e7;border:1px solid #27272a;border-radius:10px;padding:10px 12px;font:14px/1.5 Inter,system-ui,sans-serif}
+.t-prof textarea:focus{outline:none;border-color:#6366f1}
+.t-prof-hint{margin:6px 0 2px;font-size:12px;color:#71717a}
+.t-pro{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:6px;font-size:10px;font-weight:700;letter-spacing:.04em;background:linear-gradient(90deg,#4f46e5,#7c3aed);color:#fff;vertical-align:middle}
