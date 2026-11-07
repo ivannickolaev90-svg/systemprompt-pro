@@ -3,7 +3,7 @@
 // даже если наш ИИ временно недоступен или лимит на сегодня закончился.
 import { handler, json, isSameOrigin, readJsonBody, licenseInfo, TIERS, bumpCounter, bearer, clientKey, hitLimit, peekLimit, HOUR_MS, DAY_MS, isRid, isRefCode, refCode, refBalance, refAdd, refTake, refStore, REF_BONUS, REF_DAILY_FRIENDS } from '../../lib/shared.js';
 import { aiComplete, AI_CFG } from '../../lib/ai.js';
-import { getTask, validateFields, buildMessages, buildPortablePrompt, TWEAKS } from '../../lib/tasks.js';
+import { getTask, validateFields, buildMessages, buildPortablePrompt, TWEAKS, splitReviews, BATCH_FREE } from '../../lib/tasks.js';
 
 export const onRequest = handler(async (req) => {
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405, { allow: 'POST' });
@@ -41,7 +41,7 @@ export const onRequest = handler(async (req) => {
   const orderId = lic ? lic.orderId : null;
   const pro = !!orderId;
   // PRO-сценарии (ответы пачкой) — только для тарифов с PRO-возможностями
-  if (task.pro && !(lic && TIERS[lic.tier] && TIERS[lic.tier].builder)) {
+  if (task.pro && !(lic && TIERS[lic.tier] && TIERS[lic.tier].builder) && splitReviews(v.fields.reviews).length > BATCH_FREE) {
     return json({ error: 'pro_only', pro, prompt: buildPortablePrompt(task, v.fields, profile) }, 402);
   }
 

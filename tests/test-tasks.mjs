@@ -90,10 +90,22 @@ ok(r.s === 200 && r.d.mode === 'ai', 'constructor AI generation still works afte
   sql.exec("DELETE FROM kv");
   let last = null;
   globalThis.fetch = async (u, init) => { last = JSON.parse(init.body); return new Response(JSON.stringify({ choices: [{ message: { content: 'Отзыв 1:\nСпасибо!\n\nОтзыв 2:\nПростите за неудобства.' } }] }), { status: 200 }); };
-  let x = await call(taskFn, 'POST', JSON.stringify({ task: 'otvety-pachkoj', fields: { reviews: '5 супер\n\n2 плохо' } }));
+  let x = await call(taskFn, 'POST', JSON.stringify({ task: 'otvety-pachkoj', fields: { reviews: '5 супер\n\n2 плохо\n\n3 так\n\n4 ок' } }));
   ok(x.s === 402 && x.d.error === 'pro_only' && x.d.prompt.includes('Отзыв 2'), 'batch for free user -> 402 pro_only with prompt');
   x = await call(taskFn, 'POST', JSON.stringify({ task: 'svoya-zadacha', fields: { request: 'пост' }, profile: 'Магазин «Ромашка», возврат 14 дней' }));
   ok(x.s === 200 && last.messages[1].content.includes('Ромашка') && x.d.prompt.includes('Ромашка'), 'profile goes into AI request and portable prompt');
   x = await call(taskFn, 'POST', JSON.stringify({ task: 'svoya-zadacha', fields: { request: 'пост' }, profile: 'x'.repeat(801) }));
   ok(x.s === 400, 'too long profile rejected');
+}
+
+// Пачка: до 3 отзывов бесплатно
+{
+  sql.exec("DELETE FROM kv");
+  globalThis.fetch = async () => new Response(JSON.stringify({ choices: [{ message: { content: 'Отзыв 1:\nСпасибо!\n\nОтзыв 2:\nПростите.' } }] }), { status: 200 });
+  let x = await call(taskFn, 'POST', JSON.stringify({ task: 'otvety-pachkoj', fields: { reviews: 'a хорошо\n\nb плохо\n\nc норм' } }));
+  ok(x.s === 200, 'free batch of 3 works');
+  x = await call(taskFn, 'POST', JSON.stringify({ task: 'otvety-pachkoj', fields: { reviews: 'a\n\nb\n\nc\n\nd' } }));
+  ok(x.s === 402 && x.d.error === 'pro_only', 'free batch of 4 -> pro_only');
+  const t = await call(tasksFn, 'GET');
+  ok(t.d.tasks.filter((z) => !z.hidden).every((z) => z.cats.length && z.example), 'every visible task has category and example');
 }

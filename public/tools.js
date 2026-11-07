@@ -159,10 +159,11 @@
   }
 
   /* ---------- Сетка задач ---------- */
-  const MAIN = 5; // сколько задач видно сразу, остальные — под «Другие задачи»
+  const CATS = [['sell', '🛒 Продавцам'], ['biz', '💼 Бизнесу'], ['me', '🙋 Для себя']];
+  let cat = 'sell', tabs = null;
   function card(t) {
     const b = el('button', 't-card');
-    b.type = 'button'; b.dataset.task = t.id; b.setAttribute('aria-pressed', 'false');
+    b.type = 'button'; b.dataset.task = t.id; b.setAttribute('aria-pressed', String(!!current && current.id === t.id));
     b.appendChild(el('span', 'e', t.emoji));
     b.appendChild(el('span', 'n', t.title));
     if (t.pro) b.querySelector('.n').appendChild(el('span', 't-pro', 'PRO'));
@@ -170,38 +171,43 @@
     b.addEventListener('click', () => select(t.id, true));
     return b;
   }
-  let moreBox = null, moreBtn = null;
-  function showMore(on) {
-    if (!moreBox) return;
-    moreBox.classList.toggle('t-hidden', !on);
-    moreBtn.setAttribute('aria-expanded', String(on));
-    moreBtn.textContent = on ? 'Скрыть ▴' : 'Другие задачи (' + moreBox.children.length + ') ▾';
+  function setCat(c, user) {
+    cat = c;
+    if (tabs) tabs.querySelectorAll('button').forEach((x) => x.setAttribute('aria-selected', String(x.dataset.cat === c)));
+    grid.textContent = '';
+    tasks.filter((t) => !t.hidden && (t.cats || []).includes(c)).forEach((t) => grid.appendChild(card(t)));
+    if (user) { ls('sp_cat', c); goal('tab_' + c); }
   }
   function buildGrid() {
-    grid.textContent = '';
-    const list = tasks.filter((t) => !t.hidden);
-    list.slice(0, MAIN).forEach((t) => grid.appendChild(card(t)));
-    const rest = list.slice(MAIN);
-    if (!rest.length) return;
-    moreBox = el('div', 't-grid t-more t-hidden');
-    rest.forEach((t) => moreBox.appendChild(card(t)));
-    moreBtn = el('button', 't-morebtn');
-    moreBtn.type = 'button';
-    moreBtn.addEventListener('click', () => { const on = moreBox.classList.contains('t-hidden'); showMore(on); if (on) goal('tasks_more'); });
-    grid.insertAdjacentElement('afterend', moreBtn);
-    moreBtn.insertAdjacentElement('afterend', moreBox);
-    showMore(false);
+    tabs = el('div', 't-tabs'); tabs.setAttribute('role', 'tablist');
+    CATS.forEach(([id, name]) => {
+      const b = el('button', '', name); b.type = 'button'; b.dataset.cat = id; b.setAttribute('role', 'tab');
+      b.addEventListener('click', () => setCat(id, true));
+      tabs.appendChild(b);
+    });
+    grid.insertAdjacentElement('beforebegin', tabs);
+    const saved = ls('sp_cat');
+    setCat(CATS.some((c) => c[0] === saved) ? saved : 'sell');
   }
 
   function select(id, scroll) {
     const t = tasks.find((x) => x.id === id);
     if (!t) return;
     current = t; lastResult = ''; lastPrompt = ''; lastFields = null;
+    if (!t.hidden && !(t.cats || []).includes(cat) && t.cats && t.cats.length) setCat(t.cats[0]);
     root.querySelectorAll('.t-card').forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.task === id)));
-    if (moreBox && moreBox.querySelector('[data-task="' + id + '"]')) showMore(true);
     title.textContent = t.emoji + ' ' + t.title;
     hint.textContent = t.desc;
     form.textContent = '';
+    if (t.example) {
+      const ex = el('button', 't-example', '✨ Заполнить примером');
+      ex.type = 'button';
+      ex.addEventListener('click', () => {
+        Object.keys(t.example).forEach((k) => { const i = form.querySelector('[name="' + k + '"]'); if (i) { i.value = t.example[k]; i.closest('.t-field').classList.remove('bad'); } });
+        goal('task_example');
+      });
+      form.appendChild(ex);
+    }
     t.fields.forEach((f) => {
       const lab = el('label', 't-field'); lab.dataset.name = f.name;
       const cap = el('span', '', f.label);
@@ -276,7 +282,7 @@
     }
     out.textContent = '';
     if (res.status === 402 && d.error === 'pro_only') {
-      out.appendChild(el('div', 't-note', 'Ответы пачкой — в тарифе PRO: до 15 отзывов за раз, 100 текстов в сутки. Попробуйте 7 дней за 99 ₽. А пока можно отправить этот запрос в ChatGPT, Claude или другую нейросеть кнопками ниже.'));
+      out.appendChild(el('div', 't-note', 'Бесплатно — до 3 отзывов за раз. До 15 за раз и 100 текстов в сутки — в PRO, попробуйте 7 дней за 99 ₽. Или уберите лишние отзывы, или отправьте этот запрос в ChatGPT, Claude или другую нейросеть кнопками ниже.'));
       openBox.classList.remove('t-hidden');
       window.spPreferTrial = true;
       goal('batch_pro');
