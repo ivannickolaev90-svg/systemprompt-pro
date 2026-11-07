@@ -76,7 +76,7 @@
 
   <!-- Стили собраны заранее (Tailwind), без внешних скриптов -->
   <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/tools.css?v=4">
+  <link rel="stylesheet" href="/tools.css?v=5">
 </head>
 
 <body class="bg-zinc-950 text-zinc-200 font-sans min-h-screen overflow-x-hidden selection:bg-indigo-600/50 selection:text-white">
@@ -143,11 +143,10 @@
         <div class="t-head">
           <div>
             <h2 id="tasksTitle" class="t-title">Что нужно сделать?</h2>
-            <p class="t-sub">Выберите задачу — ответьте на 2–4 вопроса — получите готовый текст</p>
+            <p class="t-sub">Напишите своими словами или выберите задачу — получите готовый текст</p>
           </div>
           <span id="tQuota" class="t-quota" aria-live="polite"></span>
         </div>
-        <p id="tRef" class="t-ref t-hidden" aria-live="polite"></p>
         <form id="tQuick" class="t-quick" novalidate>
           <textarea id="tQuickText" rows="2" maxlength="2000" aria-label="Что нужно написать?" placeholder="Напишите, что нужно. Например: ответь на отзыв «товар пришёл мятым», вежливо, предложи обмен"></textarea>
           <button type="submit" class="t-go">Написать ⚡</button>
@@ -159,6 +158,7 @@
         </details>
         <p class="t-or">или выберите готовую задачу:</p>
         <div id="tGrid" class="t-grid"><p class="t-sub">Загружаем задачи…</p></div>
+        <p id="tRef" class="t-ref t-hidden" aria-live="polite"></p>
 
         <div id="tPanel" class="t-panel t-hidden">
           <div class="t-box">
@@ -620,6 +620,6 @@
   <!-- ===== ЛОГИКА ===== -->
   <script src="/metrika.js"></script>
   <script src="/app.js?v=5" defer></script>
-  <script src="/tools.js?v=4" defer></script>
+  <script src="/tools.js?v=5" defer></script>
 </body>
 </html>

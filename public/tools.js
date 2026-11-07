@@ -159,26 +159,46 @@
   }
 
   /* ---------- Сетка задач ---------- */
+  const MAIN = 5; // сколько задач видно сразу, остальные — под «Другие задачи»
+  function card(t) {
+    const b = el('button', 't-card');
+    b.type = 'button'; b.dataset.task = t.id; b.setAttribute('aria-pressed', 'false');
+    b.appendChild(el('span', 'e', t.emoji));
+    b.appendChild(el('span', 'n', t.title));
+    if (t.pro) b.querySelector('.n').appendChild(el('span', 't-pro', 'PRO'));
+    b.appendChild(el('span', 'd', t.desc));
+    b.addEventListener('click', () => select(t.id, true));
+    return b;
+  }
+  let moreBox = null, moreBtn = null;
+  function showMore(on) {
+    if (!moreBox) return;
+    moreBox.classList.toggle('t-hidden', !on);
+    moreBtn.setAttribute('aria-expanded', String(on));
+    moreBtn.textContent = on ? 'Скрыть ▴' : 'Другие задачи (' + moreBox.children.length + ') ▾';
+  }
   function buildGrid() {
     grid.textContent = '';
-    tasks.forEach((t) => {
-      if (t.hidden) return;
-      const b = el('button', 't-card');
-      b.type = 'button'; b.dataset.task = t.id; b.setAttribute('aria-pressed', 'false');
-      b.appendChild(el('span', 'e', t.emoji));
-      b.appendChild(el('span', 'n', t.title));
-      if (t.pro) b.querySelector('.n').appendChild(el('span', 't-pro', 'PRO'));
-      b.appendChild(el('span', 'd', t.desc));
-      b.addEventListener('click', () => select(t.id, true));
-      grid.appendChild(b);
-    });
+    const list = tasks.filter((t) => !t.hidden);
+    list.slice(0, MAIN).forEach((t) => grid.appendChild(card(t)));
+    const rest = list.slice(MAIN);
+    if (!rest.length) return;
+    moreBox = el('div', 't-grid t-more t-hidden');
+    rest.forEach((t) => moreBox.appendChild(card(t)));
+    moreBtn = el('button', 't-morebtn');
+    moreBtn.type = 'button';
+    moreBtn.addEventListener('click', () => { const on = moreBox.classList.contains('t-hidden'); showMore(on); if (on) goal('tasks_more'); });
+    grid.insertAdjacentElement('afterend', moreBtn);
+    moreBtn.insertAdjacentElement('afterend', moreBox);
+    showMore(false);
   }
 
   function select(id, scroll) {
     const t = tasks.find((x) => x.id === id);
     if (!t) return;
     current = t; lastResult = ''; lastPrompt = ''; lastFields = null;
-    grid.querySelectorAll('.t-card').forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.task === id)));
+    root.querySelectorAll('.t-card').forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.task === id)));
+    if (moreBox && moreBox.querySelector('[data-task="' + id + '"]')) showMore(true);
     title.textContent = t.emoji + ' ' + t.title;
     hint.textContent = t.desc;
     form.textContent = '';
