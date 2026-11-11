@@ -196,6 +196,20 @@ ${cta}
 }
 
 const toolBySlug = Object.fromEntries(TOOLS.map((t) => [t.slug, t]));
+
+// Все посадочные одним списком — внутренние ссылки помогают индексации
+const TOOL_GROUPS = [
+  ['Отзывы', ['generator-otvetov-na-otzyvy', 'otvet-na-otzyv-wildberries', 'otvet-na-otzyv-ozon', 'otvet-na-otzyv-yandeks-karty', 'otvet-na-negativnyj-otzyv', 'otvet-na-pretenziyu-klienta']],
+  ['Товары и объявления', ['opisanie-tovara-nejroset', 'opisanie-tovara-wildberries', 'opisanie-tovara-ozon', 'obyavlenie-avito-nejroset']],
+  ['Посты', ['post-dlya-telegram-nejroset', 'post-dlya-vk-nejroset', 'kontent-plan-nejroset']],
+  ['Письма', ['kommercheskoe-predlozhenie-nejroset', 'delovoe-pismo-nejroset', 'pismo-napominanie-ob-oplate', 'soprovoditelnoe-pismo-nejroset', 'uluchshit-prompt-onlajn']]
+];
+const allTools = (current) => `
+      <h2>Все инструменты</h2>
+      <div class="alltools">
+${TOOL_GROUPS.map(([name, list]) => `        <div><b>${esc(name)}</b>${list.filter((x) => toolBySlug[x]).map((x) => x === current ? `<span>${esc(toolBySlug[x].h1)}</span>` : `<a href="/${x}">${esc(toolBySlug[x].h1)}</a>`).join('')}</div>`).join('\n')}
+        <div><b>Ещё</b><a href="/nejroset-dlya-tekstov">Нейросеть для текстов</a><a href="/prompts/">Готовые промпты</a><a href="/">Все задачи на главной</a></div>
+      </div>`;
 function toolHtml(t) {
   const url = `${SITE}/${t.slug}`;
   const jsonld = [
@@ -232,7 +246,15 @@ ${t.steps.map((x) => `        <li>${esc(x)}</li>`).join('\n')}
       <p class="note"><strong>Что ввели:</strong> ${esc(t.example.input)}</p>
       <div class="code"><pre>${esc(t.example.output)}</pre></div>
       <p class="note">Каждый раз текст пишется заново под ваши данные, поэтому результат будет другим.</p>
-${btn}
+${t.more ? `
+      <h2>${esc(t.more.title)}</h2>
+${t.more.items.map((x) => `      <p class="note"><strong>Что ввели:</strong> ${esc(x.input)}</p>
+      <div class="code"><pre>${esc(x.output)}</pre></div>`).join('\n')}
+` : ''}${btn}
+${t.guide ? `
+      <h2>${esc(t.guide.title)}</h2>
+${t.guide.paras.map((x) => `      <p>${esc(x)}</p>`).join('\n')}
+` : ''}
       <h2>Советы</h2>
       <ul>
 ${t.tips.map((x) => `        <li>${esc(x)}</li>`).join('\n')}
@@ -245,6 +267,7 @@ ${t.faq.map((f) => `      <details class="faq"><summary>${esc(f.q)}</summary><p>
       <div class="grid">
 ${t.related.filter((s) => toolBySlug[s]).map((s) => `        <a class="tile" href="/${s}"><b>${esc(toolBySlug[s].h1)}</b><span>${esc(toolBySlug[s].lead)}</span></a>`).join('\n')}
       </div>
+${allTools(t.slug)}
     </div>
   </main>
 ` + foot;
@@ -312,6 +335,18 @@ fs.writeFileSync(path.join(pub, 'nejroset-dlya-tekstov.html'), hubHtml());
 fs.mkdirSync(path.join(pub, 'prompts'), { recursive: true });
 for (const p of PAGES) fs.writeFileSync(path.join(pub, 'prompts', p.slug + '.html'), pageHtml(p));
 fs.writeFileSync(path.join(pub, 'prompts', 'index.html'), catalogHtml());
+
+// Страница 404 — чтобы несуществующие адреса не отдавали главную с кодом 200
+fs.writeFileSync(path.join(pub, '404.html'), head({ title: 'Страница не найдена — SystemPrompt PRO', description: 'Такой страницы нет. Перейдите на главную или выберите инструмент.', url: SITE + '/' }).replace('<link rel="canonical"', '<meta name="robots" content="noindex">\n  <link rel="canonical"') + `
+  <main>
+    <div class="wrap">
+      <h1>Страница не найдена</h1>
+      <p class="lead">Возможно, адрес набран с ошибкой или страница переехала. Все инструменты — на главной.</p>
+      <p><a class="btn" href="/">Перейти на главную ⚡</a></p>
+${allTools('')}
+    </div>
+  </main>
+` + foot);
 
 // sitemap.xml целиком
 const urls = [

@@ -112,3 +112,11 @@ code { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .9em; 
   .cta { padding: 18px; }
   .btn { width: 100%; text-align: center; }
 }
+
+/* Все инструменты */
+.alltools { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px 20px; margin: 8px 0 24px; font-size: 14px; }
+.alltools div { display: flex; flex-direction: column; gap: 5px; }
+.alltools b { color: var(--title); font-size: 13px; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 2px; }
+.alltools a { color: var(--muted); text-decoration: none; }
+.alltools a:hover { color: var(--title); text-decoration: underline; }
+.alltools span { color: var(--title); font-weight: 600; }
