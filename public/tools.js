@@ -159,7 +159,7 @@
   }
 
   /* ---------- Сетка задач ---------- */
-  const CATS = [['sell', '🛒 Продавцам'], ['biz', '💼 Бизнесу'], ['me', '🙋 Для себя']];
+  const CATS = [['sell', '🛒 Продавцам'], ['biz', '💼 Бизнесу'], ['me', '📝 Другие тексты']];
   let cat = 'sell', tabs = null;
   function card(t) {
     const b = el('button', 't-card');
