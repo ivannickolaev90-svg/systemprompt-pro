@@ -779,6 +779,7 @@
     }
     const m = /^#task=([a-z0-9-]+)$/.exec(location.hash || '');
     if (m) select(m[1], true);
+    window.addEventListener('hashchange', () => { const h = /^#task=([a-z0-9-]+)$/.exec(location.hash || ''); if (h && tasks.some((t) => t.id === h[1])) select(h[1], true); });
   }
   init();
 })();
