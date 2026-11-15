@@ -199,10 +199,10 @@ const toolBySlug = Object.fromEntries(TOOLS.map((t) => [t.slug, t]));
 
 // Все посадочные одним списком — внутренние ссылки помогают индексации
 const TOOL_GROUPS = [
-  ['Отзывы', ['generator-otvetov-na-otzyvy', 'otvet-na-otzyv-wildberries', 'otvet-na-otzyv-ozon', 'otvet-na-otzyv-yandeks-karty', 'otvet-na-negativnyj-otzyv', 'otvet-na-pretenziyu-klienta']],
-  ['Товары и объявления', ['opisanie-tovara-nejroset', 'opisanie-tovara-wildberries', 'opisanie-tovara-ozon', 'obyavlenie-avito-nejroset']],
+  ['Отзывы', ['generator-otvetov-na-otzyvy', 'otvet-na-otzyv-wildberries', 'otvet-na-otzyv-ozon', 'otvet-na-otzyv-yandeks-karty', 'otvet-na-negativnyj-otzyv', 'otvet-na-vopros-pokupatelya', 'otvet-na-pretenziyu-klienta']],
+  ['Товары и объявления', ['opisanie-tovara-nejroset', 'opisanie-tovara-wildberries', 'opisanie-tovara-ozon', 'opisanie-tovara-yandeks-market', 'obyavlenie-avito-nejroset', 'obyavlenie-o-prodazhe-veshchej']],
   ['Посты', ['post-dlya-telegram-nejroset', 'post-dlya-vk-nejroset', 'kontent-plan-nejroset']],
-  ['Письма', ['kommercheskoe-predlozhenie-nejroset', 'delovoe-pismo-nejroset', 'pismo-napominanie-ob-oplate', 'soprovoditelnoe-pismo-nejroset', 'uluchshit-prompt-onlajn']]
+  ['Письма', ['kommercheskoe-predlozhenie-nejroset', 'delovoe-pismo-nejroset', 'pismo-napominanie-ob-oplate', 'soprovoditelnoe-pismo-nejroset', 'soprovoditelnoe-pismo-bez-opyta', 'uluchshit-prompt-onlajn']]
 ];
 const allTools = (current) => `
       <h2>Все инструменты</h2>
