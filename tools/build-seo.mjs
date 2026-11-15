@@ -42,7 +42,7 @@ const head = ({ title, description, url, jsonld }) => `<!DOCTYPE html>
   <header class="top">
     <div class="wrap">
       <a class="logo" href="/">⚡ SystemPrompt <span>PRO</span></a>
-      <nav class="topnav"><a href="/prompts/">Готовые промпты</a><a class="btn-sm" href="/#builder">Конструктор</a></nav>
+      <nav class="topnav"><a href="/prompts/">Готовые промпты</a><a class="btn-sm" href="/#tasks">Все задачи</a></nav>
     </div>
   </header>
 `;

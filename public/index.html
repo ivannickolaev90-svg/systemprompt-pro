@@ -33,7 +33,7 @@
 
   <!-- ===== Twitter / X ===== -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="SystemPrompt PRO — Конструктор системных промптов">
+  <meta name="twitter:title" content="SystemPrompt PRO — помощник продавца маркетплейсов">
   <meta name="twitter:description" content="Генератор системных инструкций для ИИ-агентов с защитой от prompt injection.">
   <meta name="twitter:image" content="https://systemprompt-pro.com/og-image.png?v=2">
 
@@ -96,8 +96,6 @@
       </a>
       <nav class="flex items-center gap-1 sm:gap-2 text-sm">
         <a href="#tasks" class="hidden md:inline-block px-3 py-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors">Задачи</a>
-        <a href="#builder" class="hidden md:inline-block px-3 py-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors">Для ботов</a>
-        <a href="#knowledge" class="hidden md:inline-block px-3 py-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors">База знаний</a>
         <a href="/prompts/" class="hidden md:inline-block px-3 py-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors">Готовые промпты</a>
 
         <!-- Счётчик бесплатных генераций -->
@@ -195,7 +193,7 @@
     </section>
 
     <!-- ===== BUILDER ===== -->
-    <section id="builder" class="max-w-7xl mx-auto px-4 sm:px-6 pb-20 scroll-mt-20">
+    <section id="builder" hidden class="max-w-7xl mx-auto px-4 sm:px-6 pb-20 scroll-mt-20">
       <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
         <!-- ЛЕВАЯ КОЛОНКА: Панель управления -->
@@ -413,7 +411,7 @@
     </section>
 
     <!-- ===== SEO-СТАТЬЯ: БАЗА ЗНАНИЙ ===== -->
-    <section id="knowledge" class="border-t border-zinc-800 bg-zinc-950/80 scroll-mt-16">
+    <section id="knowledge" hidden class="border-t border-zinc-800 bg-zinc-950/80 scroll-mt-16">
       <div class="max-w-3xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
         <div class="text-center mb-10">
           <span class="inline-block text-xs font-mono uppercase tracking-widest text-emerald-400 mb-3">// knowledge base</span>
@@ -484,8 +482,6 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-zinc-500">
       <p>© <span id="year"></span> SystemPrompt PRO — ИИ напишет за вас: отзывы, посты, описания товаров</p>
       <div class="flex flex-wrap justify-center gap-x-5 gap-y-2">
-        <a href="#builder" class="hover:text-emerald-400 transition-colors">Конструктор</a>
-        <a href="#knowledge" class="hover:text-emerald-400 transition-colors">База знаний</a>
         <a href="/prompts/" class="hover:text-emerald-400 transition-colors">Готовые промпты</a>
         <a href="#" data-telegram class="hover:text-emerald-400 transition-colors">Telegram</a>
         <a href="/offer" class="hover:text-emerald-400 transition-colors">Оферта</a>
@@ -551,7 +547,7 @@
           <label class="pl-card"><input type="radio" name="plan" value="pro" checked><span class="pl-badge">Популярный</span>
             <span class="pl-head"><span class="pl-name">PRO</span><span class="pl-price">399 ₽</span></span>
             <span class="pl-per">30 дней</span>
-            <ul class="pl-list"><li>100 готовых текстов в сутки</li><li>Ответы на 15 отзывов за раз</li><li>Конструктор промптов для ботов без ограничений</li></ul>
+            <ul class="pl-list"><li>100 готовых текстов в сутки</li><li>Ответы на 15 отзывов за раз</li><li>Разбор отзывов и обращения в поддержку</li></ul>
           </label>
           <label class="pl-card"><input type="radio" name="plan" value="pro_year">
             <span class="pl-head"><span class="pl-name">PRO на год</span><span class="pl-price">2 990 ₽</span></span>
@@ -622,6 +618,6 @@
   <!-- ===== ЛОГИКА ===== -->
   <script src="/metrika.js"></script>
   <script src="/app.js?v=5" defer></script>
-  <script src="/tools.js?v=8" defer></script>
+  <script src="/tools.js?v=9" defer></script>
 </body>
 </html>

@@ -757,3 +757,6 @@
   }
   init();
 })();
+
+// Конструктор скрыт с главной; открывается только по прямой ссылке /#builder
+(function () { function show() { if (location.hash === '#builder') { const b = document.getElementById('builder'); if (b) { b.hidden = false; b.scrollIntoView(); } } } show(); window.addEventListener('hashchange', show); })();
