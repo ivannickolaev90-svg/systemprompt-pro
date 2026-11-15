@@ -714,9 +714,34 @@
 
   /* ---------- Поле «Напишите, что нужно» ---------- */
   const qBox = $('#tQuick'), qText = $('#tQuickText');
+  // Короткая просьба «что сделать» → сразу открываем подходящую задачу (длинный текст — это уже материал, его пишет ИИ)
+  const ROUTES = [
+    [/(пачк|много|сразу|несколько|все|массов|excel|эксел|файл|таблиц).*отзыв|отзыв.*(пачк|много|сразу|несколько|массов|excel|эксел|файл|таблиц)/, 'otvety-pachkoj'],
+    [/(разбор|разобрать|анализ|проанализ|жалу|что (не )?нравит).*отзыв|отзыв.*(разбор|разобрать|анализ|проанализ)/, 'razbor-otzyvov'],
+    [/штраф|поддержк|оспор|претензи.*(склад|wb|вб|озон|ozon|маркетплейс)|потерял|потеря|компенсац/, 'obrashchenie-v-podderzhku'],
+    [/вопрос.*покупател|покупател.*(спрашива|вопрос)|ответ.*на вопрос/, 'vopros-pokupatelya'],
+    [/(провер|аудит|оцени|улучш).*карточк/, 'proverka-kartochki'],
+    [/карточк|описани.*товар|название товар|seo.*товар/, 'kartochka-tovara'],
+    [/авито|объявлени/, 'obyavlenie-avito'],
+    [/отзыв/, 'otvet-na-otzyv'],
+    [/деловое письмо|письмо партн|письмо поставщ/, 'delovoe-pismo'],
+    [/контент.?план/, 'kontent-plan'],
+    [/пост|телеграм|вк\b|вконтакт/, 'post-telegram'],
+    [/коммерческ|\bкп\b/, 'kommercheskoe-predlozhenie'],
+    [/сопроводит|резюме|вакансi?/, 'soprovoditelnoe-pismo'],
+    [/клиент.*(ответ|недовол|жалоб)|ответ.*клиент/, 'otvet-klientu']
+  ];
+  function route(v) {
+    if (v.length > 90 || /[«"„]/.test(v)) return null;
+    const x = v.toLowerCase().replace(/ё/g, 'е');
+    for (const [re, id] of ROUTES) if (re.test(x) && tasks.some((t) => t.id === id)) return id;
+    return null;
+  }
   function quick() {
     const v = (qText.value || '').trim();
     if (!v) { qText.focus(); return; }
+    const r = route(v);
+    if (r) { select(r, true); goal('quick_ask'); const f1 = form.querySelector('textarea, input'); if (f1) f1.focus(); return; }
     if (!tasks.some((t) => t.id === 'svoya-zadacha')) return;
     select('svoya-zadacha', true);
     const inp = form.querySelector('[name="request"]');
