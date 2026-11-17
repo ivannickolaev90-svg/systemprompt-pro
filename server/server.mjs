@@ -36,6 +36,8 @@ const ENV = { DB };
 for (const [k, v] of Object.entries(process.env)) {
   if (SECRET_KEYS.includes(k) || /^(AI_|TASK_|FREE_|PRO_)/.test(k)) ENV[k] = v;
 }
+// Groq не пускает российские IP — ходим к нему через посредника на Cloudflare Pages
+ENV.GROQ_BASE_URL = process.env.GROQ_BASE_URL || 'https://systemprompt-pro.pages.dev/api/groq';
 
 /* ---------- Заголовки из public/_headers ---------- */
 async function loadHeaderRules() {
