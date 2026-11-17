@@ -154,7 +154,7 @@ header [data-token-badge] { display: none !important; }
 .t-prof textarea{box-sizing:border-box;width:100%;margin-top:8px;resize:vertical;background:#09090b;color:#e4e4e7;border:1px solid #27272a;border-radius:10px;padding:10px 12px;font:14px/1.5 Inter,system-ui,sans-serif}
 .t-prof textarea:focus{outline:none;border-color:#6366f1}
 .t-prof-hint{margin:6px 0 2px;font-size:12px;color:#71717a}
-.t-pro{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:6px;font-size:10px;font-weight:700;letter-spacing:.04em;background:linear-gradient(90deg,#4f46e5,#7c3aed);color:#fff;vertical-align:middle}
+.t-pro{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:6px;font-size:10px;font-weight:700;letter-spacing:.04em;background:#14532d;color:#86efac;letter-spacing:0;vertical-align:middle}
 
 /* Другие задачи — свёрнуты */
 .t-morebtn{all:unset;box-sizing:border-box;cursor:pointer;display:block;margin:10px auto 0;padding:8px 16px;border:1px solid #27272a;border-radius:999px;font-size:13px;font-weight:600;color:#a1a1aa}

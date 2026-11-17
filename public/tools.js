@@ -166,7 +166,7 @@
     b.type = 'button'; b.dataset.task = t.id; b.setAttribute('aria-pressed', String(!!current && current.id === t.id));
     b.appendChild(el('span', 'e', t.emoji));
     b.appendChild(el('span', 'n', t.title));
-    if (t.pro) b.querySelector('.n').appendChild(el('span', 't-pro', 'PRO'));
+    if (t.pro) b.querySelector('.n').appendChild(el('span', 't-pro', 'до 3 бесплатно'));
     b.appendChild(el('span', 'd', t.desc));
     b.addEventListener('click', () => select(t.id, true));
     return b;
