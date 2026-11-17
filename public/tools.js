@@ -223,11 +223,18 @@
         input = el('input'); input.type = 'text'; input.maxLength = f.max; input.placeholder = f.placeholder || '';
       }
       input.name = f.name;
+      if (f.name === 'shop' && ls('sp_profile').trim()) input.placeholder = 'Можно не заполнять — магазин уже в профиле';
       input.addEventListener('input', () => lab.classList.remove('bad'));
       lab.appendChild(input);
       lab.appendChild(el('div', 'err', 'Заполните это поле'));
       form.appendChild(lab);
     });
+    if (t.id === 'otvet-na-otzyv') {
+      const PRESETS = [['📦 Брак', 'Пришло с браком — на рукаве затяжка, а надеть хотела сразу. Очень расстроилась.', '1 ★'], ['📏 Не подошёл размер', 'Маломерит. Заказала свой обычный размер — мало, пришлось вернуть.', '3 ★'], ['🚚 Долгая доставка', 'Товар хороший, но доставка шла почти две недели.', '4 ★'], ['🔄 Прислали не то', 'Заказывала синий цвет, а пришёл чёрный. Разочарована.', '2 ★'], ['💚 Всё отлично', 'Всё супер, качество отличное, пришло быстро. Спасибо!', '5 ★']];
+      const row = el('div', 't-presets'); row.appendChild(el('span', '', 'Нет отзыва под рукой? Частый случай:'));
+      PRESETS.forEach((p) => { const b = el('button', 't-preset', p[0]); b.type = 'button'; b.addEventListener('click', () => { const r = form.querySelector('[name="review"]'), g = form.querySelector('[name="rating"]'); if (r) { r.value = p[1]; r.closest('.t-field').classList.remove('bad'); } if (g) g.value = p[2]; goal('preset'); }); row.appendChild(b); });
+      const rl = form.querySelector('[data-name="review"]'); if (rl) rl.insertAdjacentElement('beforebegin', row);
+    }
     if (t.id === 'otvety-pachkoj') { const rl = form.querySelector('[data-name="reviews"]'); if (rl) rl.insertAdjacentElement('afterend', fileBox()); }
     form.querySelectorAll('textarea').forEach(addMic);
     panel.classList.remove('t-wide');
