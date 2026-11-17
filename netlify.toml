@@ -4,6 +4,16 @@
   publish = "public"
   command = ""
 
+[functions]
+  directory = "netlify/functions"
+
+# Посредник к Groq для российского сервера — не перенаправлять
+[[redirects]]
+  from = "/groq/*"
+  to = "/groq/:splat"
+  status = 200
+  force = false
+
 [[redirects]]
   from = "/*"
   to = "https://systemprompt-pro.com/:splat"
