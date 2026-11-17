@@ -76,7 +76,7 @@
 
   <!-- Стили собраны заранее (Tailwind), без внешних скриптов -->
   <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/tools.css?v=8">
+  <link rel="stylesheet" href="/tools.css?v=9">
 </head>
 
 <body class="bg-zinc-950 text-zinc-200 font-sans min-h-screen overflow-x-hidden selection:bg-indigo-600/50 selection:text-white">
@@ -173,6 +173,15 @@
               <button type="button" class="t-btn" data-act="friendlier">😊 Теплее</button>
               <button type="button" class="t-btn" data-act="formal">🎩 Официальнее</button>
               <button type="button" class="t-btn" data-act="tpl">⭐ В шаблоны</button>
+            </div>
+            <div id="tMp" class="t-mp t-hidden">
+              <p>Скопировать ответ и открыть кабинет продавца:</p>
+              <div class="t-mp-row">
+                <button type="button" class="t-mpb" data-mp="wb"><span class="t-mpi wb">W</span>Wildberries<span class="t-mpa">↗</span></button>
+                <button type="button" class="t-mpb" data-mp="ozon"><span class="t-mpi oz">O</span>Ozon<span class="t-mpa">↗</span></button>
+                <button type="button" class="t-mpb" data-mp="ym"><span class="t-mpi ym">М</span>Яндекс Маркет<span class="t-mpa">↗</span></button>
+                <button type="button" class="t-mpb" data-mp="avito"><span class="t-mpi av">A</span>Авито<span class="t-mpa">↗</span></button>
+              </div>
             </div>
             <div id="tOpen" class="t-open t-hidden">
               <p>Продолжить в своей нейросети — запрос уже собран:</p>
@@ -620,6 +629,6 @@
   <!-- ===== ЛОГИКА ===== -->
   <script src="/metrika.js"></script>
   <script src="/app.js?v=5" defer></script>
-  <script src="/tools.js?v=12" defer></script>
+  <script src="/tools.js?v=13" defer></script>
 </body>
 </html>

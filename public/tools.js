@@ -7,7 +7,7 @@
 
   const $ = (sel) => root.querySelector(sel);
   const grid = $('#tGrid'), panel = $('#tPanel'), form = $('#tForm'), title = $('#tTitle'), hint = $('#tHint');
-  const go = $('#tGo'), out = $('#tOut'), actions = $('#tActions'), openBox = $('#tOpen'), quota = $('#tQuota');
+  const go = $('#tGo'), out = $('#tOut'), actions = $('#tActions'), openBox = $('#tOpen'), mpBox = $('#tMp'), quota = $('#tQuota');
 
   const LICENSE_KEY = 'systemprompt_license';
   const license = () => { try { return localStorage.getItem(LICENSE_KEY) || ''; } catch (e) { return ''; } };
@@ -233,7 +233,7 @@
     panel.classList.remove('t-wide');
     out.textContent = '';
     out.appendChild(el('p', 'ph', 'Заполните поля и нажмите «Сделать». Готовый текст появится здесь — его можно скопировать или открыть в любой нейросети.'));
-    actions.classList.add('t-hidden'); openBox.classList.add('t-hidden');
+    actions.classList.add('t-hidden'); openBox.classList.add('t-hidden'); mpShow(false);
     panel.classList.remove('t-hidden');
     try { history.replaceState(null, '', '#task=' + id); } catch (e) { /* без смены адреса */ }
     if (scroll) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -281,7 +281,7 @@
       lastResult = d.result;
       render(d.result);
       saveHistory(current, d.result);
-      actions.classList.remove('t-hidden'); openBox.classList.remove('t-hidden');
+      actions.classList.remove('t-hidden'); openBox.classList.remove('t-hidden'); mpShow(true);
       goal(tweak ? 'task_tweak' : 'task_done');
       return;
     }
@@ -650,7 +650,7 @@
     if (!note && limited) note = 'Бесплатно — первые 3 отзыва из файла. Весь файл (по 15 отзывов за раз, до 100 запросов в сутки) — в PRO, попробуйте 7 дней за 99 ₽.';
     if (limited) { window.spPreferTrial = true; goal('batch_pro'); }
     fileResults(items, i, note);
-    if (i) goal('file_done');
+    if (i) { goal('file_done'); mpShow(true, true); }
     if (limited) openPro();
   }
   function fileBox() {
@@ -698,6 +698,30 @@
     if (direct) toast('Открываю ' + t.name + ' с готовым запросом');
     else toast(copied ? 'Запрос скопирован — вставьте его в ' + t.name + ' (Ctrl+V) и отправьте' : 'Откройте ' + t.name + ' и вставьте запрос');
   }
+
+  /* ---------- Кнопки «Скопировать и открыть кабинет маркетплейса» ---------- */
+  const MP_TASKS = { 'otvet-na-otzyv': 'r', 'otvety-pachkoj': 'r', 'vopros-pokupatelya': 'q' };
+  const MP = {
+    wb: { name: 'Wildberries', url: 'https://seller.wildberries.ru/', where: '«Вопросы и отзывы»' },
+    ozon: { name: 'Ozon', r: 'https://seller.ozon.ru/app/reviews', url: 'https://seller.ozon.ru/', where: '«Отзывы» / «Вопросы и ответы»' },
+    ym: { name: 'Яндекс Маркет', url: 'https://partner.market.yandex.ru/', where: '«Отзывы» / «Вопросы о товарах»' },
+    avito: { name: 'Авито', url: 'https://www.avito.ru/profile', where: '«Отзывы»' }
+  };
+  let mpFile = false;
+  function mpShow(on, file) {
+    if (!mpBox) return;
+    mpFile = !!file;
+    mpBox.classList.toggle('t-hidden', !(on && current && MP_TASKS[current.id]));
+  }
+  async function mpOpen(key) {
+    const m = MP[key]; if (!m) return;
+    const kind = current && MP_TASKS[current.id];
+    const copied = !mpFile && lastResult ? await copy(plain(lastResult)) : false;
+    window.open((kind === 'r' && m.r) || m.url, '_blank', 'noopener');
+    goal('mp_open_' + key);
+    toast((copied ? 'Ответ скопирован. ' : '') + 'В кабинете ' + m.name + ' откройте ' + m.where + ' и вставьте ответ (Ctrl+V)');
+  }
+  if (mpBox) mpBox.addEventListener('click', (e) => { const b = e.target.closest('button[data-mp]'); if (b) mpOpen(b.dataset.mp); });
 
   /* ---------- Обработчики ---------- */
   go.addEventListener('click', () => run(null));
