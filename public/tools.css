@@ -245,3 +245,5 @@ header [data-token-badge] { display: none !important; }
 .ft-all summary{cursor:pointer;text-align:center;font-size:12px;color:#71717a;list-style:none}
 .ft-all summary::-webkit-details-marker{display:none}
 .ft-all summary:hover{color:#34d399}
+
+#tQuick{display:none}
