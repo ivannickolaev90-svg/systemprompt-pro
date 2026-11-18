@@ -247,3 +247,20 @@ header [data-token-badge] { display: none !important; }
 .ft-all summary:hover{color:#34d399}
 
 #tQuick{display:none}
+
+.ba{max-width:880px;margin:0 auto;padding:0 16px 36px;display:grid;grid-template-columns:1fr 1.25fr;gap:14px;align-items:start}
+.ba-review,.ba-reply{border-radius:18px;padding:14px 16px;text-align:left}
+.ba-review{background:#18181b;border:1px solid #27272a}
+.ba-reply{background:linear-gradient(160deg,rgba(16,185,129,.12),rgba(99,102,241,.08));border:1px solid rgba(52,211,153,.4);box-shadow:0 10px 30px -12px rgba(16,185,129,.35)}
+.ba p{margin:10px 0 0;color:#e4e4e7;font-size:15px;line-height:1.5}
+.ba-top{display:flex;align-items:center;gap:10px}
+.ba-ava{width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#3f3f46;color:#fff;font-weight:700;flex:none}
+.ba-ava.shop{background:linear-gradient(135deg,#6366f1,#10b981)}
+.ba-who{display:flex;flex-direction:column;line-height:1.2;color:#fff;font-size:14px}
+.ba-who small{color:#a1a1aa;font-size:12px}
+.ba-stars{color:#fbbf24;font-size:13px;letter-spacing:1px}
+.ba-stars i{color:#52525b;font-style:normal}
+.ba-tag{margin-left:auto;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:3px 9px;border-radius:999px}
+.ba-tag.bad{background:rgba(248,113,113,.12);color:#fca5a5}
+.ba-tag.good{background:rgba(52,211,153,.15);color:#6ee7b7}
+@media (max-width:700px){.ba{grid-template-columns:1fr}.ba-reply{margin-left:18px}}
