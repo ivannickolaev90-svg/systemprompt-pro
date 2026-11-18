@@ -4,8 +4,8 @@
 .mp-b.on{border-color:#34d399;color:#34d399;background:rgba(52,211,153,.08)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .grid label{display:flex;flex-direction:column;gap:3px;font-size:14px;font-weight:600;color:#e4e4e7}
-.grid small{font-size:12px;font-weight:400;color:#a1a1aa;line-height:1.35}
-.grid input{margin-top:4px;padding:10px 12px;border-radius:10px;border:1px solid #3f3f46;background:#0f0f12;color:#fff;font:inherit;font-size:16px}
+.grid small{margin-bottom:6px;font-size:12px;font-weight:400;color:#a1a1aa;line-height:1.35}
+.grid input{margin-top:auto;padding:10px 12px;border-radius:10px;border:1px solid #3f3f46;background:#0f0f12;color:#fff;font:inherit;font-size:16px}
 .grid input:focus{outline:none;border-color:#818cf8}
 .res{border:1px solid #27272a;border-radius:16px;background:rgba(24,24,27,.7);padding:16px;margin:8px 0 24px}
 .res .big{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding-bottom:10px;border-bottom:1px solid #27272a;margin-bottom:6px}
