@@ -225,7 +225,7 @@ header [data-token-badge] { display: none !important; }
 .t-mpi.av{background:linear-gradient(135deg,#00b2ff,#7d3cf0)}
 .t-mpa{color:#71717a;font-weight:400}
 
-.sp-brand{display:none;flex-direction:column;line-height:1.1}@media (min-width:400px){.sp-brand{display:flex}}
+.sp-brand{display:flex;flex-direction:column;line-height:1.1;min-width:0}@media (max-width:420px){.sp-brand>span:first-child{font-size:16px}.sp-sub{font-size:10px}}
 .sp-sub{font-size:11px;color:#a1a1aa;font-weight:500;margin-top:2px}
 .ex-wrap{max-width:960px;margin:0 auto;padding:0 16px 40px}
 .ex-card{display:grid;grid-template-columns:1fr auto 1.4fr;gap:16px;align-items:center;border:1px solid #27272a;border-radius:18px;background:rgba(24,24,27,.7);padding:18px}
