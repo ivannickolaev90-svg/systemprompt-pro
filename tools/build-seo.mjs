@@ -208,7 +208,7 @@ const allTools = (current) => `
       <h2>Все инструменты</h2>
       <div class="alltools">
 ${TOOL_GROUPS.map(([name, list]) => `        <div><b>${esc(name)}</b>${list.filter((x) => toolBySlug[x]).map((x) => x === current ? `<span>${esc(toolBySlug[x].h1)}</span>` : `<a href="/${x}">${esc(toolBySlug[x].h1)}</a>`).join('')}</div>`).join('\n')}
-        <div><b>Ещё</b><a href="/nejroset-dlya-tekstov">Нейросеть для текстов</a><a href="/prompts/">Готовые промпты</a><a href="/">Все задачи на главной</a></div>
+        <div><b>Ещё</b><a href="/kalkulyator-wildberries">Калькулятор продавца WB и Ozon</a><a href="/nejroset-dlya-tekstov">Нейросеть для текстов</a><a href="/prompts/">Готовые промпты</a><a href="/">Все задачи на главной</a></div>
       </div>`;
 function toolHtml(t) {
   const url = `${SITE}/${t.slug}`;
@@ -355,6 +355,7 @@ const urls = [
   ...TOOLS.map((t) => ({ loc: `${SITE}/${t.slug}`, freq: 'weekly', pri: '0.9' })),
   { loc: SITE + '/prompts/', freq: 'weekly', pri: '0.8' },
   ...PAGES.map((p) => ({ loc: `${SITE}/prompts/${p.slug}`, freq: 'monthly', pri: '0.7' })),
+  { loc: SITE + '/kalkulyator-wildberries', freq: 'monthly', pri: '0.8' },
   { loc: SITE + '/offer', freq: 'monthly', pri: '0.3' },
   { loc: SITE + '/contacts', freq: 'monthly', pri: '0.3' }
 ];
