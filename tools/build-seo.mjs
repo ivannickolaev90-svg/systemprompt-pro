@@ -199,7 +199,7 @@ const toolBySlug = Object.fromEntries(TOOLS.map((t) => [t.slug, t]));
 
 // Все посадочные одним списком — внутренние ссылки помогают индексации
 const TOOL_GROUPS = [
-  ['Отзывы', ['generator-otvetov-na-otzyvy', 'otvety-na-otzyvy-primery', 'otvet-na-polozhitelnyj-otzyv', 'otvet-na-otzyv-avito', 'analiz-otzyvov-konkurentov', 'otvet-na-otzyv-wildberries', 'otvet-na-otzyv-ozon', 'otvet-na-otzyv-yandeks-karty', 'otvet-na-negativnyj-otzyv', 'otvet-na-vopros-pokupatelya', 'otvet-na-pretenziyu-klienta']],
+  ['Отзывы', ['generator-otvetov-na-otzyvy', 'otvety-na-otzyvy-primery', 'otvet-na-polozhitelnyj-otzyv', 'otvet-na-otzyv-avito', 'analiz-otzyvov-konkurentov', 'zhaloba-na-otzyv', 'otvet-na-otzyv-wildberries', 'otvet-na-otzyv-ozon', 'otvet-na-otzyv-yandeks-karty', 'otvet-na-negativnyj-otzyv', 'otvet-na-vopros-pokupatelya', 'otvet-na-pretenziyu-klienta']],
   ['Товары и объявления', ['opisanie-tovara-nejroset', 'opisanie-tovara-wildberries', 'opisanie-tovara-ozon', 'opisanie-tovara-yandeks-market', 'obyavlenie-avito-nejroset', 'obyavlenie-o-prodazhe-veshchej']],
   ['Посты', ['post-dlya-telegram-nejroset', 'post-dlya-vk-nejroset', 'kontent-plan-nejroset']],
   ['Письма', ['kommercheskoe-predlozhenie-nejroset', 'delovoe-pismo-nejroset', 'pismo-napominanie-ob-oplate', 'soprovoditelnoe-pismo-nejroset', 'soprovoditelnoe-pismo-bez-opyta', 'uluchshit-prompt-onlajn']]
@@ -208,7 +208,7 @@ const allTools = (current) => `
       <h2>Все инструменты</h2>
       <div class="alltools">
 ${TOOL_GROUPS.map(([name, list]) => `        <div><b>${esc(name)}</b>${list.filter((x) => toolBySlug[x]).map((x) => x === current ? `<span>${esc(toolBySlug[x].h1)}</span>` : `<a href="/${x}">${esc(toolBySlug[x].h1)}</a>`).join('')}</div>`).join('\n')}
-        <div><b>Ещё</b><a href="/kalkulyator-wildberries">Калькулятор продавца WB и Ozon</a><a href="/nejroset-dlya-tekstov">Нейросеть для текстов</a><a href="/prompts/">Готовые промпты</a><a href="/">Все задачи на главной</a></div>
+        <div><b>Ещё</b><a href="/kalkulyator-wildberries">Калькулятор продавца ВБ</a><a href="/kalkulyator-ozon">Калькулятор продавца Ozon</a><a href="/nejroset-dlya-tekstov">Нейросеть для текстов</a><a href="/prompts/">Готовые промпты</a><a href="/">Все задачи на главной</a></div>
       </div>`;
 function toolHtml(t) {
   const url = `${SITE}/${t.slug}`;
@@ -356,6 +356,7 @@ const urls = [
   { loc: SITE + '/prompts/', freq: 'weekly', pri: '0.8' },
   ...PAGES.map((p) => ({ loc: `${SITE}/prompts/${p.slug}`, freq: 'monthly', pri: '0.7' })),
   { loc: SITE + '/kalkulyator-wildberries', freq: 'monthly', pri: '0.8' },
+  { loc: SITE + '/kalkulyator-ozon', freq: 'monthly', pri: '0.8' },
   { loc: SITE + '/offer', freq: 'monthly', pri: '0.3' },
   { loc: SITE + '/contacts', freq: 'monthly', pri: '0.3' }
 ];
