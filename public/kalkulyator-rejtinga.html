@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Калькулятор рейтинга отзывов — сколько пятёрок нужно (Авито, WB, Ozon)</title>
+  <meta name="description" content="Калькулятор рейтинга и оценок: сколько отзывов на 5 звёзд нужно, чтобы поднять рейтинг на Авито, Wildberries, Ozon или Яндекс Маркете, и насколько его опустит одна единица.">
+  <link rel="canonical" href="https://systemprompt-pro.com/kalkulyator-rejtinga">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="SystemPrompt PRO">
+  <meta property="og:title" content="Калькулятор рейтинга отзывов — сколько пятёрок нужно">
+  <meta property="og:description" content="Введите текущий рейтинг и число оценок — узнайте, сколько пятёрок нужно до цели.">
+  <meta property="og:url" content="https://systemprompt-pro.com/kalkulyator-rejtinga">
+  <meta property="og:image" content="https://systemprompt-pro.com/og-image.png?v=3">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="stylesheet" href="/legal.css">
+  <link rel="stylesheet" href="/calc.css?v=2">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Калькулятор рейтинга отзывов","url":"https://systemprompt-pro.com/kalkulyator-rejtinga","applicationCategory":"BusinessApplication","operatingSystem":"Web","inLanguage":"ru","offers":{"@type":"Offer","price":"0","priceCurrency":"RUB"}}</script>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <a class="logo" href="/">⚡ SystemPrompt <span>PRO</span></a>
+      <nav class="topnav"><a class="btn-sm" href="/#tasks">Все задачи</a></nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <p class="crumbs"><a href="/">Главная</a></p>
+      <h1>Калькулятор рейтинга отзывов</h1>
+      <p class="lead">Сколько оценок на 5 звёзд нужно, чтобы поднять рейтинг до цели, и насколько его уронит одна единица. Подходит для Авито, Wildberries, Ozon, Яндекс Маркета и Яндекс Карт. Бесплатно, без регистрации, данные никуда не отправляются.</p>
+
+      <form id="rcalc" class="calc" autocomplete="off">
+        <div class="grid">
+          <label>Текущий рейтинг<small>например, 4,6 — как в профиле или карточке</small><input name="cur" inputmode="decimal" value="4.6"></label>
+          <label>Количество оценок<small>сколько всего оценок сейчас</small><input name="n" inputmode="decimal" value="120"></label>
+          <label>Желаемый рейтинг<small>до какого значения хотите подняться</small><input name="want" inputmode="decimal" value="4.8"></label>
+        </div>
+      </form>
+
+      <div class="res" id="res" aria-live="polite">
+        <div class="big"><span>Нужно оценок на 5★</span><b id="rNeed">—</b></div>
+        <div class="row"><span>Рейтинг после одной оценки 1★</span><b id="rOne">—</b></div>
+        <div class="row"><span>Сколько 5★ нужно, чтобы отыграть одну 1★</span><b id="rBack">—</b></div>
+        <div class="row"><span>Рейтинг после 10 новых пятёрок</span><b id="rFive">—</b></div>
+        <p class="warn" id="rWarn" hidden></p>
+      </div>
+
+      <div class="cta">
+        <div>
+          <p class="cta-t">Рейтинг держится на ответах: отвечайте на каждый отзыв</p>
+          <p class="cta-s">Нейросеть напишет вежливый ответ на отзыв, поможет составить жалобу на несправедливую оценку. 5 текстов в сутки бесплатно.</p>
+        </div>
+        <a class="btn" href="/#task=otvet-na-otzyv">Ответить на отзывы ⚡</a>
+      </div>
+
+      <h2>Как считается</h2>
+      <p>Рейтинг — это среднее всех оценок: сумма звёзд, делённая на их количество. Калькулятор находит, сколько пятёрок нужно добавить, чтобы среднее дошло до цели. Чем больше у вас оценок, тем сильнее рейтинг «стоит на месте»: и одна единица, и десяток пятёрок двигают его меньше.</p>
+      <h2>Важно знать</h2>
+      <ul>
+        <li><b>Площадки могут считать по-своему</b> — например, учитывать только свежие оценки или исключать отзывы, удалённые после жалобы. Калькулятор показывает простое среднее, поэтому результат — ориентир.</li>
+        <li><b>Округление.</b> В карточке рейтинг обычно показан с одним знаком после запятой: 4,75 может отображаться как 4,8.</li>
+        <li><b>Накручивать оценки нельзя</b> — за это площадки скрывают отзывы и блокируют магазины. Честные способы: просить довольных покупателей оставить отзыв, быстро решать проблемы и отвечать на каждый отзыв.</li>
+      </ul>
+      <h2>Частые вопросы</h2>
+      <p><b>Как убрать несправедливый отзыв?</b> Если отзыв нарушает правила площадки (оскорбления, не о товаре, конкурент), подайте жалобу. Текст жалобы поможет составить <a href="/zhaloba-na-otzyv">генератор жалоб на отзыв</a>.</p>
+      <p><b>Почему одна единица так сильно роняет рейтинг?</b> Когда оценок мало, каждая весит много. При 20 оценках одна единица может отнять больше 0,1 звезды, при 500 — почти незаметна.</p>
+      <p><b>Калькулятор сохраняет мои данные?</b> Нет, всё считается прямо в вашем браузере и никуда не отправляется.</p>
+      <p>Ещё полезное: <a href="/kalkulyator-wildberries">калькулятор ВБ</a>, <a href="/kalkulyator-ozon">калькулятор Ozon</a>, <a href="/kalkulyator-yandeks-market">калькулятор Яндекс Маркета</a>.</p>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap">
+      <span>© 2026 SystemPrompt PRO · Николаев Иван Антонович · самозанятый · ИНН 783807650108</span>
+      <nav><a href="/">Главная</a><a href="/generator-otvetov-na-otzyvy">Ответ на отзыв</a><a href="/otvet-na-vopros-pokupatelya">Ответ на вопрос покупателя</a><a href="/opisanie-tovara-wildberries">Описание товара для WB</a><a href="/offer">Оферта</a><a href="/contacts">Реквизиты</a></nav>
+    </div>
+  </footer>
+  <script src="/metrika.js"></script>
+  <script src="/rating.js?v=1" defer></script>
+</body>
+</html>

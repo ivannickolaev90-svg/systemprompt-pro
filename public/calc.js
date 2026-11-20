@@ -3,7 +3,7 @@
   'use strict';
   var f = document.getElementById('calc'); if (!f) return;
   var $ = function (id) { return document.getElementById(id); };
-  var HINTS = { wb: 'смотрите в кабинете WB: «Тарифы» → комиссия по вашей категории', ozon: 'смотрите в кабинете Ozon: раздел с тарифами и комиссиями по категориям', other: 'комиссия площадки за продажу в вашей категории' };
+  var HINTS = { wb: 'смотрите в кабинете WB: «Тарифы» → комиссия по вашей категории', ozon: 'смотрите в кабинете Ozon: раздел с тарифами и комиссиями по категориям', ym: 'смотрите в кабинете Маркета: «Тарифы» → комиссия за размещение по категории', other: 'комиссия площадки за продажу в вашей категории' };
   var num = function (n) { var v = parseFloat(String(f.elements[n].value).replace(',', '.').replace(/\s/g, '')); return isFinite(v) ? v : 0; };
   var rub = function (v) { return (v < 0 ? '−' : '') + Math.abs(Math.round(v)).toLocaleString('ru-RU') + ' ₽'; };
   var pct = function (v) { return (Math.round(v * 10) / 10).toLocaleString('ru-RU') + ' %'; };
