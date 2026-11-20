@@ -264,3 +264,17 @@ header [data-token-badge] { display: none !important; }
 .ba-tag.bad{background:rgba(248,113,113,.12);color:#fca5a5}
 .ba-tag.good{background:rgba(52,211,153,.15);color:#6ee7b7}
 @media (max-width:700px){.ba{grid-template-columns:1fr}.ba-reply{margin-left:18px}}
+
+#tOpen{display:none!important}
+.faq{max-width:780px;margin:0 auto;padding:0 1rem 4rem}
+.faq-h{font-size:1.5rem;font-weight:800;color:#fff;margin:0 0 1rem;text-align:center}
+.faq-list{display:grid;gap:.5rem;margin-bottom:3rem}
+.faq-i{border:1px solid #27272a;border-radius:14px;background:#18181b;padding:.9rem 1.1rem}
+.faq-i summary{cursor:pointer;font-weight:700;color:#f4f4f5;list-style:none}
+.faq-i summary::-webkit-details-marker{display:none}
+.faq-i summary::after{content:"+";float:right;color:#34d399;font-weight:800}
+.faq-i[open] summary::after{content:"−"}
+.faq-i p{margin:.6rem 0 0;color:#a1a1aa;font-size:.95rem;line-height:1.55}
+.faq-art p{color:#a1a1aa;line-height:1.65;margin:0 0 .9rem}
+.faq-art b{color:#e4e4e7}
+.faq-art a{color:#34d399;text-decoration:underline}
