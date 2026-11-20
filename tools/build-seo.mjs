@@ -205,7 +205,7 @@ const allTools = (current) => `
       <h2>Все инструменты</h2>
       <div class="alltools">
 ${TOOL_GROUPS.map(([name, list]) => `        <div><b>${esc(name)}</b>${list.filter((x) => toolBySlug[x]).map((x) => x === current ? `<span>${esc(toolBySlug[x].h1)}</span>` : `<a href="/${x}">${esc(toolBySlug[x].h1)}</a>`).join('')}</div>`).join('\n')}
-        <div><b>Ещё</b><a href="/kalkulyator-wildberries">Калькулятор продавца ВБ</a><a href="/kalkulyator-ozon">Калькулятор продавца Ozon</a><a href="/kalkulyator-yandeks-market">Калькулятор Яндекс Маркета</a><a href="/kalkulyator-rejtinga">Калькулятор рейтинга</a><a href="/nejroset-dlya-tekstov">Нейросеть для текстов</a><a href="/prompts/">Готовые промпты</a><a href="/">Все задачи на главной</a></div>
+        <div><b>Ещё</b><a href="/kalkulyator-wildberries">Калькулятор продавца ВБ</a><a href="/kalkulyator-ozon">Калькулятор продавца Ozon</a><a href="/kalkulyator-yandeks-market">Калькулятор Яндекс Маркета</a><a href="/kalkulyator-rejtinga">Калькулятор рейтинга</a><a href="/kalkulyator-yunit-ekonomiki">Калькулятор юнит-экономики</a><a href="/kalkulyator-marzhinalnosti">Калькулятор маржинальности</a><a href="/nejroset-dlya-tekstov">Нейросеть для текстов</a><a href="/prompts/">Готовые промпты</a><a href="/">Все задачи на главной</a></div>
       </div>`;
 function toolHtml(t) {
   const url = `${SITE}/${t.slug}`;
@@ -356,6 +356,8 @@ const urls = [
   { loc: SITE + '/kalkulyator-ozon', freq: 'monthly', pri: '0.8' },
   { loc: SITE + '/kalkulyator-yandeks-market', freq: 'monthly', pri: '0.8' },
   { loc: SITE + '/kalkulyator-rejtinga', freq: 'monthly', pri: '0.8' },
+  { loc: SITE + '/kalkulyator-yunit-ekonomiki', freq: 'monthly', pri: '0.8' },
+  { loc: SITE + '/kalkulyator-marzhinalnosti', freq: 'monthly', pri: '0.8' },
   { loc: SITE + '/offer', freq: 'monthly', pri: '0.3' },
   { loc: SITE + '/contacts', freq: 'monthly', pri: '0.3' }
 ];

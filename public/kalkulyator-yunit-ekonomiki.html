@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Калькулятор юнит-экономики для маркетплейсов — WB, Ozon, Яндекс Маркет онлайн</title>
+  <meta name="description" content="Калькулятор юнит-экономики товара для Wildberries, Ozon и Яндекс Маркета: прибыль и маржа с одной продажи с учётом комиссии, логистики, невыкупов, рекламы и налога. Бесплатно, онлайн.">
+  <link rel="canonical" href="https://systemprompt-pro.com/kalkulyator-yunit-ekonomiki">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="SystemPrompt PRO">
+  <meta property="og:title" content="Калькулятор юнит-экономики для маркетплейсов">
+  <meta property="og:description" content="Прибыль, маржа, ROI и цена без убытка с одной продажи на WB, Ozon и Яндекс Маркете.">
+  <meta property="og:url" content="https://systemprompt-pro.com/kalkulyator-yunit-ekonomiki">
+  <meta property="og:image" content="https://systemprompt-pro.com/og-image.png?v=3">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="stylesheet" href="/legal.css">
+  <link rel="stylesheet" href="/calc.css?v=2">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Калькулятор юнит-экономики для маркетплейсов","url":"https://systemprompt-pro.com/kalkulyator-yunit-ekonomiki","applicationCategory":"BusinessApplication","operatingSystem":"Web","inLanguage":"ru","offers":{"@type":"Offer","price":"0","priceCurrency":"RUB"}}</script>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <a class="logo" href="/">⚡ SystemPrompt <span>PRO</span></a>
+      <nav class="topnav"><a class="btn-sm" href="/#tasks">Все задачи</a></nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <p class="crumbs"><a href="/">Главная</a></p>
+      <h1>Калькулятор юнит-экономики для маркетплейсов</h1>
+      <p class="lead">Юнит-экономика — это сколько вы зарабатываете на одной проданной единице товара после всех расходов. Введите цену и расходы — калькулятор покажет прибыль, маржу, ROI и цену, ниже которой торговать в минус. Работает для Wildberries, Ozon, Яндекс Маркета и любой площадки. Бесплатно, данные никуда не отправляются.</p>
+
+      <form id="calc" class="calc" autocomplete="off">
+        <div class="mp" role="radiogroup" aria-label="Площадка">
+          <button type="button" class="mp-b on" data-mp="wb">Wildberries</button>
+          <button type="button" class="mp-b" data-mp="ozon">Ozon</button>
+          <button type="button" class="mp-b" data-mp="ym">Яндекс Маркет</button>
+          <button type="button" class="mp-b" data-mp="other">Другая</button>
+        </div>
+        <div class="grid">
+          <label>Цена продажи, ₽<small>после всех скидок, которую платит покупатель</small><input name="price" inputmode="decimal" value="1500"></label>
+          <label>Себестоимость, ₽<small>закупка + упаковка + доставка до склада, за 1 шт.</small><input name="cost" inputmode="decimal" value="500"></label>
+          <label>Комиссия площадки, %<small id="hintCom">смотрите в кабинете WB: «Тарифы» → комиссия по вашей категории</small><input name="com" inputmode="decimal" value="25"></label>
+          <label>Логистика до покупателя, ₽<small>за 1 шт., зависит от габаритов и склада</small><input name="log" inputmode="decimal" value="80"></label>
+          <label>Обратная логистика, ₽<small>когда покупатель не выкупил товар</small><input name="back" inputmode="decimal" value="50"></label>
+          <label>Процент выкупа, %<small>сколько заказов из 100 покупатели забирают</small><input name="buy" inputmode="decimal" value="80"></label>
+          <label>Хранение и приёмка, ₽<small>в среднем на 1 проданную штуку</small><input name="store" inputmode="decimal" value="15"></label>
+          <label>Реклама, % от цены<small>сколько уходит на продвижение</small><input name="ads" inputmode="decimal" value="5"></label>
+          <label>Налог, %<small>УСН «доходы» и самозанятые с юрлиц — 6 %, с физлиц — 4 %</small><input name="tax" inputmode="decimal" value="6"></label>
+          <label>Желаемая маржа, %<small>чтобы посчитать нужную цену</small><input name="want" inputmode="decimal" value="20"></label>
+        </div>
+      </form>
+
+      <div class="res" id="res" aria-live="polite">
+        <div class="big"><span>Прибыль с 1 продажи</span><b id="rProfit">—</b></div>
+        <div class="row"><span>Маржа (от цены)</span><b id="rMargin">—</b></div>
+        <div class="row"><span>Окупаемость вложений (ROI)</span><b id="rRoi">—</b></div>
+        <div class="row"><span>Цена без убытка</span><b id="rZero">—</b></div>
+        <div class="row"><span>Цена для желаемой маржи</span><b id="rWant">—</b></div>
+        <details class="parts"><summary>Из чего складываются расходы</summary><div id="rParts"></div></details>
+        <p class="warn" id="rWarn" hidden></p>
+      </div>
+
+      <div class="cta">
+        <div>
+          <p class="cta-t">Отзывы отнимают время? Нейросеть ответит за вас</p>
+          <p class="cta-s">Ответы на отзывы и вопросы покупателей, жалобы на несправедливые отзывы, карточки товаров. 5 текстов в сутки бесплатно.</p>
+        </div>
+        <a class="btn" href="/#task=otvet-na-otzyv">Ответить на отзывы ⚡</a>
+      </div>
+
+      <h2>Как считается юнит-экономика</h2>
+      <p>Из цены вычитаются себестоимость, комиссия площадки, налог и реклама (в процентах от цены), логистика и хранение. Отдельно учитываются невыкупы: за каждый невыкупленный заказ вы платите логистику туда и обратно, и эти потери ложатся на проданные товары. Поэтому при выкупе 50 % логистика на одну продажу фактически вдвое выше.</p>
+      <h2>Когда юнит-экономика «не сходится»</h2>
+      <p>Если прибыль с единицы меньше 10–15 % от цены, любой рост логистики, возвратов или ставки рекламы уведёт товар в минус. Варианты: поднять цену, снизить себестоимость (другой поставщик, крупнее партия), уменьшить габариты упаковки или поработать над процентом выкупа — точнее описать размер и комплектацию в карточке и отвечать на вопросы покупателей до покупки.</p>
+      <h2>Где взять цифры</h2>
+      <ul>
+        <li><b>Комиссия и логистика</b> — в кабинете продавца, в разделе тарифов: они зависят от категории, склада и габаритов и регулярно меняются, поэтому калькулятор их не подставляет сам.</li>
+        <li><b>Процент выкупа</b> — в аналитике кабинета по вашему товару; для одежды и обуви он обычно ниже, чем для бытовых товаров.</li>
+        <li><b>Себестоимость</b> — считайте всё, что потратили до того, как товар попал на склад: закупка, упаковка, маркировка, доставка.</li>
+      </ul>
+      <h2>Частые вопросы</h2>
+      <p><b>Что такое «цена без убытка»?</b> Минимальная цена, при которой вы выходите в ноль. Ниже неё каждая продажа приносит минус.</p>
+      <p><b>Почему маржа считается от цены?</b> Так её считают большинство продавцов: какая доля от денег покупателя остаётся у вас. ROI показывает другое — сколько вы зарабатываете на каждый вложенный в товар рубль.</p>
+      <p><b>Калькулятор сохраняет мои данные?</b> Нет, всё считается прямо в вашем браузере и никуда не отправляется.</p>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap">
+      <span>© 2026 SystemPrompt PRO · Николаев Иван Антонович · самозанятый · ИНН 783807650108</span>
+      <nav><a href="/">Главная</a><a href="/generator-otvetov-na-otzyvy">Ответ на отзыв</a><a href="/otvet-na-vopros-pokupatelya">Ответ на вопрос покупателя</a><a href="/opisanie-tovara-wildberries">Описание товара для WB</a><a href="/offer">Оферта</a><a href="/contacts">Реквизиты</a></nav>
+    </div>
+  </footer>
+  <script src="/metrika.js"></script>
+  <script src="/calc.js?v=2" defer></script>
+</body>
+</html>
