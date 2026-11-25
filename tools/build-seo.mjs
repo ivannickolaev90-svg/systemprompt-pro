@@ -196,8 +196,9 @@ const toolBySlug = Object.fromEntries(TOOLS.map((t) => [t.slug, t]));
 
 // Все посадочные одним списком — внутренние ссылки помогают индексации
 const TOOL_GROUPS = [
-  ['Отзывы', ['generator-otvetov-na-otzyvy', 'otvety-na-otzyvy-primery', 'otvet-na-polozhitelnyj-otzyv', 'otvet-na-otzyv-avito', 'analiz-otzyvov-konkurentov', 'zhaloba-na-otzyv', 'otvet-na-otzyv-wildberries', 'otvet-na-otzyv-ozon', 'otvet-na-otzyv-yandeks-karty', 'otvet-na-negativnyj-otzyv', 'otvet-na-vopros-pokupatelya', 'otvet-na-pretenziyu-klienta']],
-  ['Товары и объявления', ['opisanie-tovara-nejroset', 'opisanie-tovara-wildberries', 'opisanie-tovara-ozon', 'opisanie-tovara-yandeks-market', 'obyavlenie-avito-nejroset', 'obyavlenie-o-prodazhe-veshchej']],
+  ['Отзывы', ['generator-otvetov-na-otzyvy', 'otvety-na-otzyvy-primery', 'otvet-na-polozhitelnyj-otzyv', 'otvet-na-otzyv-avito', 'analiz-otzyvov-konkurentov', 'zhaloba-na-otzyv', 'otvet-na-otzyv-wildberries', 'otvet-na-otzyv-ozon', 'otvet-na-otzyv-yandeks-karty', 'otvet-na-negativnyj-otzyv', 'otvet-na-vopros-pokupatelya', 'otvet-na-pretenziyu-klienta', 'otvet-na-otzyv-yandeks-market', 'otvety-na-otzyvy-pachkoj', 'otvety-na-otzyvy-excel']],
+  ['Поддержка и чаты', ['obrashchenie-v-podderzhku-wildberries', 'obrashchenie-v-podderzhku-ozon', 'otvet-pokupatelyu-v-chate']],
+  ['Товары и объявления', ['opisanie-tovara-nejroset', 'opisanie-tovara-wildberries', 'opisanie-tovara-ozon', 'opisanie-tovara-yandeks-market', 'obyavlenie-avito-nejroset', 'obyavlenie-o-prodazhe-veshchej', 'proverka-kartochki-tovara']],
   ['Посты', ['post-dlya-telegram-nejroset', 'post-dlya-vk-nejroset', 'kontent-plan-nejroset']],
   ['Письма', ['kommercheskoe-predlozhenie-nejroset', 'delovoe-pismo-nejroset', 'pismo-napominanie-ob-oplate', 'soprovoditelnoe-pismo-nejroset', 'soprovoditelnoe-pismo-bez-opyta', 'uluchshit-prompt-onlajn']]
 ];
