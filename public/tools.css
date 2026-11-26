@@ -278,3 +278,10 @@ header [data-token-badge] { display: none !important; }
 .faq-art p{color:#a1a1aa;line-height:1.65;margin:0 0 .9rem}
 .faq-art b{color:#e4e4e7}
 .faq-art a{color:#34d399;text-decoration:underline}
+
+/* Переключатель примеров «До/После» на главной */
+.ba-tabs{display:flex;gap:8px;justify-content:center;margin-bottom:12px;flex-wrap:wrap}
+.ba-tab{background:#18181b;border:1px solid #27272a;color:#a1a1aa;font-size:13px;font-weight:600;padding:7px 14px;border-radius:999px;cursor:pointer;transition:border-color .2s,color .2s}
+.ba-tab:hover{border-color:#3f3f46;color:#e4e4e7}
+.ba-tab.is-on{background:rgba(52,211,153,.15);border-color:rgba(52,211,153,.4);color:#6ee7b7}
+.ba[hidden]{display:none}

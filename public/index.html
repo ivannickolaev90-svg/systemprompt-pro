@@ -73,7 +73,7 @@
 
   <!-- Стили собраны заранее (Tailwind), без внешних скриптов -->
   <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/tools.css?v=16">
+  <link rel="stylesheet" href="/tools.css?v=17">
 </head>
 
 <body class="bg-zinc-950 text-zinc-200 font-sans min-h-screen overflow-x-hidden selection:bg-indigo-600/50 selection:text-white">
@@ -130,14 +130,41 @@
     </section>
 
     <!-- ===== До / после ===== -->
-    <section class="ba" aria-label="Пример: отзыв и ответ">
-      <div class="ba-review">
-        <div class="ba-top"><span class="ba-ava">А</span><span class="ba-who"><b>Анна</b><span class="ba-stars">★<i>★★★★</i></span></span><span class="ba-tag bad">До</span></div>
-        <p>Пришло с браком — затяжка на рукаве. Очень расстроилась 😞</p>
+    <section class="ba-wrap" aria-label="Примеры: отзыв и ответ">
+      <div class="ba-tabs" role="tablist" aria-label="Тип отзыва">
+        <button class="ba-tab is-on" type="button" role="tab" aria-selected="true" data-ba="0">Негатив</button>
+        <button class="ba-tab" type="button" role="tab" aria-selected="false" data-ba="1">Позитивный</button>
+        <button class="ba-tab" type="button" role="tab" aria-selected="false" data-ba="2">Вопрос</button>
       </div>
-      <div class="ba-reply">
-        <div class="ba-top"><span class="ba-ava shop">⚡</span><span class="ba-who"><b>Ответ магазина</b><small>готов за 5 секунд</small></span><span class="ba-tag good">После</span></div>
-        <p>Анна, здравствуйте! Очень жаль, что так вышло — понимаем, как это обидно. Оформите возврат или обмен в личном кабинете, а в чате магазина поможем подобрать замену. Спасибо, что сообщили!</p>
+      <div class="ba" data-ba-panel="0">
+        <div class="ba-review">
+          <div class="ba-top"><span class="ba-ava">А</span><span class="ba-who"><b>Анна</b><span class="ba-stars">★<i>★★★★</i></span></span><span class="ba-tag bad">До</span></div>
+          <p>Пришло с браком — затяжка на рукаве. Очень расстроилась 😞</p>
+        </div>
+        <div class="ba-reply">
+          <div class="ba-top"><span class="ba-ava shop">⚡</span><span class="ba-who"><b>Ответ магазина</b><small>готов за 5 секунд</small></span><span class="ba-tag good">После</span></div>
+          <p>Анна, здравствуйте! Очень жаль, что так вышло — понимаем, как это обидно. Оформите возврат или обмен в личном кабинете, а в чате магазина поможем подобрать замену. Спасибо, что сообщили!</p>
+        </div>
+      </div>
+      <div class="ba" data-ba-panel="1" hidden>
+        <div class="ba-review">
+          <div class="ba-top"><span class="ba-ava">О</span><span class="ba-who"><b>Ольга</b><span class="ba-stars">★★★★★</span></span><span class="ba-tag bad">До</span></div>
+          <p>Заказываю уже второй раз — платье село идеально, доставка быстрая. Спасибо! ❤️</p>
+        </div>
+        <div class="ba-reply">
+          <div class="ba-top"><span class="ba-ava shop">⚡</span><span class="ba-who"><b>Ответ магазина</b><small>готов за 5 секунд</small></span><span class="ba-tag good">После</span></div>
+          <p>Ольга, спасибо, что вернулись к нам снова — это лучшая оценка! Очень рады, что платье село идеально. Кстати, к нему отлично подходит пояс из той же коллекции — загляните в наш каталог. Ждём вас снова!</p>
+        </div>
+      </div>
+      <div class="ba" data-ba-panel="2" hidden>
+        <div class="ba-review">
+          <div class="ba-top"><span class="ba-ava">Д</span><span class="ba-who"><b>Дмитрий</b><span class="ba-stars">вопрос</span></span><span class="ba-tag bad">До</span></div>
+          <p>Подскажите, эта модель маломерит? Обычно беру 46 размер.</p>
+        </div>
+        <div class="ba-reply">
+          <div class="ba-top"><span class="ba-ava shop">⚡</span><span class="ba-who"><b>Ответ магазина</b><small>готов за 5 секунд</small></span><span class="ba-tag good">После</span></div>
+          <p>Дмитрий, здравствуйте! Да, эта модель идёт размер в размер, так что на 46 смело берите 46. Если сомневаетесь между двумя — берите больший, фасон свободный. Будем рады вашему заказу!</p>
+        </div>
       </div>
     </section>
 
@@ -598,7 +625,7 @@
 
   <!-- ===== ЛОГИКА ===== -->
   <script src="/metrika.js"></script>
-  <script src="/app.js?v=5" defer></script>
+  <script src="/app.js?v=6" defer></script>
   <script src="/tools.js?v=15" defer></script>
 </body>
 </html>

@@ -844,3 +844,23 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();
+
+/* Переключатель примеров «До/После» на главной (негатив / позитивный / вопрос) */
+(function () {
+  'use strict';
+  const tabs = document.querySelectorAll('.ba-tab');
+  if (!tabs.length) return;
+  const panels = document.querySelectorAll('[data-ba-panel]');
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const target = tab.getAttribute('data-ba');
+      tabs.forEach((t) => {
+        const on = t === tab;
+        t.classList.toggle('is-on', on);
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach((p) => { p.hidden = p.getAttribute('data-ba-panel') !== target; });
+      if (typeof window.spGoal === 'function') { try { window.spGoal('demo_example_switch'); } catch (e) { /* без аналитики */ } }
+    });
+  });
+})();
