@@ -4,6 +4,7 @@
 import { handler, json, isSameOrigin, readJsonBody, ordersStore, getStore, wasModified, newOrderId, clientKey, hitLimit,
   licenseInfo, isPlan, PLANS, HOUR_MS } from '../../lib/shared.js';
 import { ykConfigured, ykCreatePayment } from '../../lib/yookassa.js';
+import { rkConfigured, rkPaymentUrl, rkNewInvId } from '../../lib/robokassa.js';
 
 export const onRequest = handler(async (req) => {
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405, { allow: 'POST' });
@@ -39,6 +40,14 @@ export const onRequest = handler(async (req) => {
       ...(planId === 'trial' ? { trialKey: ipKey } : {})
     };
     if (!wasModified(await store.setJSON(orderId, order, { onlyIfNew: true }))) return json({ error: 'server_error' }, 500);
+
+    // Робокасса — основной эквайринг (СБП, карта и др.). ЮKassa ниже — отключена площадкой, оставлена про запас.
+    if (rkConfigured()) {
+      const invId = rkNewInvId();
+      const curRk = await store.getWithMetadata(orderId);
+      await store.setJSON(orderId, { ...curRk.data, rkInvId: invId }, { onlyIfMatch: curRk.etag });
+      return json({ orderId, sum: plan.price, payUrl: rkPaymentUrl({ orderId, invId, amount: plan.price, title: plan.title }) });
+    }
 
     if (ykConfigured()) {
       try {
